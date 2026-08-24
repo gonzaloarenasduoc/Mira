@@ -138,7 +138,7 @@ java -jar target/mira-0.0.1-SNAPSHOT.jar
 | Integrante | Rol |
 |---|---|
 | Joaquín Romero | Líder de proyecto · Modelo de datos, entidades JPA y capa de servicios |
-| Gonzalo [Apellido] | Controladores, vistas Thymeleaf, panel de indicadores y documentación |
+| Gonzalo Arenas | Controladores, vistas Thymeleaf, panel de indicadores y documentación |
 
 Ambos integrantes participan en el levantamiento de requerimientos con la contraparte, en las pruebas y en la validación de los entregables.
 
