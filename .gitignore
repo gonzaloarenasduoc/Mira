@@ -1,0 +1,36 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Java
+*.class
+*.jar
+*.war
+hs_err_pid*
+replay_pid*
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+nbproject/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Entorno y datos locales
+.env
+uploads/
+logs/
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

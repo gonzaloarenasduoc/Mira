@@ -30,22 +30,26 @@ Fase 1, definición del proyecto. El desarrollo comienza en la semana 5.
   - Roles: son cuatro, no tres. 03 §1.7 quedó alineado con el enumerado.
   - Decisiones nuevas D07 (filtro por empresa con parámetro explícito), D08 (Lombok sí,
     MapStruct no) y D09 (cuatro roles y matriz de permisos) en `docs/08-decisiones.md`.
+- Esqueleto del proyecto (sesión 2 de Claude Code), en la rama `feature/esqueleto`:
+  Maven con Spring Boot 4.1.1 y Java 21, wrapper incluido, dependencias del stack, JaCoCo,
+  `docker-compose.yml` con el servicio `db`, `.env.example`, `.gitignore`, estructura de
+  paquetes vacía, `application.yml` y una página de inicio con Thymeleaf y Bootstrap.
+  `./mvnw clean test` pasa. **Sin migraciones ni entidades todavía.**
 
 ## En curso
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| _(nada aún)_ | | | |
+| Esqueleto del proyecto | Joaquín | `feature/esqueleto` | Terminado y compilando. Falta levantarlo contra la base: Docker en el equipo de Joaquín todavía no responde |
 
 ## Siguiente
 
-1. Configuración del proyecto base: Spring Boot, PostgreSQL en Docker, Flyway y
-   dependencias de pruebas. **Lo genera Joaquín**, en la rama `feature/esqueleto`, y entra
-   a `main` antes de que Gonzalo clone. Decisión tomada porque el esqueleto cae entero en
-   zona compartida (`pom.xml`, `config`, migraciones) y hacerlo dos veces obliga a rehacer
-   el merge. Requisitos previos en la lista de verificación de
-   `docs/11-arranque-claude-code.md`.
-2. Migración `V1__esquema_inicial.sql` a partir del modelo de datos.
+1. Verificar el arranque cuando Docker responda: `docker compose up -d db` y
+   `.\mvnw.cmd spring-boot:run`. Spring Security pide usuario y contraseña, es lo esperado:
+   la clave aparece en la consola. El esqueleto entra a `main` antes de que Gonzalo clone.
+2. Migración `V1__esquema_inicial.sql` a partir del modelo de datos, más
+   `MiraApplicationTests` con Testcontainers, que es la primera prueba que necesita base de
+   datos real.
 3. Épica 001, acceso y roles.
 4. Reunión con la contraparte cuando sea posible, para confirmar los supuestos de la
    sección 6 del modelo de datos.
@@ -75,7 +79,22 @@ Fase 1, definición del proyecto. El desarrollo comienza en la semana 5.
 - Gonzalo no hace commits sobre una rama que llegó por bundle. Las correcciones se piden
   en el pull request y llegan en un bundle nuevo, para que el historial siga reflejando
   quién escribió cada cosa.
-- Java 17 no sirve. El proyecto compila contra 21 y el compilador se detiene.
+- Java 17 no sirve. El proyecto compila contra 21 y el compilador se detiene. En el equipo
+  de Joaquín, el `java` del PATH era 17 (shim de Oracle) y `JAVA_HOME` estaba vacío. Se
+  configuró `JAVA_HOME` a Temurin 21 a nivel de usuario: **afecta a cualquier otro proyecto
+  de ese equipo que use Maven o Gradle con Java 17.** Lo que importa es
+  `.\mvnw.cmd -v`, porque Maven usa `JAVA_HOME`, no el PATH.
+- `cl.duoc.mira.common.controller.InicioController` es **provisional** y cae en dos zonas de
+  propiedad: `common` es de Joaquín, los controladores y las vistas son de Gonzalo. **Pasa a
+  Gonzalo** cuando arme el layout real; ahí decide dónde vive.
+- Bootstrap se sirve como webjar, no por CDN (D08 §D10). Las plantillas lo referencian sin
+  versión: `@{/webjars/bootstrap/css/bootstrap.min.css}`. Gonzalo: construye las vistas
+  sobre eso, no agregues etiquetas a un CDN.
+- La aplicación **no lee `.env`**: ese archivo es para Docker Compose. `application.yml`
+  trae los valores por omisión (`localhost:5432/mira`, usuario y clave `mira`), así que
+  clonar y levantar funciona sin configurar nada. Es lo que mide PNF-16.
+- `docker-compose.yml` tiene solo el servicio `db`. El servicio `app` con su `Dockerfile`
+  está pendiente; el README ya quedó corregido y no promete otra cosa.
 
 ---
 

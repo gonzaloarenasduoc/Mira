@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16
+    container_name: mira-db
+    environment:
+      POSTGRES_DB: mira
+      POSTGRES_USER: ${DB_USER:-mira}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mira}
+    ports:
+      - "5432:5432"
+    volumes:
+      - mira-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-mira} -d mira"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Pendiente: servicio "app" con su Dockerfile, para levantar todo con un solo comando.
+  # Hoy la aplicacion se ejecuta con ./mvnw spring-boot:run contra este contenedor.
+
+volumes:
+  mira-db-data:

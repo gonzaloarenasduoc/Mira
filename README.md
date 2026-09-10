@@ -102,26 +102,34 @@ usuario:    admin@mira.cl
 contraseña: admin123          ← cambiar en el primer inicio de sesión
 ```
 
-### Opción B — Docker Compose
+### Opción B — Base de datos en Docker
 
-Levanta la aplicación y PostgreSQL en conjunto, sin instalar nada más que Docker:
+Evita instalar PostgreSQL: el contenedor levanta la base y la aplicación se ejecuta con el
+wrapper de Maven.
 
 ```bash
 git clone https://github.com/<usuario>/mira.git
 cd mira
 cp .env.example .env
-docker compose up --build
+docker compose up -d db
+./mvnw spring-boot:run          # Windows: .\mvnw.cmd spring-boot:run
 ```
+
+> **Pendiente.** `docker-compose.yml` incluye solo el servicio `db`. El servicio `app` con
+> su `Dockerfile`, para levantar todo con un solo comando, queda para una sesión posterior.
 
 ### Variables de entorno
 
 | Variable | Descripción | Ejemplo |
 |---|---|---|
 | `DB_URL` | URL JDBC de la base de datos | `jdbc:postgresql://localhost:5432/mira` |
-| `DB_USER` | Usuario de la base de datos | `postgres` |
-| `DB_PASSWORD` | Contraseña | `postgres` |
+| `DB_USER` | Usuario de la base de datos | `mira` |
+| `DB_PASSWORD` | Contraseña | `mira` |
 | `SPRING_PROFILES_ACTIVE` | Perfil activo | `dev` |
 | `APP_UPLOAD_DIR` | Carpeta de documentos adjuntos | `./uploads` |
+
+> El archivo `.env` lo lee Docker Compose, no la aplicación. `application.yml` trae estos
+> mismos valores por omisión, de modo que clonar y levantar funciona sin configurar nada.
 
 ### Comandos útiles
 

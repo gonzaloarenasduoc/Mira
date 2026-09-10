@@ -111,5 +111,25 @@ recaería en la misma persona.
 
 ---
 
+## D10 · Bootstrap como webjar, no por CDN
+
+**Fecha.** 10-09-2026.
+
+**Motivo.** La defensa es presencial y proyectada en una sala de Duoc: si el wifi falla, con
+un CDN la interfaz se ve sin estilos. El webjar viaja dentro del `.jar` y no depende de la
+red. Además, todas las vistas se construyen sobre esta base; cambiar el origen de Bootstrap
+más adelante obligaría a tocar cada plantilla.
+
+Se agrega `org.webjars:bootstrap` con `org.webjars:webjars-locator-lite`, que resuelve la
+ruta sin la versión: `@{/webjars/bootstrap/css/bootstrap.min.css}`. Así, subir la versión de
+Bootstrap es cambiar una propiedad del `pom.xml` y ninguna plantilla.
+
+**Descartado.** Bootstrap por CDN, más simple pero dependiente de la red en la demostración.
+
+**Zona de propiedad.** Las plantillas son de Gonzalo. Queda avisado antes de que construya
+las vistas.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.
