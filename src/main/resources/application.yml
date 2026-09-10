@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: mira
+
+  # Los valores por omision permiten clonar y levantar sin configurar nada (PNF-16).
+  # La aplicacion no lee .env: ese archivo es para Docker Compose. Para sobrescribir,
+  # exporta las variables en el entorno antes de arrancar.
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/mira}
+    username: ${DB_USER:mira}
+    password: ${DB_PASSWORD:mira}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate   # El esquema lo maneja Flyway, nunca Hibernate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  thymeleaf:
+    cache: false
+
+app:
+  upload-dir: ${APP_UPLOAD_DIR:./uploads}
+
+logging:
+  level:
+    cl.duoc.mira: DEBUG
