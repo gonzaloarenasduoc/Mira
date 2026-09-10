@@ -54,7 +54,7 @@ Es **la** prueba del proyecto: si esta falla, el sistema reproduce el problema q
 |---|---|
 | Precondición | Arriendo vigente sobre el equipo GPS-123. |
 | Pasos | Registrar el retorno indicando Bodega Sur y fecha. |
-| Resultado esperado | El equipo vuelve a `DISPONIBLE`, queda asociado a Bodega Sur, se registra la fecha de retorno real y se crea un movimiento de tipo `RETORNO`. |
+| Resultado esperado | El equipo vuelve a `DISPONIBLE`, se actualiza `equipo.bodega_id` a Bodega Sur, se escribe `fecha_retorno_real` en la línea de detalle y se crea un movimiento `RETORNO_ARRIENDO` con `bodega_destino_id` igual a Bodega Sur. No se genera un traslado adicional. |
 
 ## CF-05 · Impedir número de serie duplicado
 
@@ -144,9 +144,9 @@ Verifica que la restricción de unicidad esté bien definida para el modelo mult
 
 | | |
 |---|---|
-| Precondición | Arriendo registrado sobre el equipo GPS-123. |
-| Pasos | Adjuntar una guía de despacho indicando folio y fecha. Luego abrir la ficha del equipo. |
-| Resultado esperado | El documento aparece asociado a la operación y también en el historial documental del equipo. |
+| Precondición | Arriendo registrado con tres equipos, entre ellos el GPS-123. |
+| Pasos | Adjuntar una guía de despacho indicando folio y fecha. Luego abrir la ficha de cada uno de los tres equipos. |
+| Resultado esperado | El documento aparece asociado a la operación y en el historial documental de **los tres** equipos. El documento se adjunta a la operación, no al equipo: si la operación cubre varios equipos, el mismo documento se ve en todas las fichas. Ese es el comportamiento correcto, no una duplicación. |
 
 ## CF-14 · Aislamiento entre empresas
 
@@ -249,20 +249,39 @@ Verifica que la restricción de unicidad esté bien definida para el modelo mult
 Las funcionales de lógica de negocio se automatizan con JUnit y Mockito. Las que tocan la
 base de datos usan Testcontainers con PostgreSQL real.
 
+La operación es multi-equipo, así que el servicio recibe una solicitud con la lista de
+equipos, no un identificador suelto:
+
+```java
+public record RegistrarArriendoRequest(
+        Long clienteId,
+        LocalDate fechaInicio,
+        LocalDate fechaRetornoComprometida,
+        List<LineaArriendo> lineas,
+        String observaciones) {
+
+    public record LineaArriendo(Long equipoId, BigDecimal tarifaDiaria) { }
+}
+```
+
 ```java
 @Test
-void registrar_equipoYaArrendado_lanzaExcepcionYNoModificaEstado() {
-    // preparar
-    Equipo equipo = unEquipoConEstado(EstadoEquipo.ARRENDADO);
+void registrar_algunEquipoNoDisponible_lanzaExcepcionYNoPersisteNada() {
+    // preparar: dos equipos, el segundo ya arrendado
+    var request = new RegistrarArriendoRequest(CLIENTE_ID, DESDE, HASTA,
+            List.of(new LineaArriendo(EQUIPO_DISPONIBLE, TARIFA),
+                    new LineaArriendo(EQUIPO_ARRENDADO, TARIFA)), null);
 
     // ejecutar y verificar
     assertThrows(EquipoNoDisponibleException.class,
-        () -> arriendoService.registrar(equipo.getId(), CLIENTE_ID, DESDE, HASTA));
+        () -> arriendoService.registrar(EMPRESA_ID, request));
 
-    assertEquals(EstadoEquipo.ARRENDADO, equipo.getEstado());
-    verify(arriendoRepository, never()).save(any());
+    verify(operacionRepository, never()).save(any());
 }
 ```
+
+Nota el `EMPRESA_ID` como primer parámetro: es el filtro explícito de la decisión D07. Y
+que si **una sola** línea falla, no se persiste la operación completa.
 
 Para la atomicidad hay que usar la base real, porque con repositorios simulados la
 transacción no existe:

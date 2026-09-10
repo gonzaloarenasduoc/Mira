@@ -27,6 +27,31 @@ fix/validacion-serie          correcciones
 
 Nunca se commitea directo en `main`.
 
+**Excepción, una sola vez:** el esqueleto del proyecto y la migración `V1` los genera
+Joaquín y entran a `main` antes de que Gonzalo clone. Es la única forma de evitar un merge
+imposible sobre `pom.xml` y las migraciones. Después de eso rige la regla sin excepciones.
+
+## Cuando uno de los dos no puede hacer push
+
+Mientras Joaquín no recupere el acceso a su cuenta de GitHub, entrega su trabajo en un
+bundle de Git y Gonzalo lo sube. El bundle conserva autor, fecha y mensaje de cada commit,
+que es lo que se evalúa en el indicador de colaboración.
+
+```bash
+# Joaquín, al terminar la rama
+git bundle create mira-E00X.bundle main..feature/E00X-descripcion
+
+# Gonzalo, al recibirla
+git fetch ../mira-E00X.bundle feature/E00X-descripcion:feature/E00X-descripcion
+git push origin feature/E00X-descripcion
+```
+
+Gonzalo abre el pull request y lo revisa como cualquier otro. **No hace commits sobre esa
+rama**: si hay que corregir algo, lo comenta en el PR y Joaquín manda un bundle nuevo. Si
+Gonzalo corrige encima, el historial deja de reflejar quién escribió qué.
+
+Es una medida temporal. Recuperar el segundo factor de GitHub tiene prioridad.
+
 ## Commits
 
 Formato: `tipo: descripción en presente`

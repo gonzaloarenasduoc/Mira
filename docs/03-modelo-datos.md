@@ -26,6 +26,12 @@ Cada tabla lleva `empresa_id` y las claves únicas del negocio lo son **por empr
 `(empresa_id, numero_serie)`, `(empresa_id, rut)`. Hoy existe una sola empresa cargada,
 pero incorporarlo después obligaría a migrar todos los datos.
 
+**Excepciones deliberadas.** Tres tablas no llevan `empresa_id` porque su pertenencia a la
+empresa se determina a través de su tabla padre: `venta` y `arriendo`, que comparten clave
+primaria con `operacion` por la herencia JOINED, y `operacion_detalle`, que cuelga de
+`operacion`. Agregarles la columna duplicaría el dato y abriría la posibilidad de que
+quedara inconsistente con el del padre. **No se las agreguen.**
+
 ### 1.3 El estado del equipo se deriva de sus movimientos
 
 `movimiento` es la fuente de verdad: registra cada ingreso, traslado, salida y retorno.
@@ -63,16 +69,23 @@ ambos tipos, sin campos duplicados ni nulos.
 | Estado del arriendo (vigente, vencido, cerrado) | Comparando `fecha_retorno_comprometida`, `fecha_retorno_real` y la fecha actual |
 | Días de atraso | Diferencia entre hoy y `fecha_retorno_comprometida` |
 | Nivel de utilización | Días arrendado sobre días del periodo |
-| Total de una operación | Suma de `operacion_detalle.valor_unitario` |
+| Total de una venta | Suma de `operacion_detalle.valor_unitario` |
+| Total de un arriendo | Suma de `valor_unitario × días` de cada línea |
+
+En el arriendo, los **días** de cada línea se cuentan desde `arriendo.fecha_inicio` hasta
+`operacion_detalle.fecha_retorno_real`. Mientras la línea no haya retornado, el total es una
+estimación calculada hasta `arriendo.fecha_retorno_comprometida`. La interfaz debe indicar
+cuándo el monto es estimado y cuándo es definitivo.
 
 Almacenar cualquiera de estos abriría la puerta a que el dato se desincronice de la
 realidad, que es justamente el problema que el proyecto resuelve.
 
 ### 1.7 Los roles son un enumerado, no una tabla
 
-Los tres roles están definidos en el alcance y no cambian: administrador, encargado de
-bodega y vendedor. Una tabla de roles con permisos configurables es funcionalidad que no
-se comprometió.
+Los cuatro roles están definidos en el alcance y no cambian: `ADMINISTRADOR`,
+`ENCARGADO_BODEGA`, `VENDEDOR` y `JEFATURA`. La matriz de permisos por épica está en
+`docs/01-contexto-negocio.md`. Una tabla de roles con permisos configurables es
+funcionalidad que no se comprometió (decisión D09 de `docs/08-decisiones.md`).
 
 ---
 
@@ -141,7 +154,9 @@ tablas hijas.
 | `ENTRADA_MANTENCION` | `EN_MANTENCION` |
 | `SALIDA_MANTENCION` | `DISPONIBLE` |
 
-**`rol_usuario`**: `ADMINISTRADOR`, `ENCARGADO_BODEGA`, `VENDEDOR`
+**`rol_usuario`**: `ADMINISTRADOR`, `ENCARGADO_BODEGA`, `VENDEDOR`, `JEFATURA`
+
+Los permisos de cada rol están en la matriz de `docs/01-contexto-negocio.md`.
 
 **`tipo_operacion`**: `VENTA`, `ARRIENDO` (discriminador de la herencia)
 
@@ -384,6 +399,10 @@ Cada una tiene su caso de prueba en `docs/10-casos-de-prueba.md`.
    y registra un movimiento por equipo. **Todo dentro de una transacción.**
 3. Registrar el retorno de una línea de arriendo escribe `fecha_retorno_real`, devuelve el
    equipo a `DISPONIBLE` y registra el movimiento `RETORNO_ARRIENDO`.
+4. **El retorno puede recibirse en una bodega distinta a la de origen.** En ese caso el
+   equipo queda asignado a la bodega receptora: se actualiza `equipo.bodega_id` y el
+   movimiento `RETORNO_ARRIENDO` lleva esa bodega en `bodega_destino_id`. No se genera un
+   traslado adicional; el retorno ya es el movimiento que documenta el cambio.
 4. Un equipo `VENDIDO` no vuelve a estar disponible por ninguna vía.
 5. Toda consulta filtra por `empresa_id`, incluidas las que buscan por identificador.
 6. Los equipos y clientes se dan de baja lógicamente. No se eliminan físicamente.

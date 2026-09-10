@@ -35,13 +35,34 @@ las capacitaciones asociadas y la documentación de respaldo.
 
 ## Usuarios y qué hace cada uno
 
+El sistema tiene **cuatro roles**, que corresponden a los valores del enumerado
+`rol_usuario`. Las tareas administrativas de documentación quedan cubiertas por el
+encargado de bodega y el administrador.
+
 | Rol | Uso principal |
 |---|---|
-| Administrador | Gestiona usuarios, roles, bodegas y categorías |
-| Encargado de bodega | Registra equipos, traslados, despachos y retornos |
-| Vendedor | Consulta disponibilidad, registra ventas y arriendos, agenda capacitaciones |
-| Administración | Adjunta y consulta la documentación de cada operación |
-| Jefatura | Revisa indicadores de inventario y utilización |
+| `ADMINISTRADOR` | Gestiona usuarios, bodegas y categorías. Acceso completo |
+| `ENCARGADO_BODEGA` | Registra equipos, traslados, despachos, retornos y documentos |
+| `VENDEDOR` | Consulta disponibilidad, registra ventas y arriendos, agenda capacitaciones |
+| `JEFATURA` | Consulta el panel de indicadores. Solo lectura sobre el resto |
+
+### Matriz de permisos por épica
+
+`E` significa que puede crear y modificar. `L` que solo puede consultar. Vacío es sin acceso.
+
+| Épica | ADMINISTRADOR | ENCARGADO_BODEGA | VENDEDOR | JEFATURA |
+|---|:---:|:---:|:---:|:---:|
+| E001 Usuarios | E | | | |
+| E002 Equipos | E | E | L | L |
+| E003 Bodegas y traslados | E | E | L | L |
+| E004 Disponibilidad | L | L | L | L |
+| E005 Arriendos | E | E | E | L |
+| E006 Ventas | E | | E | L |
+| E007 Capacitaciones | E | | E | L |
+| E008 Documentos | E | E | E | L |
+| E009 Indicadores | L | L | L | L |
+
+Esta matriz es la referencia para la épica 001 y para el caso de prueba CF-11.
 
 ## Fuera de alcance
 

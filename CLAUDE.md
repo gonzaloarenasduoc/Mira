@@ -16,7 +16,10 @@ Proyecto de título, Capstone APT122, Duoc UC. Integrantes: Joaquín Romero y Go
 ## Stack
 
 Java 21 · Spring Boot 4.1 · Spring Data JPA · Spring Security · Flyway · Thymeleaf ·
-Bootstrap 5 · Chart.js · PostgreSQL 16 · Maven · JUnit 5 + Mockito + Testcontainers · Docker.
+Bootstrap 5 · Chart.js · PostgreSQL 16 · Lombok · Maven · JUnit 5 + Mockito + Testcontainers · Docker.
+
+**MapStruct no se usa.** El mapeo entre entidades y DTOs se escribe a mano en la capa de
+servicio. Ver `docs/08-decisiones.md`, D08.
 
 No agregues dependencias nuevas sin dejarlo registrado en `docs/08-decisiones.md`.
 
@@ -64,6 +67,7 @@ distintos. Romper una de estas rompe el trabajo del otro.
 | Hacer commits o abrir un PR | `docs/06-flujo-trabajo.md` |
 | Escribir pruebas | `docs/07-pruebas.md` |
 | Cualquier cosa | `docs/ESTADO.md`, para saber qué está en curso |
+| Arrancar el proyecto por primera vez | `docs/11-arranque-claude-code.md` |
 
 ## Comandos
 

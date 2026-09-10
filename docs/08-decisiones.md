@@ -70,5 +70,46 @@ configuración.
 
 ---
 
+## D07 · Filtro por empresa mediante parámetro explícito
+
+**Motivo.** El identificador de empresa se pasa como parámetro explícito en cada método de
+servicio y de repositorio: `findByEmpresaIdAndNumeroSerie(...)`. El controlador lo obtiene
+del usuario autenticado.
+
+Es más verboso que las alternativas, pero **el compilador obliga a pasarlo**: no se puede
+olvidar en silencio. Con un contexto implícito, una consulta escrita sin el filtro compila
+igual y la fuga de datos entre empresas aparece recién en producción.
+
+**Descartado.** Un `TenantContext` con variable de hilo, y los filtros de Hibernate
+activados por sesión. Ambos son implícitos y se rompen con facilidad en las pruebas.
+
+**Verificado por** los casos CF-14 y PNF-06.
+
+---
+
+## D08 · Lombok sí, MapStruct no
+
+**Motivo.** Lombok elimina el código repetitivo de entidades y DTOs, que es real en Java.
+
+MapStruct se descarta: los DTOs son `record` y el mapeo se escribe a mano en la capa de
+servicio. Agregar un segundo procesador de anotaciones complica la construcción y la
+depuración a cambio de ahorrar unas pocas líneas.
+
+---
+
+## D09 · Cuatro roles de usuario
+
+**Motivo.** La documentación de negocio describía cinco perfiles de uso mientras el
+enumerado definía tres. Se unifica en cuatro roles: `ADMINISTRADOR`, `ENCARGADO_BODEGA`,
+`VENDEDOR` y `JEFATURA`.
+
+Las tareas administrativas de documentación quedan cubiertas por el encargado de bodega y
+el administrador, en lugar de crear un rol propio que en una empresa de este tamaño
+recaería en la misma persona.
+
+**Matriz de permisos** en `docs/01-contexto-negocio.md`.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.
