@@ -3,11 +3,17 @@
 Este archivo se actualiza al terminar cada sesión de trabajo. Es lo primero que lee el
 asistente del otro integrante para saber qué está en curso y no pisar nada.
 
-**Última actualización:** 10-09-2026
+**Última actualización:** 16-10-2026
 
 ## Fase actual
 
-Fase 1, definición del proyecto. El desarrollo comienza en la semana 5.
+Fase 2, semana 8. Sprint 2 (semanas 8 y 9), que retoma el objetivo no cumplido del Sprint 1:
+un usuario se autentica con su rol y registra un equipo por número de serie que aparece en un
+listado filtrado por empresa. Desde esta semana rige **una rama por semana** (D11): la de esta
+semana es `semana-08`.
+
+Entregas de la asignatura: documentos de la Fase 2 el sábado 17-10 y presentación (7 minutos
+más un video de 3 minutos) el domingo 18-10.
 
 ## Terminado
 
@@ -36,33 +42,45 @@ Fase 1, definición del proyecto. El desarrollo comienza en la semana 5.
   paquetes vacía, `application.yml` y una página de inicio con Thymeleaf y Bootstrap.
   `./mvnw clean test` pasa. **Sin migraciones ni entidades todavía.**
 
+- Control de avance del 08-10 con el docente. El atraso de la Fase 2 quedó reconocido y el
+  trabajo se reorganizó en sprints de dos semanas.
+- Documentación de la Fase 2 (semana 8, rama `semana-08`), con la estructura y los nombres del
+  repositorio del docente:
+  - `Fase 2/Evidencias Proyecto (version Agil)/`: Documento 01 Product Vision, 02 Product
+    Backlog (28 historias, HU-01 a HU-28, suman 100 PF), 04 Definition of Done y 05 Documento
+    de Diseño.
+  - `Fase 2/Evidencias Grupales/`: guía 2.4 renombrada al nombre exacto del docente e informe
+    2.6.
+  - `Fase 2/Evidencias Individules/`: diarios 2.1 de cada integrante, con el formato
+    `Apellido_Nombre_` que usa el docente en la Fase 2.
+- Diagramas UML en PlantUML en `docs/diagramas/`, con sus imágenes: casos de uso,
+  arquitectura, E-R, clases, secuencia del arriendo, componentes y despliegue.
+- Decisión D11, una rama por semana. `.mailmap` para unificar las identidades de Git.
+
 ## En curso
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Esqueleto del proyecto | Joaquín | `feature/esqueleto` | Terminado y compilando. Falta levantarlo contra la base: Docker en el equipo de Joaquín todavía no responde |
+| Migraciones `V1__esquema_inicial.sql` y `V2__datos_iniciales.sql` | Joaquín | `semana-08` | Primera tarea del Sprint 2. Pendiente de confirmación para empezar |
+| Revisión de los documentos de la Fase 2 | Ambos | `semana-08` | Los diarios 2.1 son borradores: cada uno revisa y personaliza el suyo |
 
 ## Siguiente
 
-1. Verificar el arranque cuando Docker responda: `docker compose up -d db` y
-   `.\mvnw.cmd spring-boot:run`. Spring Security pide usuario y contraseña, es lo esperado:
-   la clave aparece en la consola. El esqueleto entra a `main` antes de que Gonzalo clone.
-2. Migración `V1__esquema_inicial.sql` a partir del modelo de datos, más
-   `MiraApplicationTests` con Testcontainers, que es la primera prueba que necesita base de
-   datos real.
-3. Épica 001, acceso y roles.
-4. Reunión con la contraparte cuando sea posible, para confirmar los supuestos de la
-   sección 6 del modelo de datos.
+1. Migraciones V1 y V2, verificadas contra PostgreSQL antes de integrarlas.
+2. Historias HU-01 a HU-07 del Sprint 2 (E001 y E002), cada una con su prueba automatizada.
+3. Presentación del domingo 18-10 y guion del video de 3 minutos.
+4. Pull request de `semana-08` a `main` al cierre de la semana, revisado por el otro integrante.
 
 ## Bloqueado
 
 | Qué | Por qué | Quién lo destraba |
 |---|---|---|
-| Cifras reales en la documentación | No se ha concretado la reunión con la empresa | Joaquín |
-| Confirmar los supuestos 3, 7, 8 y 10 del modelo de datos | Requiere consultar a la contraparte o a la Eve | Joaquín |
-| Push directo a GitHub desde el equipo de Joaquín | Sin acceso a la cuenta, segundo factor perdido | Joaquín. Mientras tanto, entrega por bundle según `docs/06-flujo-trabajo.md` |
-| Levantar la aplicación en el equipo de Joaquín | Docker instalado pero requiere reiniciar el equipo | Joaquín. La sesión 2 igual se puede hacer: compila sin base de datos |
-| Tablero en GitHub Projects | Requiere acceso al repositorio | Gonzalo |
+| Push desde las sesiones de Claude Code en la nube | GitHub responde 403: la aplicación de Claude no tiene permiso sobre el repositorio | Gonzalo, reconectando GitHub en claude.ai e instalando la aplicación de Claude en el repositorio |
+| Tablero en GitHub Projects | Compromiso de la semana 7 aún no cumplido | Gonzalo |
+
+Ya no hay contraparte: con autorización del docente, los supuestos de la sección 6 del modelo
+de datos son decisiones de diseño declaradas. Docker y el acceso de Joaquín a GitHub ya
+funcionan.
 
 ## Advertencias vigentes
 
