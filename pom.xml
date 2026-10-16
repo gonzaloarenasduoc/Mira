@@ -57,9 +57,10 @@
             <artifactId>webjars-locator-lite</artifactId>
         </dependency>
 
+        <!-- En Spring Boot 4 la autoconfiguracion de Flyway vive en su propio starter (D12) -->
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>

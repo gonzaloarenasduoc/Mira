@@ -151,5 +151,24 @@ evaluación de la asignatura.
 
 ---
 
+## D12 · Flyway con su starter de Spring Boot 4
+
+**Fecha.** 16-10-2026.
+
+**Motivo.** En Spring Boot 4 la autoconfiguración de Flyway se separó en su propio módulo. Con
+solo `flyway-core` en el `pom.xml` la aplicación levantaba, pero **no aplicaba ninguna
+migración**: la base quedaba vacía sin ningún error visible. Se detectó al aplicar por primera
+vez `V1` y `V2` contra PostgreSQL. Se reemplaza `flyway-core` por
+`spring-boot-starter-flyway`, que lo incluye junto con la autoconfiguración. Se mantiene
+`flyway-database-postgresql`.
+
+**No es una dependencia nueva:** Flyway ya estaba decidido desde el inicio; cambia solo la forma
+de declararlo.
+
+**Verificado por** `MiraApplicationTests`, que comprueba que al arrancar quedan aplicadas las dos
+migraciones.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.
