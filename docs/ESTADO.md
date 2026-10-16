@@ -51,8 +51,9 @@ más un video de 3 minutos) el domingo 18-10.
     de Diseño.
   - `Fase 2/Evidencias Grupales/`: guía 2.4 renombrada al nombre exacto del docente e informe
     2.6.
-  - `Fase 2/Evidencias Individules/`: cada integrante sube su propio diario 2.1, con el formato
-    `Apellido_Nombre_2.1_APT122_DiarioReflexionFase2.docx` que usa el docente en la Fase 2.
+  - `Fase 2/Evidencias Individules/`: diarios 2.1 con el formato
+    `Apellido_Nombre_2.1_APT122_DiarioReflexionFase2.docx`. El de Joaquín ya está (el mismo entregado
+    el 04-10 en la plataforma); falta el de Gonzalo.
 - Diagramas UML en PlantUML en `docs/diagramas/`, con sus imágenes: casos de uso,
   arquitectura, E-R, clases, secuencia del arriendo, componentes y despliegue.
 - Decisión D11, una rama por semana. `.mailmap` para unificar las identidades de Git.
@@ -95,12 +96,15 @@ más un video de 3 minutos) el domingo 18-10.
 | Push desde las sesiones de Claude Code en la nube | GitHub responde 403: la aplicación de Claude no tiene permiso sobre el repositorio | Gonzalo, reconectando GitHub en claude.ai e instalando la aplicación de Claude en el repositorio |
 | Tablero en GitHub Projects | Compromiso de la semana 7 aún no cumplido | Gonzalo |
 
-Ya no hay contraparte: con autorización del docente, los supuestos de la sección 6 del modelo
-de datos son decisiones de diseño declaradas. Docker y el acceso de Joaquín a GitHub ya
+Las reuniones con la empresa se aplazaron: con autorización del docente, los supuestos de la
+sección 6 del modelo de datos se tratan como decisiones de diseño declaradas. Docker y el acceso de Joaquín a GitHub ya
 funcionan.
 
 ## Advertencias vigentes
 
+- En los documentos de la Fase 2 no se menciona que la empresa dejó de participar: se habla del
+  aplazamiento de las reuniones, como se acordó con el docente. Los documentos ya entregados
+  (Fase 1, guía 2.4, diarios) no se modifican.
 - El modelo tiene **catorce** tablas, no trece como se escribió en algunos documentos de la
   Fase 1 y en el acta del 08-10. Los documentos de la Fase 2 ya dicen catorce.
 - Usuario inicial: `admin@mira.cl`, contraseña `admin123`, solo para demostración.
