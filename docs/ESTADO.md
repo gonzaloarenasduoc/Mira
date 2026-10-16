@@ -63,19 +63,30 @@ más un video de 3 minutos) el domingo 18-10.
 - Corrección D12: Flyway no se ejecutaba porque Spring Boot 4 necesita
   `spring-boot-starter-flyway`. **Si alguno levantó la aplicación antes de esto, su base está
   vacía y no hay que hacer nada: Flyway aplica V1 y V2 en el próximo arranque.**
+- Sprint 2 implementado (HU-01 a HU-08; HU-08 se adelantó del Sprint 3 porque registrar un equipo
+  exige una bodega):
+  - Inicio de sesión real contra la tabla `usuario`, con BCrypt y mensaje genérico de error.
+  - Menú y permisos por rol según la matriz (`SeguridadConfig` y `MenuGlobal`).
+  - Usuarios: crear, editar, activar y desactivar; nadie puede desactivarse a sí mismo.
+  - Bodegas: crear, editar, activar y desactivar, con nombre único por empresa.
+  - Equipos: registro con su movimiento `INGRESO` en la misma transacción, listado con filtros y
+    ficha con historial. Un equipo de otra empresa se responde como inexistente.
+  - 29 pruebas: 25 corren sin base de datos y 4 de integración con Testcontainers, que se omiten
+    si no hay Docker.
+  - Capturas del recorrido en `docs/evidencias/semana-08/`.
 
 ## En curso
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Historias HU-01 a HU-07 del Sprint 2 | Ambos | `semana-08` | El esquema ya existe: siguen las entidades, los servicios, el inicio de sesión real y las vistas |
+| Sprint 2: HU-01 a HU-08 | Ambos | `semana-08` | **Implementadas y probadas.** Falta la revisión cruzada del otro integrante y el pull request a `main` |
 | Revisión de los documentos de la Fase 2 | Ambos | `semana-08` | Los diarios 2.1 son borradores: cada uno revisa y personaliza el suyo |
 
 ## Siguiente
 
-1. Historias HU-01 a HU-07 del Sprint 2 (E001 y E002), cada una con su prueba automatizada.
+1. Revisión cruzada del código del Sprint 2 y pull request de `semana-08` a `main`.
 2. Presentación del domingo 18-10 y guion del video de 3 minutos.
-3. Pull request de `semana-08` a `main` al cierre de la semana, revisado por el otro integrante.
+3. Sprint 3: traslados (HU-09, HU-10) y disponibilidad consolidada (HU-11 a HU-13).
 
 ## Bloqueado
 
@@ -93,6 +104,10 @@ funcionan.
 - El modelo tiene **catorce** tablas, no trece como se escribió en algunos documentos de la
   Fase 1 y en el acta del 08-10. Los documentos de la Fase 2 ya dicen catorce.
 - Usuario inicial: `admin@mira.cl`, contraseña `admin123`, solo para demostración.
+  Los demás usuarios se crean desde la pantalla Usuarios con el rol que corresponda.
+- La cookie de sesión todavía no lleva el atributo `Secure` (PNF-08): en local se usa HTTP y la
+  sesión dejaría de funcionar. Se activa en el perfil del ambiente de demostración, con HTTPS.
+- Los DTOs de formulario son clases con `@Data`, no `record` (ver `docs/04-convenciones-codigo.md`).
 
 - El modelo de datos está definido y se puede implementar. Respeta el diccionario tal como
   está escrito: nombres de tabla, de columna y enumerados.
