@@ -1,0 +1,33 @@
+@startuml componentes
+!include _estilo.iuml
+skinparam componentStyle uml2
+component [Navegador\nThymeleaf + Bootstrap + Chart.js] as NAV
+package "Aplicación Mira (cl.duoc.mira)" as APP {
+  component [config\nSeguridad y Web] as CFG
+  component [usuarios\nUsuarios y roles] as USR
+  component [indicadores\nPanel y alertas] as IND
+  component [capacitaciones\nAgenda de técnicos] as CAP
+  component [documentos\nAdjuntos de operaciones] as DOC
+  component [operaciones\nVentas, arriendos,\ndisponibilidad, retornos] as OPE
+  component [inventario\nEquipos, categorías,\nbodegas, traslados] as INV
+  component [common\nAuditoría, excepciones] as COM
+}
+database "PostgreSQL 16" as DB
+folder "Archivos adjuntos\n(APP_UPLOAD_DIR)" as FS
+
+NAV --> CFG : HTTP
+CFG ..> USR : autenticación
+IND --> OPE : OperacionService
+CAP --> OPE : OperacionService
+DOC --> OPE : OperacionService
+OPE --> INV : EquipoService
+IND --> INV : EquipoService
+INV ..> COM
+DOC --> FS
+APP --> DB : JPA · repositorios de cada módulo
+note right of OPE
+  Un módulo llama a los servicios de otro,
+  nunca a sus repositorios ni entidades.
+  Todos usan common (auditoría y excepciones).
+end note
+@enduml
