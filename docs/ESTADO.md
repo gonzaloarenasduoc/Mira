@@ -51,8 +51,8 @@ más un video de 3 minutos) el domingo 18-10.
     de Diseño.
   - `Fase 2/Evidencias Grupales/`: guía 2.4 renombrada al nombre exacto del docente e informe
     2.6.
-  - `Fase 2/Evidencias Individules/`: diarios 2.1 de cada integrante, con el formato
-    `Apellido_Nombre_` que usa el docente en la Fase 2.
+  - `Fase 2/Evidencias Individules/`: cada integrante sube su propio diario 2.1, con el formato
+    `Apellido_Nombre_2.1_APT122_DiarioReflexionFase2.docx` que usa el docente en la Fase 2.
 - Diagramas UML en PlantUML en `docs/diagramas/`, con sus imágenes: casos de uso,
   arquitectura, E-R, clases, secuencia del arriendo, componentes y despliegue.
 - Decisión D11, una rama por semana. `.mailmap` para unificar las identidades de Git.
@@ -80,7 +80,7 @@ más un video de 3 minutos) el domingo 18-10.
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
 | Sprint 2: HU-01 a HU-08 | Ambos | `semana-08` | **Implementadas y probadas.** Falta la revisión cruzada del otro integrante y el pull request a `main` |
-| Revisión de los documentos de la Fase 2 | Ambos | `semana-08` | Los diarios 2.1 son borradores: cada uno revisa y personaliza el suyo |
+| Revisión de los documentos de la Fase 2 y subida de los diarios 2.1 | Ambos | `semana-08` | Cada uno sube su diario con el nombre exacto del formato del docente |
 
 ## Siguiente
 
