@@ -99,7 +99,7 @@ Flyway aplica automáticamente las migraciones al iniciar. La aplicación queda 
 
 ```
 usuario:    admin@mira.cl
-contraseña: admin123          ← cambiar en el primer inicio de sesión
+contraseña: admin123          ← solo para demostración; en un ambiente real se cambia antes de habilitar el acceso
 ```
 
 ### Opción B — Base de datos en Docker
