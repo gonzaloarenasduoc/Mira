@@ -131,5 +131,25 @@ las vistas.
 
 ---
 
+## D11 · Una rama por semana
+
+**Fecha.** 16-10-2026.
+
+**Motivo.** Sugerencia del docente en el control de avance del 08-10-2026. Cada semana del
+calendario académico queda como una rama con un pull request revisado y fechado, lo que hace
+visible el avance semanal y el aporte de cada integrante, que es lo que se evalúa en el
+informe de avance. Con dos integrantes y zonas de propiedad definidas, una rama compartida
+por semana no genera más conflictos que una rama por funcionalidad.
+
+**Condiciones.** `main` se mantiene estable: el pull request semanal se integra solo con las
+pruebas pasando, y el trabajo inconcluso pasa a la rama de la semana siguiente. El
+procedimiento está en `docs/06-flujo-trabajo.md`.
+
+**Descartado.** Una rama por épica o funcionalidad, la convención original: deja ramas de
+vida muy desigual, algunas de varias semanas, y no se corresponde con los cortes de
+evaluación de la asignatura.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.

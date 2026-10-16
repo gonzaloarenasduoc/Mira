@@ -42,7 +42,8 @@ distintos. Romper una de estas rompe el trabajo del otro.
 
 5. **Ejecuta `./mvnw test` antes de cada commit.** Si algo falla, no se commitea.
 
-6. **No trabajes sobre `main`.** Rama por funcionalidad, integración por pull request.
+6. **No trabajes sobre `main`.** Una rama por semana (`semana-08`, `semana-09`…), integración
+   por pull request al cierre de la semana. Ver `docs/08-decisiones.md`, D11.
 
 7. **Respeta las zonas de propiedad** definidas en `docs/06-flujo-trabajo.md`. Si
    necesitas tocar código del otro integrante, avísale antes; no lo hagas por tu cuenta.

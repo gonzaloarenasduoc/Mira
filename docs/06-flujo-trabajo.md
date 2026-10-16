@@ -21,11 +21,20 @@ advierta y se detenga.
 
 ```
 main                          estable, siempre debe compilar y pasar las pruebas
-feature/E005-arriendos        una rama por épica o por funcionalidad
-fix/validacion-serie          correcciones
+semana-08                     una rama por semana del calendario académico
+semana-09
 ```
 
-Nunca se commitea directo en `main`.
+Nunca se commitea directo en `main`. Desde la semana 8 rige una rama por semana (D11 en
+`docs/08-decisiones.md`), a sugerencia del docente:
+
+1. La rama de la semana se crea desde `main` actualizado: `git checkout -b semana-09 origin/main`.
+2. Ambos integrantes commitean en ella, cada uno dentro de su zona de propiedad. Si los dos
+   necesitan tocar el mismo archivo, se avisa antes, como siempre.
+3. Al cierre de la semana se abre un pull request a `main`, que revisa el otro integrante.
+   Se integra solo si `./mvnw clean verify` pasa.
+4. Lo que no quedó terminado no entra a `main` a medias: sigue en la rama de la semana
+   siguiente, que se crea desde la rama anterior si su pull request no alcanzó a integrarse.
 
 **Excepción, una sola vez:** el esqueleto del proyecto y la migración `V1` los genera
 Joaquín y entran a `main` antes de que Gonzalo clone. Es la única forma de evitar un merge
