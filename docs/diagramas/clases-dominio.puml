@@ -1,0 +1,117 @@
+@startuml clases-dominio
+!include _estilo.iuml
+hide empty methods
+abstract class EntidadAuditable {
+  # creadoPor : String
+  # creadoEn : LocalDateTime
+  # modificadoPor : String
+  # modificadoEn : LocalDateTime
+}
+class Empresa {
+  - rut : String
+  - razonSocial : String
+  - activa : boolean
+}
+class Usuario {
+  - nombre : String
+  - email : String
+  - passwordHash : String
+  - rol : RolUsuario
+  - activo : boolean
+}
+class Bodega {
+  - nombre : String
+  - comuna : String
+  - activa : boolean
+}
+class Categoria {
+  - nombre : String
+  - requiereCapacitacion : boolean
+}
+class Equipo {
+  - numeroSerie : String
+  - marca : String
+  - modelo : String
+  - estado : EstadoEquipo
+  - tarifaDiaria : BigDecimal
+  - activo : boolean
+  + estaDisponible() : boolean
+}
+class Movimiento {
+  - tipo : TipoMovimiento
+  - fecha : LocalDateTime
+  - observacion : String
+}
+class Cliente {
+  - rut : String
+  - razonSocial : String
+}
+abstract class Operacion {
+  - fecha : LocalDate
+  - observaciones : String
+}
+class Venta {
+  - numeroOrdenCompra : String
+  + total() : BigDecimal
+}
+class Arriendo {
+  - fechaInicio : LocalDate
+  - fechaRetornoComprometida : LocalDate
+  + estaVencido(hoy : LocalDate) : boolean
+  + total(hoy : LocalDate) : BigDecimal
+}
+class OperacionDetalle {
+  - valorUnitario : BigDecimal
+  - fechaRetornoReal : LocalDate
+}
+class Capacitacion {
+  - fechaProgramada : LocalDateTime
+  - lugar : String
+  - estado : EstadoCapacitacion
+}
+class Tecnico {
+  - nombre : String
+}
+class Documento {
+  - tipo : TipoDocumento
+  - numeroFolio : String
+  - rutaArchivo : String
+}
+enum EstadoEquipo {
+  DISPONIBLE
+  ARRENDADO
+  EN_TRANSITO
+  EN_MANTENCION
+  VENDIDO
+}
+enum RolUsuario {
+  ADMINISTRADOR
+  ENCARGADO_BODEGA
+  VENDEDOR
+  JEFATURA
+}
+
+EntidadAuditable <|-- Equipo
+EntidadAuditable <|-- Operacion
+EntidadAuditable <|-- Movimiento
+Operacion <|-- Venta
+Operacion <|-- Arriendo
+Empresa "1" -- "*" Usuario
+Empresa "1" -- "*" Equipo
+Categoria "1" -- "*" Equipo
+Bodega "1" -- "*" Equipo : asignado a >
+Equipo "1" *-- "*" Movimiento : historial
+Cliente "1" -- "*" Operacion
+Operacion "1" *-- "1..*" OperacionDetalle
+OperacionDetalle "*" -- "1" Equipo
+Operacion "1" -- "*" Documento
+Operacion "1" -- "*" Capacitacion
+Tecnico "1" -- "*" Capacitacion
+Equipo ..> EstadoEquipo
+Usuario ..> RolUsuario
+note bottom of EntidadAuditable
+  Todas las entidades de negocio heredan
+  la auditoría y referencian a Empresa
+  (se omiten algunas flechas por claridad).
+end note
+@enduml

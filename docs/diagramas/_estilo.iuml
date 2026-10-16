@@ -1,0 +1,27 @@
+!pragma layout smetana
+skinparam dpi 170
+skinparam shadowing false
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam ArrowColor #2F4F6F
+skinparam BackgroundColor white
+skinparam roundCorner 8
+skinparam ActorBorderColor #2F4F6F
+skinparam UsecaseBackgroundColor #EAF2FB
+skinparam UsecaseBorderColor #2F5F8F
+skinparam RectangleBorderColor #2F5F8F
+skinparam PackageBorderColor #2F5F8F
+skinparam ClassBackgroundColor #F5F9FD
+skinparam ClassBorderColor #2F5F8F
+skinparam ClassHeaderBackgroundColor #DCE8F5
+skinparam ComponentBackgroundColor #EAF2FB
+skinparam ComponentBorderColor #2F5F8F
+skinparam NodeBackgroundColor #F7F7F7
+skinparam DatabaseBackgroundColor #EAF2FB
+skinparam EntityBackgroundColor #F5F9FD
+skinparam EntityBorderColor #2F5F8F
+skinparam SequenceLifeLineBorderColor #7A8FA6
+skinparam ParticipantBackgroundColor #EAF2FB
+skinparam ParticipantBorderColor #2F5F8F
+skinparam NoteBackgroundColor #FFF8DC
+skinparam NoteBorderColor #C9B458
