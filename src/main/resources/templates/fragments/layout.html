@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' · Mira'">Mira</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/mira.svg}">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/mira.css}">
+</head>
+<body>
+
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark mira-navbar">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-semibold" th:href="@{/}">
+            <img th:src="@{/img/mira.svg}" width="30" height="30" alt="">
+            <span>Mira</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal"
+                aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menú">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item" th:each="opcion : ${menu}">
+                    <a class="nav-link" th:href="@{${opcion.url()}}" th:text="${opcion.etiqueta()}"
+                       th:classappend="${seccion == opcion.etiqueta()} ? 'active'">Opción</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center gap-3" th:if="${usuarioActual != null}">
+                <div class="text-end lh-sm small">
+                    <div class="text-white" th:text="${usuarioActual.nombreCompleto()}">Usuario</div>
+                    <div class="text-white-50" th:text="${usuarioActual.rol().etiqueta}">Rol</div>
+                </div>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="btn btn-sm btn-outline-light">Cerrar sesión</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div th:fragment="mensajes">
+    <div class="alert alert-success" role="status" th:if="${exito}" th:text="${exito}">Éxito</div>
+    <div class="alert alert-danger" role="alert" th:if="${error}" th:text="${error}">Error</div>
+</div>
+
+<footer th:fragment="pie" class="container py-3 pie text-center">
+    Mira · Gestión y trazabilidad de equipos de geomensura · Proyecto de título Capstone, Duoc UC
+</footer>
+
+<th:block th:fragment="scripts">
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</th:block>
+</body>
+</html>

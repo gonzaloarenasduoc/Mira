@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${id == null} ? 'Nueva bodega' : 'Editar bodega')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" style="max-width: 760px;">
+    <div class="encabezado-pagina mb-4">
+        <h1 th:text="${id == null} ? 'Nueva bodega' : 'Editar bodega'">Bodega</h1>
+        <p>El nombre identifica a la bodega y no puede repetirse dentro de la empresa.</p>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-4">
+            <form th:object="${bodega}" method="post" novalidate
+                  th:action="${id == null} ? @{/bodegas} : @{/bodegas/{id}(id=${id})}">
+                <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}">
+                    <div th:each="e : ${#fields.globalErrors()}" th:text="${e}">Error</div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input id="nombre" type="text" class="form-control" th:field="*{nombre}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{nombre}">Error</div>
+                    </div>
+                    <div class="col-md-8">
+                        <label for="direccion" class="form-label">Dirección <span class="text-secondary">(opcional)</span></label>
+                        <input id="direccion" type="text" class="form-control" th:field="*{direccion}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{direccion}">Error</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="comuna" class="form-label">Comuna <span class="text-secondary">(opcional)</span></label>
+                        <input id="comuna" type="text" class="form-control" th:field="*{comuna}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{comuna}">Error</div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-end mt-4">
+                    <a class="btn btn-outline-secondary" th:href="@{/bodegas}">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

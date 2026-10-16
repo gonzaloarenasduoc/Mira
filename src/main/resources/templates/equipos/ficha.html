@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Ficha del equipo')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" th:with="e=${ficha.equipo()}">
+    <div class="encabezado-pagina d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <p class="small mb-1"><a th:href="@{/equipos}">Equipos</a> / Ficha</p>
+            <h1 th:text="${e.categoria()} + ' ' + ${e.marca()} + ' ' + ${e.modelo()}">Equipo</h1>
+            <p>Número de serie <strong th:text="${e.numeroSerie()}">serie</strong></p>
+        </div>
+        <span class="estado fs-6" th:classappend="'estado-' + ${e.estado()}" th:text="${e.estado().etiqueta}">Estado</span>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <div class="row g-3">
+        <div class="col-lg-5">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-secondary mb-3">Datos del equipo</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Bodega</dt><dd class="col-sm-7" th:text="${e.bodega()}">Bodega</dd>
+                        <dt class="col-sm-5">Categoría</dt><dd class="col-sm-7" th:text="${e.categoria()}">Categoría</dd>
+                        <dt class="col-sm-5">Marca</dt><dd class="col-sm-7" th:text="${e.marca()}">Marca</dd>
+                        <dt class="col-sm-5">Modelo</dt><dd class="col-sm-7" th:text="${e.modelo()}">Modelo</dd>
+                        <dt class="col-sm-5">Adquisición</dt>
+                        <dd class="col-sm-7" th:text="${e.fechaAdquisicion() != null} ? ${#temporals.format(e.fechaAdquisicion(), 'dd-MM-yyyy')} : '—'">—</dd>
+                        <dt class="col-sm-5">Valor</dt>
+                        <dd class="col-sm-7" th:text="${e.valorAdquisicion() != null} ? '$ ' + ${#numbers.formatDecimal(e.valorAdquisicion(), 1, 'POINT', 0, 'COMMA')} : '—'">—</dd>
+                        <dt class="col-sm-5">Tarifa diaria</dt>
+                        <dd class="col-sm-7" th:text="${e.tarifaDiaria() != null} ? '$ ' + ${#numbers.formatDecimal(e.tarifaDiaria(), 1, 'POINT', 0, 'COMMA')} : '—'">—</dd>
+                        <dt class="col-sm-5" th:if="${e.observaciones() != null}">Observaciones</dt>
+                        <dd class="col-sm-7" th:if="${e.observaciones() != null}" th:text="${e.observaciones()}">Obs.</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-secondary mb-3">Historial de movimientos</h2>
+                    <ul class="historial">
+                        <li th:each="m : ${ficha.historial()}">
+                            <div class="fw-semibold" th:text="${m.tipo().etiqueta}">Movimiento</div>
+                            <div class="small text-secondary">
+                                <span th:text="${#temporals.format(m.fecha(), 'dd-MM-yyyy HH:mm')}">fecha</span>
+                                · <span th:text="${m.responsable()}">responsable</span>
+                            </div>
+                            <div class="small" th:if="${m.bodegaOrigen() != null or m.bodegaDestino() != null}">
+                                <span th:if="${m.bodegaOrigen() != null}" th:text="'Desde ' + ${m.bodegaOrigen()}">origen</span>
+                                <span th:if="${m.bodegaDestino() != null}" th:text="'Hacia ' + ${m.bodegaDestino()}">destino</span>
+                            </div>
+                            <div class="small text-secondary fst-italic" th:if="${m.observacion() != null}" th:text="${m.observacion()}">obs</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

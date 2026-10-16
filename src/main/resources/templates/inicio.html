@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mira</title>
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
-</head>
-<body class="bg-body-tertiary">
-<main class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h1 class="h3 mb-3">Mira</h1>
-                    <p class="text-body-secondary mb-0">
-                        Gestión y trazabilidad de equipos de geomensura.
-                    </p>
+<head th:replace="~{fragments/layout :: head('Inicio')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div class="encabezado-pagina mb-4">
+        <h1 th:text="'Hola, ' + ${usuarioActual.nombreCompleto()}">Hola</h1>
+        <p th:text="'Ingresaste como ' + ${#strings.toLowerCase(usuarioActual.rol().etiqueta)} + '. Estas son las opciones disponibles para tu rol.'">Opciones</p>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6 col-lg-4" th:each="opcion : ${menu}" th:unless="${opcion.etiqueta() == 'Inicio'}">
+            <a class="card h-100 acceso-rapido" th:href="@{${opcion.url()}}">
+                <div class="card-body">
+                    <div class="titulo mb-1" th:text="${opcion.etiqueta()}">Opción</div>
+                    <div class="text-secondary small" th:switch="${opcion.etiqueta()}">
+                        <span th:case="'Equipos'">Registro de cada equipo por número de serie, con su estado, bodega e historial.</span>
+                        <span th:case="'Bodegas'">Bodegas de la empresa donde se asignan los equipos.</span>
+                        <span th:case="'Usuarios'">Usuarios del sistema y el rol que determina a qué accede cada uno.</span>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 </main>
-<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
 </html>

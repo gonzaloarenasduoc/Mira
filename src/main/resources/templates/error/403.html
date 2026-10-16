@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Acceso denegado')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-5" style="max-width: 640px;">
+    <div class="card"><div class="card-body p-4 text-center">
+        <h1 class="h4" style="color: var(--mira-azul);">Acceso denegado</h1>
+        <p class="text-secondary">Su rol no tiene permiso para usar esta funcionalidad.</p>
+        <a class="btn btn-primary" th:href="@{/}">Volver al inicio</a>
+    </div></div>
+</main>
+</body>
+</html>
