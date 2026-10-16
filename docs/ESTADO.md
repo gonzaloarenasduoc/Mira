@@ -56,20 +56,26 @@ más un video de 3 minutos) el domingo 18-10.
 - Diagramas UML en PlantUML en `docs/diagramas/`, con sus imágenes: casos de uso,
   arquitectura, E-R, clases, secuencia del arriendo, componentes y despliegue.
 - Decisión D11, una rama por semana. `.mailmap` para unificar las identidades de Git.
+- Migraciones `V1__esquema_inicial.sql` (las 14 tablas del diccionario) y
+  `V2__datos_iniciales.sql` (empresa de demostración, administrador y cuatro categorías),
+  aplicadas y verificadas contra PostgreSQL 16. `MiraApplicationTests` las prueba con
+  Testcontainers; sin Docker la clase se omite.
+- Corrección D12: Flyway no se ejecutaba porque Spring Boot 4 necesita
+  `spring-boot-starter-flyway`. **Si alguno levantó la aplicación antes de esto, su base está
+  vacía y no hay que hacer nada: Flyway aplica V1 y V2 en el próximo arranque.**
 
 ## En curso
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Migraciones `V1__esquema_inicial.sql` y `V2__datos_iniciales.sql` | Joaquín | `semana-08` | Primera tarea del Sprint 2. Pendiente de confirmación para empezar |
+| Historias HU-01 a HU-07 del Sprint 2 | Ambos | `semana-08` | El esquema ya existe: siguen las entidades, los servicios, el inicio de sesión real y las vistas |
 | Revisión de los documentos de la Fase 2 | Ambos | `semana-08` | Los diarios 2.1 son borradores: cada uno revisa y personaliza el suyo |
 
 ## Siguiente
 
-1. Migraciones V1 y V2, verificadas contra PostgreSQL antes de integrarlas.
-2. Historias HU-01 a HU-07 del Sprint 2 (E001 y E002), cada una con su prueba automatizada.
-3. Presentación del domingo 18-10 y guion del video de 3 minutos.
-4. Pull request de `semana-08` a `main` al cierre de la semana, revisado por el otro integrante.
+1. Historias HU-01 a HU-07 del Sprint 2 (E001 y E002), cada una con su prueba automatizada.
+2. Presentación del domingo 18-10 y guion del video de 3 minutos.
+3. Pull request de `semana-08` a `main` al cierre de la semana, revisado por el otro integrante.
 
 ## Bloqueado
 
@@ -83,6 +89,10 @@ de datos son decisiones de diseño declaradas. Docker y el acceso de Joaquín a 
 funcionan.
 
 ## Advertencias vigentes
+
+- El modelo tiene **catorce** tablas, no trece como se escribió en algunos documentos de la
+  Fase 1 y en el acta del 08-10. Los documentos de la Fase 2 ya dicen catorce.
+- Usuario inicial: `admin@mira.cl`, contraseña `admin123`, solo para demostración.
 
 - El modelo de datos está definido y se puede implementar. Respeta el diccionario tal como
   está escrito: nombres de tabla, de columna y enumerados.
