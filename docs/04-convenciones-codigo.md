@@ -31,6 +31,11 @@ problemas de serialización con las relaciones perezosas.
 
 Usa `record` de Java para los DTOs.
 
+**Excepción: los DTOs de entrada que respaldan un formulario** (`CrearUsuarioRequest`,
+`RegistrarEquipoRequest`, etc.) son clases con `@Data` de Lombok. El enlace de formularios de
+Thymeleaf (`th:field`) y la recarga del formulario con errores necesitan getters y setters, que
+un `record` no tiene. Los DTOs de salida (`...Response`) siguen siendo `record`.
+
 ## Validación
 
 - Validación de formato en el DTO, con anotaciones de Bean Validation.

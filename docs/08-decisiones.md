@@ -170,5 +170,21 @@ migraciones.
 
 ---
 
+## D13 · Starters de prueba de MockMvc y de seguridad
+
+**Fecha.** 16-10-2026.
+
+**Motivo.** Las pruebas de rutas y permisos (CF-11, PNF-05) se escriben con `@WebMvcTest`, que
+levanta solo la capa web con los servicios simulados y no necesita base de datos. En Spring
+Boot 4 esa anotación y la integración de Spring Security con MockMvc salieron de
+`spring-boot-starter-test` a dos starters propios: `spring-boot-starter-webmvc-test` y
+`spring-boot-starter-security-test`. Este último incluye `spring-security-test`, que ya estaba en
+el proyecto. Ambos son de alcance `test` y no llegan al `.jar` de la aplicación.
+
+**Descartado.** Probar los permisos con `@SpringBootTest` completo: necesita PostgreSQL y, sin
+Docker, la prueba se omite justo cuando más se necesita.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.
