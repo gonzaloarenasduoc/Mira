@@ -11,6 +11,7 @@ import cl.duoc.mira.inventario.dto.RegistrarEquipoRequest;
 import cl.duoc.mira.inventario.entity.Bodega;
 import cl.duoc.mira.inventario.entity.Categoria;
 import cl.duoc.mira.inventario.entity.Equipo;
+import cl.duoc.mira.inventario.entity.EstadoEquipo;
 import cl.duoc.mira.inventario.entity.Movimiento;
 import cl.duoc.mira.inventario.entity.TipoMovimiento;
 import cl.duoc.mira.inventario.repository.CategoriaRepository;
@@ -93,14 +94,17 @@ public class EquipoService {
                         m.getBodegaDestino() == null ? null : m.getBodegaDestino().getNombre(),
                         nombres.getOrDefault(m.getUsuarioId(), "—"), m.getObservacion()))
                 .toList();
-        return new FichaEquipoResponse(aResponse(equipo), historial);
+        String trasladoHacia = equipo.getEstado() != EstadoEquipo.EN_TRANSITO ? null
+                : historial.stream().filter(m -> m.tipo() == TipoMovimiento.TRASLADO_SALIDA)
+                        .map(MovimientoResponse::bodegaDestino).findFirst().orElse(null);
+        return new FichaEquipoResponse(aResponse(equipo), historial, trasladoHacia);
     }
 
     private static String vacioANulo(String valor) {
         return valor == null || valor.isBlank() ? null : valor.trim();
     }
 
-    private static EquipoResponse aResponse(Equipo e) {
+    static EquipoResponse aResponse(Equipo e) {
         return new EquipoResponse(e.getId(), e.getNumeroSerie(), e.getCategoria().getNombre(),
                 e.getMarca(), e.getModelo(), e.getEstado(), e.getBodega().getNombre(),
                 e.getFechaAdquisicion(), e.getValorAdquisicion(), e.getTarifaDiaria(),

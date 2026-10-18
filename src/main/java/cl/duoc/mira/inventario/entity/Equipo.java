@@ -84,8 +84,14 @@ public class Equipo extends EntidadAuditable {
         this.activo = true;
     }
 
-    /** Solo lo invoca EquipoService al registrar un movimiento, nunca por separado. */
-    void aplicar(TipoMovimiento tipo) {
+    /**
+     * Solo lo invoca Movimiento.registrar, nunca por separado. La llegada de un traslado y el
+     * retorno de un arriendo dejan el equipo en la bodega de destino (03-modelo-datos.md, 5.4).
+     */
+    void aplicar(TipoMovimiento tipo, Bodega destino) {
         this.estado = tipo.getEstadoResultante();
+        if (tipo.isReubica() && destino != null) {
+            this.bodega = destino;
+        }
     }
 }

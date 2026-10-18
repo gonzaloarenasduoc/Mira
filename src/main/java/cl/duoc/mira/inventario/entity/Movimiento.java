@@ -60,7 +60,7 @@ public class Movimiento extends EntidadAuditable {
     @Column(length = 300)
     private String observacion;
 
-    /** Crea el movimiento y aplica al equipo el estado que le corresponde. */
+    /** Crea el movimiento y aplica al equipo el estado y, si corresponde, la bodega de destino. */
     public static Movimiento registrar(Equipo equipo, TipoMovimiento tipo, LocalDateTime fecha,
                                        Bodega origen, Bodega destino, Long usuarioId,
                                        String observacion) {
@@ -73,7 +73,7 @@ public class Movimiento extends EntidadAuditable {
         m.bodegaDestino = destino;
         m.usuarioId = usuarioId;
         m.observacion = observacion;
-        equipo.aplicar(tipo);
+        equipo.aplicar(tipo, destino);
         return m;
     }
 }
