@@ -18,6 +18,11 @@ import cl.duoc.mira.inventario.service.BodegaService;
 import cl.duoc.mira.inventario.service.CategoriaService;
 import cl.duoc.mira.inventario.service.EquipoService;
 import cl.duoc.mira.inventario.service.TrasladoService;
+import cl.duoc.mira.operaciones.controller.DisponibilidadController;
+import cl.duoc.mira.operaciones.dto.DisponibilidadResponse;
+import cl.duoc.mira.operaciones.service.DisponibilidadService;
+import java.time.LocalDate;
+import java.util.List;
 import cl.duoc.mira.usuarios.controller.UsuarioController;
 import cl.duoc.mira.usuarios.entity.RolUsuario;
 import cl.duoc.mira.usuarios.service.UsuarioAutenticado;
@@ -37,7 +42,8 @@ import org.springframework.test.web.servlet.MockMvc;
  * con los servicios simulados: no necesita base de datos.
  */
 @WebMvcTest(controllers = {InicioController.class, UsuarioController.class,
-        BodegaController.class, EquipoController.class, TrasladoController.class})
+        BodegaController.class, EquipoController.class, TrasladoController.class,
+        DisponibilidadController.class})
 @Import({SeguridadConfig.class, MenuGlobal.class})
 class SeguridadTest {
 
@@ -54,11 +60,13 @@ class SeguridadTest {
     private EquipoService equipoService;
     @MockitoBean
     private TrasladoService trasladoService;
+    @MockitoBean
+    private DisponibilidadService disponibilidadService;
 
     /** PNF-05: toda URL protegida, accedida sin sesión, redirige al inicio de sesión. */
     @ParameterizedTest
     @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios",
-            "/traslados", "/traslados/nuevo?equipoId=1"})
+            "/traslados", "/traslados/nuevo?equipoId=1", "/disponibilidad"})
     void rutaProtegida_sinSesion_redirigeAlLogin(String ruta) throws Exception {
         mvc.perform(get(ruta))
                 .andExpect(status().is3xxRedirection())
@@ -124,6 +132,16 @@ class SeguridadTest {
         mvc.perform(post("/traslados/llegada").param("equipoId", "1")
                         .with(csrf()).with(user(con(RolUsuario.JEFATURA))))
                 .andExpect(status().isForbidden());
+    }
+
+    /** E004: los cuatro roles consultan la disponibilidad. */
+    @ParameterizedTest
+    @ValueSource(strings = {"ADMINISTRADOR", "ENCARGADO_BODEGA", "VENDEDOR", "JEFATURA"})
+    void disponibilidad_cualquierRol_puedeConsultar(String rol) throws Exception {
+        when(disponibilidadService.consultar(any(), any()))
+                .thenReturn(new DisponibilidadResponse(List.of(), 0, 0, LocalDate.of(2026, 10, 20)));
+        mvc.perform(get("/disponibilidad").with(user(con(RolUsuario.valueOf(rol)))))
+                .andExpect(status().isOk());
     }
 
     private static UsuarioAutenticado con(RolUsuario rol) {

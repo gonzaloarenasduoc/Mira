@@ -85,3 +85,9 @@ main { flex: 1; }
 }
 
 .pie { color: #8A94A6; font-size: .8rem; }
+
+/* Disponibilidad consolidada (HU-12 y HU-13) */
+.resumen-disponibilidad { font-size: 1.05rem; }
+.resumen-disponibilidad .cifra { font-size: 1.6rem; font-weight: 700; color: var(--mira-azul); margin-right: .25rem; }
+.fila-vencida > td { background-color: #FDECEC; }
+.tabla-disponibilidad { table-layout: fixed; min-width: 640px; }

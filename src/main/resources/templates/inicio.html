@@ -15,6 +15,8 @@
                 <div class="card-body">
                     <div class="titulo mb-1" th:text="${opcion.etiqueta()}">Opción</div>
                     <div class="text-secondary small" th:switch="${opcion.etiqueta()}">
+                        <span th:case="'Disponibilidad'">Unidades disponibles en cada bodega y fecha de retorno de las arrendadas.</span>
+                        <span th:case="'Traslados'">Equipos en tránsito entre bodegas e historial de traslados.</span>
                         <span th:case="'Equipos'">Registro de cada equipo por número de serie, con su estado, bodega e historial.</span>
                         <span th:case="'Bodegas'">Bodegas de la empresa donde se asignan los equipos.</span>
                         <span th:case="'Usuarios'">Usuarios del sistema y el rol que determina a qué accede cada uno.</span>
