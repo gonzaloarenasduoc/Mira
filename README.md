@@ -99,7 +99,7 @@ Flyway aplica automáticamente las migraciones al iniciar. La aplicación queda 
 
 ```
 usuario:    admin@mira.cl
-contraseña: admin123          ← cambiar en el primer inicio de sesión
+contraseña: admin123          ← solo para demostración; en un ambiente real se cambia antes de habilitar el acceso
 ```
 
 ### Opción B — Base de datos en Docker
@@ -160,7 +160,7 @@ El equipo trabaja bajo un enfoque **ágil basado en Scrum**, adaptado al calenda
 - **Iteraciones quincenales.** Cada iteración cierra con una funcionalidad demostrable.
 - **Tablero Kanban en GitHub Projects**, con las columnas `Backlog → En progreso → En revisión → Hecho`.
 - **Reuniones de sincronización** dos veces por semana entre los integrantes, y reuniones de validación con la contraparte en los hitos de monitoreo (semanas 6, 11 y 17).
-- **Flujo de trabajo en Git:** rama `main` estable, ramas `feature/<epica>-<descripcion>` por funcionalidad e integración mediante *pull request* con revisión del otro integrante.
+- **Flujo de trabajo en Git:** rama `main` estable y, desde la semana 8, una rama por semana (`semana-08`, `semana-09`…) que se integra mediante *pull request* con revisión del otro integrante (decisión D11).
 - **Convención de commits:** `feat:`, `fix:`, `docs:`, `test:`, `refactor:`.
 
 ### Planificación por fases
@@ -236,4 +236,14 @@ Cada paquete de dominio contiene sus propias clases `entity`, `repository`, `ser
 
 🚧 En desarrollo — Fase 2 (semanas 5 a 15).
 
-El avance por épica puede consultarse en el tablero del repositorio.
+**Sprint 2 terminado (semana 8):** inicio de sesión con roles, menú y permisos según la matriz de
+la empresa, administración de usuarios y bodegas, y registro de equipos por número de serie con
+listado filtrado y ficha con historial (historias HU-01 a HU-08).
+
+| Dónde | Qué hay |
+|---|---|
+| `Fase 2/` | Evidencias de la Fase 2: Product Vision, Product Backlog, Definition of Done, Documento de Diseño, guías 2.4 y 2.6 y presentación |
+| `docs/` | Documentación técnica: modelo de datos, arquitectura, convenciones, decisiones y casos de prueba |
+| `docs/diagramas/` | Diagramas UML en PlantUML |
+| `docs/evidencias/semana-08/` | Capturas del sistema funcionando |
+| `docs/ESTADO.md` | Qué está terminado, en curso y pendiente |

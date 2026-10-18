@@ -1,17 +1,16 @@
 package cl.duoc.mira.common.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-/**
- * Provisional: pasa a Gonzalo cuando arme el layout real de las vistas.
- * Ver docs/ESTADO.md.
- */
+/** Página de inicio de cada rol: accesos a las opciones que el menú le muestra. */
 @Controller
 public class InicioController {
 
     @GetMapping("/")
-    public String inicio() {
+    public String inicio(Model model) {
+        model.addAttribute("seccion", "Inicio");
         return "inicio";
     }
 }

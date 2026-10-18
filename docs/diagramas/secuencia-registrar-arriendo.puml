@@ -1,0 +1,36 @@
+@startuml secuencia-registrar-arriendo
+!include _estilo.iuml
+autonumber
+actor "Vendedor" as V
+participant "ArriendoController" as C
+participant "ArriendoService\n<<@Transactional>>" as S
+participant "EquipoService" as ES
+participant "OperacionRepository" as OR
+database "PostgreSQL" as DB
+
+V -> C : POST /arriendos (cliente, fechas, líneas)
+C -> C : validar formato del DTO\n(Bean Validation)
+C -> S : registrar(empresaId, request)
+activate S
+S -> ES : buscarDisponibles(empresaId, idsEquipos)
+ES -> DB : SELECT ... WHERE empresa_id = ?\nFOR UPDATE
+DB --> ES : equipos
+alt algún equipo no está DISPONIBLE
+  ES --> S : EquipoNoDisponibleException
+  S --> C : excepción de dominio\n(rollback: no se guarda nada)
+  C --> V : mensaje de negocio:\n"El equipo X no está disponible"
+else todos disponibles
+  ES --> S : equipos
+  S -> OR : save(arriendo + detalles)
+  OR -> DB : INSERT operacion, arriendo,\noperacion_detalle
+  loop por cada equipo
+    S -> ES : registrarSalidaArriendo(equipo, arriendo)
+    ES -> DB : UPDATE equipo SET estado = ARRENDADO
+    ES -> DB : INSERT movimiento SALIDA_ARRIENDO
+  end
+  S --> C : ArriendoResponse
+  deactivate S
+  note right of S : COMMIT: operación, estados y\nmovimientos quedan juntos
+  C --> V : redirección al detalle del arriendo
+end
+@enduml

@@ -1,0 +1,153 @@
+@startuml modelo-er
+!include _estilo.iuml
+hide circle
+skinparam linetype ortho
+entity empresa {
+  * id : BIGSERIAL <<PK>>
+  --
+  * rut : VARCHAR(12) <<UQ>>
+  * razon_social : VARCHAR(200)
+  nombre_fantasia : VARCHAR(200)
+  * activa : BOOLEAN
+}
+entity usuario {
+  * id : BIGSERIAL <<PK>>
+  --
+  * empresa_id : BIGINT <<FK>>
+  * nombre, apellido : VARCHAR(100)
+  * email : VARCHAR(150) <<UQ>>
+  * password_hash : VARCHAR(100)
+  * rol : rol_usuario
+  * activo : BOOLEAN
+}
+entity bodega {
+  * id : BIGSERIAL <<PK>>
+  --
+  * empresa_id : BIGINT <<FK>>
+  * nombre : VARCHAR(100)
+  direccion, comuna
+  * activa : BOOLEAN
+}
+entity categoria {
+  * id : BIGSERIAL <<PK>>
+  --
+  * empresa_id : BIGINT <<FK>>
+  * nombre : VARCHAR(100)
+  descripcion : VARCHAR(300)
+  * requiere_capacitacion : BOOLEAN
+  * activa : BOOLEAN
+}
+entity equipo {
+  * id : BIGSERIAL <<PK>>
+  --
+  * empresa_id : BIGINT <<FK>>
+  * categoria_id : BIGINT <<FK>>
+  * bodega_id : BIGINT <<FK>>
+  * numero_serie : VARCHAR(80)
+  * marca, modelo : VARCHAR(80)
+  * estado : estado_equipo
+  fecha_adquisicion : DATE
+  valor_adquisicion, tarifa_diaria : NUMERIC(12,2)
+  * activo : BOOLEAN
+}
+entity movimiento {
+  * id : BIGSERIAL <<PK>>
+  --
+  * empresa_id : BIGINT <<FK>>
+  * equipo_id : BIGINT <<FK>>
+  * tipo : tipo_movimiento
+  * fecha : TIMESTAMP
+  bodega_origen_id : BIGINT <<FK>>
+  bodega_destino_id : BIGINT <<FK>>
+  operacion_id : BIGINT <<FK>>
+  * usuario_id : BIGINT <<FK>>
+}
+entity cliente {
+  * id : BIGSERIAL <<PK>>
+  --
+  * empresa_id : BIGINT <<FK>>
+  * rut : VARCHAR(12)
+  * razon_social : VARCHAR(200)
+  giro, direccion, contacto
+  * activo : BOOLEAN
+}
+entity operacion {
+  * id : BIGSERIAL <<PK>>
+  --
+  * empresa_id : BIGINT <<FK>>
+  * tipo : tipo_operacion
+  * cliente_id : BIGINT <<FK>>
+  * usuario_id : BIGINT <<FK>>
+  * fecha : DATE
+}
+entity venta {
+  * id : BIGINT <<PK, FK>>
+  --
+  numero_orden_compra : VARCHAR(50)
+}
+entity arriendo {
+  * id : BIGINT <<PK, FK>>
+  --
+  * fecha_inicio : DATE
+  * fecha_retorno_comprometida : DATE
+  numero_orden_compra : VARCHAR(50)
+}
+entity operacion_detalle {
+  * id : BIGSERIAL <<PK>>
+  --
+  * operacion_id : BIGINT <<FK>>
+  * equipo_id : BIGINT <<FK>>
+  * valor_unitario : NUMERIC(12,2)
+  fecha_retorno_real : DATE
+}
+entity tecnico {
+  * id : BIGSERIAL <<PK>>
+  --
+  * empresa_id : BIGINT <<FK>>
+  * nombre, apellido : VARCHAR(100)
+  email, telefono
+  * activo : BOOLEAN
+}
+entity capacitacion {
+  * id : BIGSERIAL <<PK>>
+  --
+  * empresa_id : BIGINT <<FK>>
+  * operacion_id : BIGINT <<FK>>
+  * tecnico_id : BIGINT <<FK>>
+  * fecha_programada : TIMESTAMP
+  fecha_realizada : TIMESTAMP
+  * estado : estado_capacitacion
+}
+entity documento {
+  * id : BIGSERIAL <<PK>>
+  --
+  * empresa_id : BIGINT <<FK>>
+  * operacion_id : BIGINT <<FK>>
+  * tipo : tipo_documento
+  numero_folio : VARCHAR(50)
+  * nombre_archivo, ruta_archivo
+  * content_type, tamano_bytes
+}
+
+empresa ||--o{ usuario
+empresa ||--o{ bodega
+empresa ||--o{ categoria
+empresa ||--o{ equipo
+empresa ||--o{ cliente
+empresa ||--o{ tecnico
+empresa ||--o{ operacion
+categoria ||--o{ equipo
+bodega ||--o{ equipo
+equipo ||--o{ movimiento
+usuario ||--o{ movimiento
+cliente ||--o{ operacion
+usuario ||--o{ operacion
+operacion ||--o| venta
+operacion ||--o| arriendo
+operacion ||--|{ operacion_detalle
+equipo ||--o{ operacion_detalle
+operacion ||--o{ documento
+operacion ||--o{ capacitacion
+tecnico ||--o{ capacitacion
+operacion |o--o{ movimiento
+@enduml

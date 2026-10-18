@@ -1,0 +1,61 @@
+@startuml casos-de-uso
+!include _estilo.iuml
+left to right direction
+skinparam packageStyle rectangle
+actor "Administrador" as ADM
+actor "Encargado de bodega" as ENC
+actor "Vendedor" as VEN
+actor "Jefatura" as JEF
+
+rectangle "Sistema Mira" {
+  package "Acceso" {
+    usecase "Iniciar sesión" as UC01
+    usecase "Gestionar usuarios y roles" as UC02
+  }
+  package "Inventario" {
+    usecase "Registrar equipo\npor número de serie" as UC03
+    usecase "Consultar ficha e\nhistorial del equipo" as UC04
+    usecase "Administrar bodegas" as UC05
+    usecase "Registrar traslado" as UC06
+    usecase "Consultar disponibilidad\nconsolidada" as UC07
+  }
+  package "Operaciones" {
+    usecase "Registrar arriendo" as UC08
+    usecase "Validar disponibilidad" as UC09
+    usecase "Registrar retorno" as UC10
+    usecase "Registrar venta" as UC11
+    usecase "Agendar capacitación" as UC12
+    usecase "Adjuntar documento" as UC13
+  }
+  package "Indicadores" {
+    usecase "Consultar panel\nde indicadores" as UC14
+    usecase "Revisar alertas\nde retorno" as UC15
+  }
+}
+
+ADM --> UC02
+ADM --> UC05
+ENC --> UC03
+ENC --> UC04
+ENC --> UC06
+ENC --> UC10
+ENC --> UC13
+ENC --> UC15
+VEN --> UC07
+VEN --> UC08
+VEN --> UC11
+VEN --> UC12
+VEN --> UC13
+JEF --> UC14
+JEF --> UC15
+
+UC08 ..> UC09 : <<include>>
+UC11 ..> UC09 : <<include>>
+UC12 ..> UC08 : <<extend>>
+UC02 ..> UC01 : <<include>>
+note right of UC01
+  Todos los actores inician sesión.
+  El acceso a cada caso de uso
+  lo determina la matriz de permisos.
+end note
+@enduml

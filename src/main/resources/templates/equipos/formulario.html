@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Registrar equipo')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" style="max-width: 860px;">
+    <div class="encabezado-pagina mb-4">
+        <h1>Registrar equipo</h1>
+        <p>El equipo queda disponible en la bodega indicada y su ingreso se registra en el historial.</p>
+    </div>
+
+    <div class="alert alert-warning" role="alert" th:if="${#lists.isEmpty(bodegas)}">
+        No hay bodegas activas. <a th:href="@{/bodegas/nueva}">Registre una bodega</a> antes de ingresar equipos.
+    </div>
+
+    <div class="card">
+        <div class="card-body p-4">
+            <form th:object="${equipo}" th:action="@{/equipos}" method="post" novalidate>
+                <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}">
+                    <div th:each="e : ${#fields.globalErrors()}" th:text="${e}">Error</div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="numeroSerie" class="form-label">Número de serie</label>
+                        <input id="numeroSerie" type="text" class="form-control" th:field="*{numeroSerie}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{numeroSerie}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="categoriaId" class="form-label">Categoría</label>
+                        <select id="categoriaId" class="form-select" th:field="*{categoriaId}" th:errorclass="is-invalid">
+                            <option value="">Seleccione…</option>
+                            <option th:each="c : ${categorias}" th:value="${c.id()}" th:text="${c.nombre()}">Categoría</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{categoriaId}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="marca" class="form-label">Marca</label>
+                        <input id="marca" type="text" class="form-control" th:field="*{marca}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{marca}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="modelo" class="form-label">Modelo</label>
+                        <input id="modelo" type="text" class="form-control" th:field="*{modelo}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{modelo}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="bodegaId" class="form-label">Bodega</label>
+                        <select id="bodegaId" class="form-select" th:field="*{bodegaId}" th:errorclass="is-invalid">
+                            <option value="">Seleccione…</option>
+                            <option th:each="b : ${bodegas}" th:value="${b.id()}" th:text="${b.nombre()}">Bodega</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{bodegaId}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="fechaAdquisicion" class="form-label">Fecha de adquisición <span class="text-secondary">(opcional)</span></label>
+                        <input id="fechaAdquisicion" type="date" class="form-control" th:field="*{fechaAdquisicion}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{fechaAdquisicion}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="valorAdquisicion" class="form-label">Valor de adquisición <span class="text-secondary">(opcional)</span></label>
+                        <div class="input-group has-validation">
+                            <span class="input-group-text">$</span>
+                            <input id="valorAdquisicion" type="number" min="0" step="1" class="form-control" th:field="*{valorAdquisicion}" th:errorclass="is-invalid">
+                            <div class="invalid-feedback" th:errors="*{valorAdquisicion}">Error</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tarifaDiaria" class="form-label">Tarifa diaria de arriendo <span class="text-secondary">(opcional)</span></label>
+                        <div class="input-group has-validation">
+                            <span class="input-group-text">$</span>
+                            <input id="tarifaDiaria" type="number" min="0" step="1" class="form-control" th:field="*{tarifaDiaria}" th:errorclass="is-invalid">
+                            <div class="invalid-feedback" th:errors="*{tarifaDiaria}">Error</div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label for="observaciones" class="form-label">Observaciones <span class="text-secondary">(opcional)</span></label>
+                        <textarea id="observaciones" rows="3" class="form-control" th:field="*{observaciones}" th:errorclass="is-invalid"></textarea>
+                        <div class="invalid-feedback" th:errors="*{observaciones}">Error</div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-end mt-4">
+                    <a class="btn btn-outline-secondary" th:href="@{/equipos}">Cancelar</a>
+                    <button type="submit" class="btn btn-primary" th:disabled="${#lists.isEmpty(bodegas)}">Registrar equipo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

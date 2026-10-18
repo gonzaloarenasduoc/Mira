@@ -131,5 +131,60 @@ las vistas.
 
 ---
 
+## D11 · Una rama por semana
+
+**Fecha.** 16-10-2026.
+
+**Motivo.** Sugerencia del docente en el control de avance del 08-10-2026. Cada semana del
+calendario académico queda como una rama con un pull request revisado y fechado, lo que hace
+visible el avance semanal y el aporte de cada integrante, que es lo que se evalúa en el
+informe de avance. Con dos integrantes y zonas de propiedad definidas, una rama compartida
+por semana no genera más conflictos que una rama por funcionalidad.
+
+**Condiciones.** `main` se mantiene estable: el pull request semanal se integra solo con las
+pruebas pasando, y el trabajo inconcluso pasa a la rama de la semana siguiente. El
+procedimiento está en `docs/06-flujo-trabajo.md`.
+
+**Descartado.** Una rama por épica o funcionalidad, la convención original: deja ramas de
+vida muy desigual, algunas de varias semanas, y no se corresponde con los cortes de
+evaluación de la asignatura.
+
+---
+
+## D12 · Flyway con su starter de Spring Boot 4
+
+**Fecha.** 16-10-2026.
+
+**Motivo.** En Spring Boot 4 la autoconfiguración de Flyway se separó en su propio módulo. Con
+solo `flyway-core` en el `pom.xml` la aplicación levantaba, pero **no aplicaba ninguna
+migración**: la base quedaba vacía sin ningún error visible. Se detectó al aplicar por primera
+vez `V1` y `V2` contra PostgreSQL. Se reemplaza `flyway-core` por
+`spring-boot-starter-flyway`, que lo incluye junto con la autoconfiguración. Se mantiene
+`flyway-database-postgresql`.
+
+**No es una dependencia nueva:** Flyway ya estaba decidido desde el inicio; cambia solo la forma
+de declararlo.
+
+**Verificado por** `MiraApplicationTests`, que comprueba que al arrancar quedan aplicadas las dos
+migraciones.
+
+---
+
+## D13 · Starters de prueba de MockMvc y de seguridad
+
+**Fecha.** 16-10-2026.
+
+**Motivo.** Las pruebas de rutas y permisos (CF-11, PNF-05) se escriben con `@WebMvcTest`, que
+levanta solo la capa web con los servicios simulados y no necesita base de datos. En Spring
+Boot 4 esa anotación y la integración de Spring Security con MockMvc salieron de
+`spring-boot-starter-test` a dos starters propios: `spring-boot-starter-webmvc-test` y
+`spring-boot-starter-security-test`. Este último incluye `spring-security-test`, que ya estaba en
+el proyecto. Ambos son de alcance `test` y no llegan al `.jar` de la aplicación.
+
+**Descartado.** Probar los permisos con `@SpringBootTest` completo: necesita PostgreSQL y, sin
+Docker, la prueba se omite justo cuando más se necesita.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.

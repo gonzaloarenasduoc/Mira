@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Bodegas')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div class="encabezado-pagina d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <h1>Bodegas</h1>
+            <p>Lugares físicos donde la empresa almacena sus equipos.</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/bodegas/nueva}" th:if="${puedeEditarInventario}">Nueva bodega</a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <div class="card">
+        <div class="card-body text-secondary" th:if="${#lists.isEmpty(bodegas)}">
+            Aún no hay bodegas registradas. Registre la primera para poder ingresar equipos.
+        </div>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(bodegas)}">
+            <table class="table table-hover align-middle mb-0 tabla-mira">
+                <thead>
+                <tr><th>Nombre</th><th>Dirección</th><th>Comuna</th><th>Estado</th>
+                    <th class="text-end" th:if="${puedeEditarInventario}">Acciones</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="b : ${bodegas}">
+                    <td class="fw-semibold" th:text="${b.nombre()}">Nombre</td>
+                    <td th:text="${b.direccion()} ?: '—'">Dirección</td>
+                    <td th:text="${b.comuna()} ?: '—'">Comuna</td>
+                    <td>
+                        <span class="estado estado-DISPONIBLE" th:if="${b.activa()}">Activa</span>
+                        <span class="estado estado-VENDIDO" th:unless="${b.activa()}">Inactiva</span>
+                    </td>
+                    <td class="text-end text-nowrap" th:if="${puedeEditarInventario}">
+                        <a class="btn btn-sm btn-outline-primary" th:href="@{/bodegas/{id}/editar(id=${b.id()})}">Editar</a>
+                        <form class="d-inline" method="post" th:if="${b.activa()}"
+                              th:action="@{/bodegas/{id}/desactivar(id=${b.id()})}">
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Desactivar</button>
+                        </form>
+                        <form class="d-inline" method="post" th:unless="${b.activa()}"
+                              th:action="@{/bodegas/{id}/activar(id=${b.id()})}">
+                            <button class="btn btn-sm btn-outline-success" type="submit">Activar</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

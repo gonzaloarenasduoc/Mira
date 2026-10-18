@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Equipos')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div class="encabezado-pagina d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <h1>Equipos</h1>
+            <p>Cada equipo es una unidad única, identificada por su número de serie.</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/equipos/nuevo}" th:if="${puedeEditarInventario}">Registrar equipo</a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <form class="card mb-3" method="get" th:action="@{/equipos}" th:object="${filtro}">
+        <div class="card-body row g-2 align-items-end">
+            <div class="col-md-3">
+                <label for="numeroSerie" class="form-label small mb-1">Número de serie</label>
+                <input id="numeroSerie" type="search" class="form-control" th:field="*{numeroSerie}" placeholder="Buscar…">
+            </div>
+            <div class="col-md-3">
+                <label for="categoriaId" class="form-label small mb-1">Categoría</label>
+                <select id="categoriaId" class="form-select" th:field="*{categoriaId}">
+                    <option value="">Todas</option>
+                    <option th:each="c : ${categorias}" th:value="${c.id()}" th:text="${c.nombre()}">Categoría</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="estado" class="form-label small mb-1">Estado</label>
+                <select id="estado" class="form-select" th:field="*{estado}">
+                    <option value="">Todos</option>
+                    <option th:each="e : ${estados}" th:value="${e}" th:text="${e.etiqueta}">Estado</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="bodegaId" class="form-label small mb-1">Bodega</label>
+                <select id="bodegaId" class="form-select" th:field="*{bodegaId}">
+                    <option value="">Todas</option>
+                    <option th:each="b : ${bodegas}" th:value="${b.id()}" th:text="${b.nombre()}">Bodega</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-fill">Filtrar</button>
+                <a class="btn btn-outline-secondary" th:href="@{/equipos}" title="Quitar filtros">Limpiar</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body text-secondary" th:if="${#lists.isEmpty(equipos)}">
+            No hay equipos que coincidan con los filtros.
+        </div>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(equipos)}">
+            <table class="table table-hover align-middle mb-0 tabla-mira">
+                <thead>
+                <tr><th>Número de serie</th><th>Categoría</th><th>Marca y modelo</th><th>Estado</th><th>Bodega</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="e : ${equipos}">
+                    <td><a class="fw-semibold" th:href="@{/equipos/{id}(id=${e.id()})}" th:text="${e.numeroSerie()}">Serie</a></td>
+                    <td th:text="${e.categoria()}">Categoría</td>
+                    <td th:text="${e.marca()} + ' ' + ${e.modelo()}">Marca</td>
+                    <td><span class="estado" th:classappend="'estado-' + ${e.estado()}" th:text="${e.estado().etiqueta}">Estado</span></td>
+                    <td th:text="${e.bodega()}">Bodega</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-white text-secondary small" th:unless="${#lists.isEmpty(equipos)}"
+             th:text="${#lists.size(equipos)} + (${#lists.size(equipos)} == 1 ? ' equipo' : ' equipos')">0 equipos</div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

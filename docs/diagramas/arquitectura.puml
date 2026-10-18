@@ -1,0 +1,22 @@
+@startuml arquitectura
+!include _estilo.iuml
+top to bottom direction
+actor "Usuario\n(navegador)" as U
+rectangle "Aplicación Mira · Spring Boot 4.1 · Java 21  (monolito modular en capas)" as APP {
+  rectangle "Capa de presentación\n@Controller + plantillas Thymeleaf + Bootstrap 5\n@RestController acotado para los gráficos (Chart.js)" as PRES
+  rectangle "Spring Security\nautenticación, sesión y autorización por rol" as SEC
+  rectangle "Capa de servicios\n@Service · reglas de negocio · @Transactional\nfiltro explícito por empresa (D07)" as SRV
+  rectangle "Capa de acceso a datos\n@Repository · Spring Data JPA" as REP
+  rectangle "Modelo de dominio\n@Entity · auditoría JPA" as ENT
+}
+database "PostgreSQL 16\nesquema versionado con Flyway" as DB
+folder "Sistema de archivos\n(APP_UPLOAD_DIR)" as FS
+
+U --> SEC : HTTP(S)\nformularios y vistas
+SEC --> PRES
+PRES --> SRV : DTO (record)
+SRV --> REP
+REP --> ENT
+REP --> DB : JDBC / SQL
+SRV --> FS : documentos adjuntos
+@enduml

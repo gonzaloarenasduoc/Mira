@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${modo == 'crear'} ? 'Nuevo usuario' : 'Editar usuario')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" style="max-width: 760px;">
+    <div class="encabezado-pagina mb-4">
+        <h1 th:text="${modo == 'crear'} ? 'Nuevo usuario' : 'Editar usuario'">Usuario</h1>
+        <p th:text="${modo == 'crear'} ? 'El rol determina las funcionalidades a las que accede la persona.' : 'El correo no se modifica: es la credencial de acceso.'">Detalle</p>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-4">
+            <form th:object="${usuario}" method="post" novalidate
+                  th:action="${modo == 'crear'} ? @{/usuarios} : @{/usuarios/{id}(id=${id})}">
+                <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}">
+                    <div th:each="e : ${#fields.globalErrors()}" th:text="${e}">Error</div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input id="nombre" type="text" class="form-control" th:field="*{nombre}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{nombre}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="apellido" class="form-label">Apellido</label>
+                        <input id="apellido" type="text" class="form-control" th:field="*{apellido}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{apellido}">Error</div>
+                    </div>
+                    <div class="col-md-6" th:if="${modo == 'crear'}">
+                        <label for="email" class="form-label">Correo</label>
+                        <input id="email" type="email" class="form-control" th:field="*{email}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{email}">Error</div>
+                    </div>
+                    <div class="col-md-6" th:unless="${modo == 'crear'}">
+                        <label class="form-label" for="correoFijo">Correo</label>
+                        <input id="correoFijo" type="email" class="form-control" th:value="${email}" disabled>
+                    </div>
+                    <div class="col-md-6" th:if="${modo == 'crear'}">
+                        <label for="password" class="form-label">Contraseña inicial</label>
+                        <input id="password" type="password" class="form-control" th:field="*{password}"
+                               th:errorclass="is-invalid" autocomplete="new-password">
+                        <div class="form-text">Mínimo 8 caracteres. Se guarda cifrada.</div>
+                        <div class="invalid-feedback" th:errors="*{password}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="rol" class="form-label">Rol</label>
+                        <select id="rol" class="form-select" th:field="*{rol}" th:errorclass="is-invalid">
+                            <option value="">Seleccione…</option>
+                            <option th:each="r : ${roles}" th:value="${r}" th:text="${r.etiqueta}">Rol</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{rol}">Error</div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-end mt-4">
+                    <a class="btn btn-outline-secondary" th:href="@{/usuarios}">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

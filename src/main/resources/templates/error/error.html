@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Error')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-5" style="max-width: 640px;">
+    <div class="card"><div class="card-body p-4 text-center">
+        <h1 class="h4" style="color: var(--mira-azul);">Ocurrió un problema</h1>
+        <p class="text-secondary">No fue posible completar la operación. Intente nuevamente; si el problema persiste, avise al administrador.</p>
+        <a class="btn btn-primary" th:href="@{/}">Volver al inicio</a>
+    </div></div>
+</main>
+</body>
+</html>

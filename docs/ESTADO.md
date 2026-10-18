@@ -3,11 +3,17 @@
 Este archivo se actualiza al terminar cada sesión de trabajo. Es lo primero que lee el
 asistente del otro integrante para saber qué está en curso y no pisar nada.
 
-**Última actualización:** 10-09-2026
+**Última actualización:** 16-10-2026
 
 ## Fase actual
 
-Fase 1, definición del proyecto. El desarrollo comienza en la semana 5.
+Fase 2, semana 8. Sprint 2 (semanas 8 y 9), que retoma el objetivo no cumplido del Sprint 1:
+un usuario se autentica con su rol y registra un equipo por número de serie que aparece en un
+listado filtrado por empresa. Desde esta semana rige **una rama por semana** (D11): la de esta
+semana es `semana-08`.
+
+Entregas de la asignatura: documentos de la Fase 2 el sábado 17-10 y presentación (7 minutos
+más un video de 3 minutos) el domingo 18-10.
 
 ## Terminado
 
@@ -36,35 +42,76 @@ Fase 1, definición del proyecto. El desarrollo comienza en la semana 5.
   paquetes vacía, `application.yml` y una página de inicio con Thymeleaf y Bootstrap.
   `./mvnw clean test` pasa. **Sin migraciones ni entidades todavía.**
 
+- Control de avance del 08-10 con el docente. El atraso de la Fase 2 quedó reconocido y el
+  trabajo se reorganizó en sprints de dos semanas.
+- Documentación de la Fase 2 (semana 8, rama `semana-08`), con la estructura y los nombres del
+  repositorio del docente:
+  - `Fase 2/Evidencias Proyecto (version Agil)/`: Documento 01 Product Vision, 02 Product
+    Backlog (28 historias, HU-01 a HU-28, suman 100 PF), 04 Definition of Done y 05 Documento
+    de Diseño.
+  - `Fase 2/Evidencias Grupales/`: guía 2.4 renombrada al nombre exacto del docente e informe
+    2.6.
+  - `Fase 2/Evidencias Individules/`: diarios 2.1 con el formato
+    `Apellido_Nombre_2.1_APT122_DiarioReflexionFase2.docx`. El de Joaquín ya está (el mismo entregado
+    el 04-10 en la plataforma); falta el de Gonzalo.
+- Diagramas UML en PlantUML en `docs/diagramas/`, con sus imágenes: casos de uso,
+  arquitectura, E-R, clases, secuencia del arriendo, componentes y despliegue.
+- Decisión D11, una rama por semana. `.mailmap` para unificar las identidades de Git.
+- Migraciones `V1__esquema_inicial.sql` (las 14 tablas del diccionario) y
+  `V2__datos_iniciales.sql` (empresa de demostración, administrador y cuatro categorías),
+  aplicadas y verificadas contra PostgreSQL 16. `MiraApplicationTests` las prueba con
+  Testcontainers; sin Docker la clase se omite.
+- Corrección D12: Flyway no se ejecutaba porque Spring Boot 4 necesita
+  `spring-boot-starter-flyway`. **Si alguno levantó la aplicación antes de esto, su base está
+  vacía y no hay que hacer nada: Flyway aplica V1 y V2 en el próximo arranque.**
+- Sprint 2 implementado (HU-01 a HU-08; HU-08 se adelantó del Sprint 3 porque registrar un equipo
+  exige una bodega):
+  - Inicio de sesión real contra la tabla `usuario`, con BCrypt y mensaje genérico de error.
+  - Menú y permisos por rol según la matriz (`SeguridadConfig` y `MenuGlobal`).
+  - Usuarios: crear, editar, activar y desactivar; nadie puede desactivarse a sí mismo.
+  - Bodegas: crear, editar, activar y desactivar, con nombre único por empresa.
+  - Equipos: registro con su movimiento `INGRESO` en la misma transacción, listado con filtros y
+    ficha con historial. Un equipo de otra empresa se responde como inexistente.
+  - 29 pruebas: 25 corren sin base de datos y 4 de integración con Testcontainers, que se omiten
+    si no hay Docker.
+  - Capturas del recorrido en `docs/evidencias/semana-08/`.
+
 ## En curso
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Esqueleto del proyecto | Joaquín | `feature/esqueleto` | Terminado y compilando. Falta levantarlo contra la base: Docker en el equipo de Joaquín todavía no responde |
+| Sprint 2: HU-01 a HU-08 | Ambos | `semana-08` | **Implementadas y probadas.** Falta la revisión cruzada del otro integrante y el pull request a `main` |
+| Revisión de los documentos de la Fase 2 y subida de los diarios 2.1 | Ambos | `semana-08` | Cada uno sube su diario con el nombre exacto del formato del docente |
 
 ## Siguiente
 
-1. Verificar el arranque cuando Docker responda: `docker compose up -d db` y
-   `.\mvnw.cmd spring-boot:run`. Spring Security pide usuario y contraseña, es lo esperado:
-   la clave aparece en la consola. El esqueleto entra a `main` antes de que Gonzalo clone.
-2. Migración `V1__esquema_inicial.sql` a partir del modelo de datos, más
-   `MiraApplicationTests` con Testcontainers, que es la primera prueba que necesita base de
-   datos real.
-3. Épica 001, acceso y roles.
-4. Reunión con la contraparte cuando sea posible, para confirmar los supuestos de la
-   sección 6 del modelo de datos.
+1. Revisión cruzada del código del Sprint 2 y pull request de `semana-08` a `main`.
+2. Presentación del domingo 18-10 y guion del video de 3 minutos.
+3. Sprint 3: traslados (HU-09, HU-10) y disponibilidad consolidada (HU-11 a HU-13).
 
 ## Bloqueado
 
 | Qué | Por qué | Quién lo destraba |
 |---|---|---|
-| Cifras reales en la documentación | No se ha concretado la reunión con la empresa | Joaquín |
-| Confirmar los supuestos 3, 7, 8 y 10 del modelo de datos | Requiere consultar a la contraparte o a la Eve | Joaquín |
-| Push directo a GitHub desde el equipo de Joaquín | Sin acceso a la cuenta, segundo factor perdido | Joaquín. Mientras tanto, entrega por bundle según `docs/06-flujo-trabajo.md` |
-| Levantar la aplicación en el equipo de Joaquín | Docker instalado pero requiere reiniciar el equipo | Joaquín. La sesión 2 igual se puede hacer: compila sin base de datos |
-| Tablero en GitHub Projects | Requiere acceso al repositorio | Gonzalo |
+| Push desde las sesiones de Claude Code en la nube | GitHub responde 403: la aplicación de Claude no tiene permiso sobre el repositorio | Gonzalo, reconectando GitHub en claude.ai e instalando la aplicación de Claude en el repositorio |
+| Tablero en GitHub Projects | Compromiso de la semana 7 aún no cumplido | Gonzalo |
+
+Las reuniones con la empresa se aplazaron: con autorización del docente, los supuestos de la
+sección 6 del modelo de datos se tratan como decisiones de diseño declaradas. Docker y el acceso de Joaquín a GitHub ya
+funcionan.
 
 ## Advertencias vigentes
+
+- En los documentos de la Fase 2 no se menciona que la empresa dejó de participar: se habla del
+  aplazamiento de las reuniones, como se acordó con el docente. Los documentos ya entregados
+  (Fase 1, guía 2.4, diarios) no se modifican.
+- El modelo tiene **catorce** tablas, no trece como se escribió en algunos documentos de la
+  Fase 1 y en el acta del 08-10. Los documentos de la Fase 2 ya dicen catorce.
+- Usuario inicial: `admin@mira.cl`, contraseña `admin123`, solo para demostración.
+  Los demás usuarios se crean desde la pantalla Usuarios con el rol que corresponda.
+- La cookie de sesión todavía no lleva el atributo `Secure` (PNF-08): en local se usa HTTP y la
+  sesión dejaría de funcionar. Se activa en el perfil del ambiente de demostración, con HTTPS.
+- Los DTOs de formulario son clases con `@Data`, no `record` (ver `docs/04-convenciones-codigo.md`).
 
 - El modelo de datos está definido y se puede implementar. Respeta el diccionario tal como
   está escrito: nombres de tabla, de columna y enumerados.

@@ -1,0 +1,26 @@
+@startuml despliegue
+!include _estilo.iuml
+node "Equipo del usuario" {
+  artifact "Navegador web\n(Chrome, Firefox, Edge)" as NAV
+}
+node "Servidor de demostración\n(máquina virtual de capa gratuita)" as VM {
+  node "Docker Engine + Docker Compose" {
+    node "Contenedor app\n(eclipse-temurin:21-jre)" as APP {
+      artifact "mira.jar\nSpring Boot 4.1" as JAR
+    }
+    node "Contenedor db\n(postgres:16)" as DBC {
+      database "mira" as DB
+    }
+    storage "Volumen pgdata" as V1
+    storage "Volumen uploads" as V2
+  }
+}
+NAV --> JAR : HTTPS :443 / HTTP :8080
+JAR --> DB : JDBC :5432\n(red interna de Compose)
+DB --> V1
+JAR --> V2
+note bottom of APP
+  Las migraciones Flyway se aplican
+  automáticamente al arrancar la aplicación.
+end note
+@enduml

@@ -224,7 +224,7 @@ Commit. Si no puedes hacer push, genera el bundle y mándaselo a Gonzalo.
 
 > Lee docs/03-modelo-datos.md completo.
 >
-> Crea `src/main/resources/db/migration/V1__esquema_inicial.sql` con las trece tablas del
+> Crea `src/main/resources/db/migration/V1__esquema_inicial.sql` con las catorce tablas del
 > diccionario de datos.
 >
 > Requisitos que no puedes cambiar:

@@ -1,0 +1,87 @@
+/* Estilo de Mira sobre Bootstrap 5. Colores: azul institucional y amarillo de la mira topográfica. */
+:root {
+    --mira-azul: #1F3864;
+    --mira-azul-claro: #2E4F86;
+    --mira-amarillo: #F2A900;
+    --mira-fondo: #F4F6FA;
+    --bs-primary: #1F3864;
+    --bs-primary-rgb: 31, 56, 100;
+    --bs-link-color: #2E4F86;
+    --bs-link-hover-color: #1F3864;
+}
+
+body {
+    background-color: var(--mira-fondo);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main { flex: 1; }
+
+.mira-navbar {
+    background-color: var(--mira-azul);
+    border-bottom: 3px solid var(--mira-amarillo);
+}
+
+.mira-navbar .nav-link.active {
+    color: #FFFFFF;
+    font-weight: 600;
+    border-bottom: 2px solid var(--mira-amarillo);
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--mira-azul);
+    --bs-btn-border-color: var(--mira-azul);
+    --bs-btn-hover-bg: var(--mira-azul-claro);
+    --bs-btn-hover-border-color: var(--mira-azul-claro);
+    --bs-btn-active-bg: var(--mira-azul-claro);
+    --bs-btn-disabled-bg: #8A9BB8;
+    --bs-btn-disabled-border-color: #8A9BB8;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--mira-azul);
+    --bs-btn-border-color: var(--mira-azul);
+    --bs-btn-hover-bg: var(--mira-azul);
+    --bs-btn-hover-border-color: var(--mira-azul);
+}
+
+.encabezado-pagina h1 { font-size: 1.5rem; font-weight: 600; color: var(--mira-azul); margin: 0; }
+.encabezado-pagina p { margin: 0; color: #6C757D; }
+
+.card { border: 0; box-shadow: 0 1px 3px rgba(31, 56, 100, .12); }
+
+.tabla-mira thead th {
+    background-color: #E9EEF6;
+    color: var(--mira-azul);
+    font-weight: 600;
+    font-size: .875rem;
+    white-space: nowrap;
+}
+
+.estado { font-weight: 600; font-size: .78rem; padding: .35em .65em; border-radius: 1rem; }
+.estado-DISPONIBLE { background: #D1F2DD; color: #0F5132; }
+.estado-ARRENDADO { background: #FFE8B3; color: #7A4F00; }
+.estado-EN_TRANSITO { background: #D6E4FF; color: #1F3864; }
+.estado-EN_MANTENCION { background: #F1D9F7; color: #5B2370; }
+.estado-VENDIDO { background: #E2E3E5; color: #41464B; }
+
+.acceso-rapido { transition: transform .1s ease, box-shadow .1s ease; color: inherit; text-decoration: none; }
+.acceso-rapido:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(31, 56, 100, .18); }
+.acceso-rapido .titulo { color: var(--mira-azul); font-weight: 600; }
+
+.login-fondo {
+    background: linear-gradient(135deg, var(--mira-azul) 0%, var(--mira-azul-claro) 100%);
+}
+
+.historial { list-style: none; padding-left: 0; margin: 0; }
+.historial li { position: relative; padding: 0 0 1rem 1.5rem; border-left: 2px solid #D6DEEA; margin-left: .5rem; }
+.historial li:last-child { padding-bottom: 0; }
+.historial li::before {
+    content: ""; position: absolute; left: -7px; top: .3rem;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--mira-amarillo); border: 2px solid #FFFFFF; box-shadow: 0 0 0 1px var(--mira-amarillo);
+}
+
+.pie { color: #8A94A6; font-size: .8rem; }
