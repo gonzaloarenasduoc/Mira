@@ -17,8 +17,8 @@
     <form class="card mb-3" method="get" th:action="@{/equipos}" th:object="${filtro}">
         <div class="card-body row g-2 align-items-end">
             <div class="col-md-3">
-                <label for="numeroSerie" class="form-label small mb-1">Número de serie</label>
-                <input id="numeroSerie" type="search" class="form-control" th:field="*{numeroSerie}" placeholder="Buscar…">
+                <label for="texto" class="form-label small mb-1">Serie, marca o modelo</label>
+                <input id="texto" type="search" class="form-control" th:field="*{texto}" placeholder="Por ejemplo, GS18 o Leica">
             </div>
             <div class="col-md-3">
                 <label for="categoriaId" class="form-label small mb-1">Categoría</label>
