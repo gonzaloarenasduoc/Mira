@@ -1,5 +1,8 @@
 package cl.duoc.mira.config;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -10,9 +13,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import cl.duoc.mira.common.controller.InicioController;
 import cl.duoc.mira.inventario.controller.BodegaController;
 import cl.duoc.mira.inventario.controller.EquipoController;
+import cl.duoc.mira.inventario.controller.TrasladoController;
 import cl.duoc.mira.inventario.service.BodegaService;
 import cl.duoc.mira.inventario.service.CategoriaService;
 import cl.duoc.mira.inventario.service.EquipoService;
+import cl.duoc.mira.inventario.service.TrasladoService;
 import cl.duoc.mira.usuarios.controller.UsuarioController;
 import cl.duoc.mira.usuarios.entity.RolUsuario;
 import cl.duoc.mira.usuarios.service.UsuarioAutenticado;
@@ -23,6 +28,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,7 +37,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * con los servicios simulados: no necesita base de datos.
  */
 @WebMvcTest(controllers = {InicioController.class, UsuarioController.class,
-        BodegaController.class, EquipoController.class})
+        BodegaController.class, EquipoController.class, TrasladoController.class})
 @Import({SeguridadConfig.class, MenuGlobal.class})
 class SeguridadTest {
 
@@ -46,10 +52,13 @@ class SeguridadTest {
     private CategoriaService categoriaService;
     @MockitoBean
     private EquipoService equipoService;
+    @MockitoBean
+    private TrasladoService trasladoService;
 
     /** PNF-05: toda URL protegida, accedida sin sesión, redirige al inicio de sesión. */
     @ParameterizedTest
-    @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios"})
+    @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios",
+            "/traslados", "/traslados/nuevo?equipoId=1"})
     void rutaProtegida_sinSesion_redirigeAlLogin(String ruta) throws Exception {
         mvc.perform(get(ruta))
                 .andExpect(status().is3xxRedirection())
@@ -93,6 +102,28 @@ class SeguridadTest {
     void registrarEquipo_comoEncargadoDeBodega_permiteElAcceso() throws Exception {
         mvc.perform(get("/equipos/nuevo").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
                 .andExpect(status().isOk());
+    }
+
+    /** E003: el vendedor consulta los traslados, pero no los registra ni confirma llegadas. */
+    @Test
+    void traslados_comoVendedor_puedeConsultar() throws Exception {
+        when(trasladoService.historial(any(), any(), anyInt())).thenReturn(Page.empty());
+        mvc.perform(get("/traslados").with(user(con(RolUsuario.VENDEDOR))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void registrarTraslado_comoVendedor_accesoDenegado() throws Exception {
+        mvc.perform(post("/traslados").param("equipoId", "1").param("bodegaDestinoId", "2")
+                        .with(csrf()).with(user(con(RolUsuario.VENDEDOR))))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void confirmarLlegada_comoJefatura_accesoDenegado() throws Exception {
+        mvc.perform(post("/traslados/llegada").param("equipoId", "1")
+                        .with(csrf()).with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
     }
 
     private static UsuarioAutenticado con(RolUsuario rol) {

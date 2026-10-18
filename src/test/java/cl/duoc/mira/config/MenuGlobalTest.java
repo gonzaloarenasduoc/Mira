@@ -13,13 +13,13 @@ class MenuGlobalTest {
     void opcionesPara_administrador_incluyeUsuarios() {
         assertThat(MenuGlobal.opcionesPara(RolUsuario.ADMINISTRADOR))
                 .extracting(OpcionMenu::etiqueta)
-                .containsExactly("Inicio", "Equipos", "Bodegas", "Usuarios");
+                .containsExactly("Inicio", "Equipos", "Traslados", "Bodegas", "Usuarios");
     }
 
     @Test
     void opcionesPara_vendedor_noIncluyeUsuarios() {
         assertThat(MenuGlobal.opcionesPara(RolUsuario.VENDEDOR))
                 .extracting(OpcionMenu::etiqueta)
-                .containsExactly("Inicio", "Equipos", "Bodegas");
+                .containsExactly("Inicio", "Equipos", "Traslados", "Bodegas");
     }
 }

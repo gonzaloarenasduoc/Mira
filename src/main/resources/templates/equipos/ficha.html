@@ -10,10 +10,25 @@
             <h1 th:text="${e.categoria()} + ' ' + ${e.marca()} + ' ' + ${e.modelo()}">Equipo</h1>
             <p>Número de serie <strong th:text="${e.numeroSerie()}">serie</strong></p>
         </div>
-        <span class="estado fs-6" th:classappend="'estado-' + ${e.estado()}" th:text="${e.estado().etiqueta}">Estado</span>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="estado fs-6" th:classappend="'estado-' + ${e.estado()}" th:text="${e.estado().etiqueta}">Estado</span>
+            <a class="btn btn-primary" th:if="${puedeEditarInventario and e.estado().name() == 'DISPONIBLE'}"
+               th:href="@{/traslados/nuevo(equipoId=${e.id()})}">Trasladar</a>
+        </div>
     </div>
 
     <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <div class="alert alert-info d-flex flex-wrap justify-content-between align-items-center gap-2"
+         role="status" th:if="${ficha.trasladoHacia() != null}">
+        <span>En tránsito desde <strong th:text="${e.bodega()}">origen</strong> hacia
+            <strong th:text="${ficha.trasladoHacia()}">destino</strong>. Sigue asignado a su bodega de origen
+            hasta que se confirme la llegada.</span>
+        <form th:action="@{/traslados/llegada}" method="post" class="m-0" th:if="${puedeEditarInventario}">
+            <input type="hidden" name="equipoId" th:value="${e.id()}">
+            <button type="submit" class="btn btn-sm btn-primary">Confirmar llegada</button>
+        </form>
+    </div>
 
     <div class="row g-3">
         <div class="col-lg-5">
@@ -40,7 +55,10 @@
         <div class="col-lg-7">
             <div class="card h-100">
                 <div class="card-body">
-                    <h2 class="h6 text-uppercase text-secondary mb-3">Historial de movimientos</h2>
+                    <div class="d-flex justify-content-between align-items-baseline mb-3">
+                        <h2 class="h6 text-uppercase text-secondary mb-0">Historial de movimientos</h2>
+                        <a class="small" th:href="@{/traslados(numeroSerie=${e.numeroSerie()})}">Ver sus traslados</a>
+                    </div>
                     <ul class="historial">
                         <li th:each="m : ${ficha.historial()}">
                             <div class="fw-semibold" th:text="${m.tipo().etiqueta}">Movimiento</div>
@@ -50,7 +68,7 @@
                             </div>
                             <div class="small" th:if="${m.bodegaOrigen() != null or m.bodegaDestino() != null}">
                                 <span th:if="${m.bodegaOrigen() != null}" th:text="'Desde ' + ${m.bodegaOrigen()}">origen</span>
-                                <span th:if="${m.bodegaDestino() != null}" th:text="'Hacia ' + ${m.bodegaDestino()}">destino</span>
+                                <span th:if="${m.bodegaDestino() != null}" th:text="(${m.bodegaOrigen() != null} ? 'hacia ' : 'Hacia ') + ${m.bodegaDestino()}">destino</span>
                             </div>
                             <div class="small text-secondary fst-italic" th:if="${m.observacion() != null}" th:text="${m.observacion()}">obs</div>
                         </li>

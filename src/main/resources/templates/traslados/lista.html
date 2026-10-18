@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Traslados')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div class="encabezado-pagina mb-4">
+        <h1>Traslados</h1>
+        <p>Movimientos de equipos entre bodegas. Un traslado se inicia desde la ficha de un equipo disponible.</p>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="h6 text-uppercase text-secondary mb-3">En tránsito</h2>
+            <p class="text-secondary mb-0" th:if="${#lists.isEmpty(enTransito)}">No hay equipos en tránsito.</p>
+            <div class="table-responsive" th:unless="${#lists.isEmpty(enTransito)}">
+                <table class="table align-middle mb-0 tabla-mira">
+                    <thead>
+                    <tr><th>Número de serie</th><th>Equipo</th><th>Origen</th><th>Destino</th><th>Salida</th><th>Responsable</th><th th:if="${puedeEditarInventario}"></th></tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="t : ${enTransito}">
+                        <td><a class="fw-semibold" th:href="@{/equipos/{id}(id=${t.equipoId()})}" th:text="${t.numeroSerie()}">Serie</a></td>
+                        <td th:text="${t.equipo()}">Equipo</td>
+                        <td th:text="${t.bodegaOrigen()}">Origen</td>
+                        <td th:text="${t.bodegaDestino()}">Destino</td>
+                        <td th:text="${#temporals.format(t.fecha(), 'dd-MM-yyyy HH:mm')}">Fecha</td>
+                        <td th:text="${t.responsable()}">Responsable</td>
+                        <td class="text-end" th:if="${puedeEditarInventario}">
+                            <form th:action="@{/traslados/llegada}" method="post" class="m-0">
+                                <input type="hidden" name="equipoId" th:value="${t.equipoId()}">
+                                <input type="hidden" name="volverAlListado" value="true">
+                                <button type="submit" class="btn btn-sm btn-primary">Confirmar llegada</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="h5 mb-3" style="color: var(--mira-azul);">Historial de traslados</h2>
+    <form class="card mb-3" method="get" th:action="@{/traslados}" th:object="${filtro}">
+        <div class="card-body row g-2 align-items-end">
+            <div class="col-md-3">
+                <label for="numeroSerie" class="form-label small mb-1">Número de serie</label>
+                <input id="numeroSerie" type="search" class="form-control" th:field="*{numeroSerie}" placeholder="Buscar…">
+            </div>
+            <div class="col-md-3">
+                <label for="bodegaId" class="form-label small mb-1">Bodega (origen o destino)</label>
+                <select id="bodegaId" class="form-select" th:field="*{bodegaId}">
+                    <option value="">Todas</option>
+                    <option th:each="b : ${bodegas}" th:value="${b.id()}" th:text="${b.nombre()}">Bodega</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="desde" class="form-label small mb-1">Desde</label>
+                <input id="desde" type="date" class="form-control" th:field="*{desde}">
+            </div>
+            <div class="col-md-2">
+                <label for="hasta" class="form-label small mb-1">Hasta</label>
+                <input id="hasta" type="date" class="form-control" th:field="*{hasta}">
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-fill">Filtrar</button>
+                <a class="btn btn-outline-secondary" th:href="@{/traslados}" title="Quitar filtros">Limpiar</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body text-secondary" th:if="${traslados.isEmpty()}">
+            No hay traslados que coincidan con los filtros.
+        </div>
+        <div class="table-responsive" th:unless="${traslados.isEmpty()}">
+            <table class="table table-hover align-middle mb-0 tabla-mira">
+                <thead>
+                <tr><th>Fecha</th><th>Paso</th><th>Número de serie</th><th>Equipo</th><th>Origen</th><th>Destino</th><th>Responsable</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="t : ${traslados.content}">
+                    <td class="text-nowrap" th:text="${#temporals.format(t.fecha(), 'dd-MM-yyyy HH:mm')}">Fecha</td>
+                    <td th:text="${t.tipo().name() == 'TRASLADO_SALIDA'} ? 'Salida' : 'Llegada'">Paso</td>
+                    <td><a class="fw-semibold" th:href="@{/equipos/{id}(id=${t.equipoId()})}" th:text="${t.numeroSerie()}">Serie</a></td>
+                    <td th:text="${t.equipo()}">Equipo</td>
+                    <td th:text="${t.bodegaOrigen()}">Origen</td>
+                    <td th:text="${t.bodegaDestino()}">Destino</td>
+                    <td th:text="${t.responsable()}">Responsable</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-white d-flex flex-wrap justify-content-between align-items-center gap-2 small"
+             th:unless="${traslados.isEmpty()}">
+            <span class="text-secondary"
+                  th:text="${traslados.totalElements} + (${traslados.totalElements} == 1 ? ' registro' : ' registros') + ' · página ' + ${traslados.number + 1} + ' de ' + ${traslados.totalPages}">0 registros</span>
+            <nav aria-label="Páginas del historial" th:if="${traslados.totalPages > 1}">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item" th:classappend="${traslados.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/traslados(numeroSerie=${filtro.numeroSerie}, bodegaId=${filtro.bodegaId}, desde=${filtro.desde}, hasta=${filtro.hasta}, pagina=${traslados.number - 1})}">Anterior</a>
+                    </li>
+                    <li class="page-item" th:classappend="${traslados.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/traslados(numeroSerie=${filtro.numeroSerie}, bodegaId=${filtro.bodegaId}, desde=${filtro.desde}, hasta=${filtro.hasta}, pagina=${traslados.number + 1})}">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
