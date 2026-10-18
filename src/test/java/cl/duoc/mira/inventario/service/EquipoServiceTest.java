@@ -12,6 +12,7 @@ import cl.duoc.mira.common.entity.Empresa;
 import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.common.exception.RecursoNoEncontradoException;
 import cl.duoc.mira.common.repository.EmpresaRepository;
+import cl.duoc.mira.inventario.dto.FiltroEquipos;
 import cl.duoc.mira.inventario.dto.RegistrarEquipoRequest;
 import cl.duoc.mira.inventario.entity.Bodega;
 import cl.duoc.mira.inventario.entity.Categoria;
@@ -110,6 +111,16 @@ class EquipoServiceTest {
         when(equipoRepository.buscarFicha(EMPRESA_ID, 99L)).thenReturn(Optional.empty());
 
         assertThrows(RecursoNoEncontradoException.class, () -> service.ficha(EMPRESA_ID, 99L));
+    }
+
+    /** PNF-07: el texto del buscador viaja como parámetro, con sus comodines escapados. */
+    @Test
+    void buscar_textoConCaracteresEspeciales_seEnviaComoPatronEscapado() {
+        FiltroEquipos filtro = new FiltroEquipos();
+        filtro.setTexto(" ' OR 1=1 -- 100% ");
+
+        assertThat(service.buscar(EMPRESA_ID, filtro)).isEmpty();
+        verify(equipoRepository).buscar(EMPRESA_ID, null, null, null, "%' or 1=1 -- 100\\%%");
     }
 
     private static RegistrarEquipoRequest solicitud() {

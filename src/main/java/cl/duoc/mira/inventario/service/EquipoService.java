@@ -3,6 +3,7 @@ package cl.duoc.mira.inventario.service;
 import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.common.exception.RecursoNoEncontradoException;
 import cl.duoc.mira.common.repository.EmpresaRepository;
+import cl.duoc.mira.common.util.Busqueda;
 import cl.duoc.mira.inventario.dto.EquipoResponse;
 import cl.duoc.mira.inventario.dto.FichaEquipoResponse;
 import cl.duoc.mira.inventario.dto.FiltroEquipos;
@@ -72,10 +73,10 @@ public class EquipoService {
         return aResponse(equipo);
     }
 
+    /** El texto se busca como parámetro y con sus comodines escapados: no altera la consulta (PNF-07). */
     public List<EquipoResponse> buscar(Long empresaId, FiltroEquipos filtro) {
-        String serie = filtro.getNumeroSerie() == null ? "" : filtro.getNumeroSerie().trim();
         return equipoRepository.buscar(empresaId, filtro.getCategoriaId(), filtro.getBodegaId(),
-                        filtro.getEstado(), serie).stream()
+                        filtro.getEstado(), Busqueda.contiene(filtro.getTexto())).stream()
                 .map(EquipoService::aResponse)
                 .toList();
     }
