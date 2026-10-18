@@ -240,10 +240,14 @@ Cada paquete de dominio contiene sus propias clases `entity`, `repository`, `ser
 la empresa, administración de usuarios y bodegas, y registro de equipos por número de serie con
 listado filtrado y ficha con historial (historias HU-01 a HU-08).
 
+**Sprint 3 implementado (semana 9, en revisión):** traslados entre bodegas con salida y llegada,
+historial de traslados, búsqueda por serie, marca o modelo, y consulta de disponibilidad
+consolidada por bodega con la fecha de retorno de los equipos arrendados (historias HU-09 a HU-13).
+
 | Dónde | Qué hay |
 |---|---|
 | `Fase 2/` | Evidencias de la Fase 2: Product Vision, Product Backlog, Definition of Done, Documento de Diseño, guías 2.4 y 2.6 y presentación |
 | `docs/` | Documentación técnica: modelo de datos, arquitectura, convenciones, decisiones y casos de prueba |
 | `docs/diagramas/` | Diagramas UML en PlantUML |
-| `docs/evidencias/semana-08/` | Capturas del sistema funcionando |
+| `docs/evidencias/semana-08/`, `semana-09/` | Capturas del sistema funcionando y mediciones |
 | `docs/ESTADO.md` | Qué está terminado, en curso y pendiente |
