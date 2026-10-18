@@ -1,0 +1,18 @@
+# Perfil del ambiente de demostración, que se sirve con HTTPS. Se activa con
+# SPRING_PROFILES_ACTIVE=demo. En local no se usa: con HTTP, el navegador no enviaría
+# una cookie Secure y la sesión dejaría de funcionar.
+server:
+  servlet:
+    session:
+      cookie:
+        secure: true       # PNF-08: la cookie de sesión solo viaja por HTTPS
+        http-only: true    # PNF-08: el JavaScript de la página no puede leerla
+        same-site: lax
+
+spring:
+  thymeleaf:
+    cache: true
+
+logging:
+  level:
+    cl.duoc.mira: INFO
