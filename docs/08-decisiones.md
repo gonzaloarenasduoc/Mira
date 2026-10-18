@@ -186,5 +186,57 @@ Docker, la prueba se omite justo cuando más se necesita.
 
 ---
 
+## D14 · El traslado tiene dos pasos: salida y llegada
+
+**Fecha.** 18-10-2026.
+
+**Decisión.** Un traslado se registra en dos momentos, cada uno con su movimiento. La salida
+(`TRASLADO_SALIDA`) deja el equipo `EN_TRANSITO` y guarda el origen y el destino; la llegada
+(`TRASLADO_LLEGADA`) lo deja `DISPONIBLE` y reasigna `equipo.bodega_id` al destino de esa salida.
+Mientras está en tránsito, el equipo **sigue asignado a la bodega de origen**. La pantalla
+Traslados muestra los equipos en tránsito para confirmar su llegada.
+
+**Motivo.** Es lo que pide HU-09 ("la salida deja el equipo en tránsito y la llegada lo deja
+disponible en la bodega de destino") y lo que ya preveía el enumerado `tipo_movimiento`. Un equipo
+en camino no puede ofrecerse en ninguna de las dos bodegas, y el estado `EN_TRANSITO` lo excluye
+de la disponibilidad sin reglas adicionales.
+
+**Descartado.** Un traslado de un solo paso que cambie la bodega de inmediato: el inventario
+mostraría el equipo disponible en el destino antes de que llegue.
+
+## D15 · Bloqueo del equipo al cambiar su estado
+
+**Fecha.** 18-10-2026.
+
+**Decisión.** Toda operación que cambia el estado de un equipo lo lee con
+`EquipoRepository.buscarParaActualizar`, que toma un bloqueo de escritura
+(`PESSIMISTIC_WRITE`, `SELECT … FOR UPDATE`) hasta el fin de la transacción. Se usa en los
+traslados y se usará en arriendos, retornos y ventas.
+
+**Motivo.** Dos usuarios que trasladan o arriendan el mismo equipo a la vez leerían ambos
+`DISPONIBLE` y lo comprometerían dos veces (CF-02). Con el bloqueo, la segunda operación espera a
+la primera y ve el estado ya cambiado. No requiere migración.
+
+**Descartado.** Bloqueo optimista con una columna `version`: exige una migración nueva y obliga a
+reintentar la operación ante el conflicto, sin ventaja para el volumen de la empresa (PNF-03).
+
+## D16 · Entidades de operaciones antes de sus servicios
+
+**Fecha.** 18-10-2026.
+
+**Decisión.** `Cliente`, `Operacion` (herencia JOINED con discriminador `tipo`), `Arriendo`,
+`Venta` y `OperacionDetalle` se mapean en el Sprint 3, sobre las tablas que ya crea `V1`, sin
+migración nueva. Por ahora solo se leen: HU-13 necesita la fecha comprometida de los arriendos
+vigentes. Los constructores y las reglas de registro llegan con HU-14 a HU-19. `OperacionDetalle`
+guarda el equipo como `equipoId` y `Operacion` guarda el usuario como `usuarioId`, igual que
+`Movimiento`, para que `operaciones` no use las entidades de `inventario` ni de `usuarios`
+(`docs/02-arquitectura.md`).
+
+**Motivo.** La disponibilidad se calcula con el estado y los arriendos vigentes (D05); sin estas
+entidades, HU-12 y HU-13 dependerían solo del estado. `ddl-auto: validate` comprueba el mapeo
+contra el esquema real en cada arranque.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.
