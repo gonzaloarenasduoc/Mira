@@ -3,7 +3,7 @@
 Este archivo se actualiza al terminar cada sesión de trabajo. Es lo primero que lee el
 asistente del otro integrante para saber qué está en curso y no pisar nada.
 
-**Última actualización:** 18-10-2026
+**Última actualización:** 19-10-2026
 
 ## Fase actual
 
@@ -74,6 +74,9 @@ Los documentos de la Fase 2 se entregaron el sábado 17-10 y la presentación el
     si no hay Docker.
   - Capturas del recorrido en `docs/evidencias/semana-08/`.
 - Pull request #2 (`semana-08` → `main`) integrado. Quedó sin revisión registrada en GitHub.
+- Entregas de la semana 9: diario 2.1 de Gonzalo, video `Demo/Demo_v3.mp4` y presentación en el AVA, y
+  Acta de Control de Avance del 19-10-2026. La aplicación de Claude ya tiene acceso al repositorio:
+  no se necesitan más bundles.
 - Sprint 3 implementado en `semana-09` (HU-09 a HU-13, 18 PF):
   - **Traslados (HU-09, D14):** la salida deja el equipo `EN_TRANSITO`, todavía asignado a la
     bodega de origen; la llegada lo deja `DISPONIBLE` en la de destino. Cada paso es un
@@ -100,7 +103,7 @@ Los documentos de la Fase 2 se entregaron el sábado 17-10 y la presentación el
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
 | Sprint 3: HU-09 a HU-13 | Ambos | `semana-09` | **Implementadas y probadas.** Falta la revisión cruzada y el pull request a `main`, esta vez con la aprobación del otro integrante antes de integrar |
-| Diario de reflexión 2.1 de Gonzalo | Gonzalo | `main` | Falta subirlo a `Fase 2/Evidencias Individules/` con el nombre `Arenas_Gonzalo_2.1_APT122_DiarioReflexionFase2.docx` |
+| Tablero en GitHub Projects ("Mira - Tablero del proyecto", público) | Ambos | — | Creado el 19-10 con las columnas Backlog, Sprint actual, En curso, En revisión y Terminado, y los campos Épica, Puntos y Sprint. Falta completar esos campos en cada tarjeta |
 
 ## Siguiente
 
@@ -112,10 +115,7 @@ Los documentos de la Fase 2 se entregaron el sábado 17-10 y la presentación el
 
 ## Bloqueado
 
-| Qué | Por qué | Quién lo destraba |
-|---|---|---|
-| Push desde las sesiones de Claude Code en la nube | GitHub responde 403: la aplicación de Claude no tiene permiso sobre el repositorio | Gonzalo, reconectando GitHub en claude.ai e instalando la aplicación de Claude en el repositorio |
-| Tablero en GitHub Projects | Compromiso de la semana 7 aún no cumplido | Gonzalo |
+Nada bloqueado.
 
 Las reuniones con la empresa se aplazaron: con autorización del docente, los supuestos de la
 sección 6 del modelo de datos se tratan como decisiones de diseño declaradas. Docker y el acceso de Joaquín a GitHub ya
