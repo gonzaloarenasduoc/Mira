@@ -4,10 +4,13 @@
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 <main class="container py-4" th:with="r=${resultado}">
-    <div class="encabezado-pagina mb-4">
-        <h1>Disponibilidad</h1>
-        <p>Unidades de todas las bodegas en una sola consulta. Un equipo está disponible si no está arrendado,
-            en tránsito ni en mantención.</p>
+    <div class="encabezado-pagina d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <h1>Disponibilidad</h1>
+            <p>Unidades de todas las bodegas en una sola consulta. Un equipo está disponible si no está arrendado,
+                en tránsito ni en mantención.</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/arriendos/nuevo}" th:if="${puedeArrendar}">Registrar arriendo</a>
     </div>
 
     <form class="card mb-3" method="get" th:action="@{/disponibilidad}" th:object="${filtro}">

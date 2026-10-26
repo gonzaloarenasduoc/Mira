@@ -2,6 +2,7 @@ package cl.duoc.mira.config;
 
 import static cl.duoc.mira.usuarios.entity.RolUsuario.ADMINISTRADOR;
 import static cl.duoc.mira.usuarios.entity.RolUsuario.ENCARGADO_BODEGA;
+import static cl.duoc.mira.usuarios.entity.RolUsuario.VENDEDOR;
 
 import cl.duoc.mira.usuarios.entity.RolUsuario;
 import cl.duoc.mira.usuarios.service.UsuarioAutenticado;
@@ -25,6 +26,7 @@ public class MenuGlobal {
     static final List<OpcionMenu> OPCIONES = List.of(
             new OpcionMenu("Inicio", "/", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Disponibilidad", "/disponibilidad", EnumSet.allOf(RolUsuario.class)),
+            new OpcionMenu("Arriendos", "/arriendos/nuevo", EnumSet.of(ADMINISTRADOR, ENCARGADO_BODEGA, VENDEDOR)),
             new OpcionMenu("Equipos", "/equipos", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Traslados", "/traslados", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Bodegas", "/bodegas", EnumSet.allOf(RolUsuario.class)),
@@ -47,5 +49,10 @@ public class MenuGlobal {
     @ModelAttribute("puedeEditarInventario")
     public boolean puedeEditarInventario(@AuthenticationPrincipal UsuarioAutenticado usuario) {
         return usuario != null && usuario.tieneRol(ADMINISTRADOR, ENCARGADO_BODEGA);
+    }
+
+    @ModelAttribute("puedeArrendar")
+    public boolean puedeArrendar(@AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return usuario != null && usuario.tieneRol(ADMINISTRADOR, ENCARGADO_BODEGA, VENDEDOR);
     }
 }

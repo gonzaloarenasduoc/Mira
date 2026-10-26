@@ -18,6 +18,9 @@ public class SeguridadConfig {
     /** Roles que crean y modifican inventario (E002 y E003). Vendedor y jefatura solo consultan. */
     static final String[] EDITAN_INVENTARIO = {"ADMINISTRADOR", "ENCARGADO_BODEGA"};
 
+    /** Roles que registran arriendos (E005). La jefatura solo consulta. */
+    static final String[] REGISTRAN_ARRIENDOS = {"ADMINISTRADOR", "ENCARGADO_BODEGA", "VENDEDOR"};
+
     @Bean
     SecurityFilterChain cadenaDeSeguridad(HttpSecurity http) throws Exception {
         http
@@ -28,6 +31,8 @@ public class SeguridadConfig {
                     .hasAnyRole(EDITAN_INVENTARIO)
                 .requestMatchers(HttpMethod.POST, "/bodegas/**", "/equipos/**", "/traslados/**")
                     .hasAnyRole(EDITAN_INVENTARIO)
+                .requestMatchers("/arriendos/nuevo").hasAnyRole(REGISTRAN_ARRIENDOS)
+                .requestMatchers(HttpMethod.POST, "/arriendos/**").hasAnyRole(REGISTRAN_ARRIENDOS)
                 .anyRequest().authenticated())
             .formLogin(login -> login
                 .loginPage("/login")

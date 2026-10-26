@@ -13,13 +13,21 @@ class MenuGlobalTest {
     void opcionesPara_administrador_incluyeUsuarios() {
         assertThat(MenuGlobal.opcionesPara(RolUsuario.ADMINISTRADOR))
                 .extracting(OpcionMenu::etiqueta)
-                .containsExactly("Inicio", "Disponibilidad", "Equipos", "Traslados", "Bodegas", "Usuarios");
+                .containsExactly("Inicio", "Disponibilidad", "Arriendos", "Equipos", "Traslados", "Bodegas", "Usuarios");
+    }
+
+    /** E005: la jefatura consulta, pero no registra arriendos. */
+    @Test
+    void opcionesPara_jefatura_noIncluyeArriendosNiUsuarios() {
+        assertThat(MenuGlobal.opcionesPara(RolUsuario.JEFATURA))
+                .extracting(OpcionMenu::etiqueta)
+                .containsExactly("Inicio", "Disponibilidad", "Equipos", "Traslados", "Bodegas");
     }
 
     @Test
     void opcionesPara_vendedor_noIncluyeUsuarios() {
         assertThat(MenuGlobal.opcionesPara(RolUsuario.VENDEDOR))
                 .extracting(OpcionMenu::etiqueta)
-                .containsExactly("Inicio", "Disponibilidad", "Equipos", "Traslados", "Bodegas");
+                .containsExactly("Inicio", "Disponibilidad", "Arriendos", "Equipos", "Traslados", "Bodegas");
     }
 }

@@ -12,7 +12,9 @@
         </div>
         <div class="d-flex flex-wrap align-items-center gap-2">
             <span class="estado fs-6" th:classappend="'estado-' + ${e.estado()}" th:text="${e.estado().etiqueta}">Estado</span>
-            <a class="btn btn-primary" th:if="${puedeEditarInventario and e.estado().name() == 'DISPONIBLE'}"
+            <a class="btn btn-primary" th:if="${puedeArrendar and e.estado().name() == 'DISPONIBLE'}"
+               th:href="@{/arriendos/nuevo(equipoId=${e.id()})}">Arrendar</a>
+            <a class="btn btn-outline-primary" th:if="${puedeEditarInventario and e.estado().name() == 'DISPONIBLE'}"
                th:href="@{/traslados/nuevo(equipoId=${e.id()})}">Trasladar</a>
         </div>
     </div>
