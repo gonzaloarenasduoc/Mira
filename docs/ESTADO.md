@@ -3,15 +3,13 @@
 Este archivo se actualiza al terminar cada sesión de trabajo. Es lo primero que lee el
 asistente del otro integrante para saber qué está en curso y no pisar nada.
 
-**Última actualización:** 19-10-2026
+**Última actualización:** 26-10-2026
 
 ## Fase actual
 
-Fase 2, semana 9, rama `semana-09` (D11). El Sprint 2 quedó cerrado en la semana 8 e integrado a
-`main` con el pull request #2. El **Sprint 3** (HU-09 a HU-13, planificado para las semanas 10 y 11)
-se adelantó a esta rama y está implementado y probado; falta la revisión cruzada y el pull request.
-
-Los documentos de la Fase 2 se entregaron el sábado 17-10 y la presentación el domingo 18-10.
+Fase 2, semana 10, rama `semana-10` (D11), creada desde `semana-09` porque el pull request #3
+(Sprint 3) todavía no se integra. Comenzó el **Sprint 4** (HU-14 a HU-19, semanas 10 a 13): HU-14
+está implementada y probada.
 
 ## Terminado
 
@@ -97,21 +95,31 @@ Los documentos de la Fase 2 se entregaron el sábado 17-10 y la presentación el
     verificaron contra un PostgreSQL 16 local.
   - PNF-01 medido con 500 equipos: percentil 95 de 0,20 s. PNF-08 resuelto con el perfil `demo`.
   - Capturas y mediciones en `docs/evidencias/semana-09/`.
+- Tablero de GitHub Projects con las 9 épicas (#4 a #12) y las 6 historias del Sprint 4 (#13 a
+  #18) como *issues*, cada historia colgada de su épica. E001 y E002 están cerradas.
+- Pull request #3 (`semana-09` → `main`) abierto el 26-10, con la revisión pedida a Joaquín.
+- HU-14 en `semana-10`: registro de un arriendo con varias líneas, en una sola transacción.
+  Rechaza equipos no disponibles o con arriendo vigente, con la fecha de retorno en el mensaje
+  (CF-02, PNF-10). Si una línea falla no queda nada guardado (CF-03, prueba de integración contra
+  PostgreSQL). El equipo cambia de estado solo mediante `EquipoService.despacharEnArriendo`.
+  75 pruebas; capturas en `docs/evidencias/semana-10/`.
 
 ## En curso
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 3: HU-09 a HU-13 | Ambos | `semana-09` | **Implementadas y probadas.** Falta la revisión cruzada y el pull request a `main`, esta vez con la aprobación del otro integrante antes de integrar |
-| Tablero en GitHub Projects ("Mira - Tablero del proyecto", público) | Ambos | — | Creado el 19-10 con las columnas Backlog, Sprint actual, En curso, En revisión y Terminado, y los campos Épica, Puntos y Sprint. Falta completar esos campos en cada tarjeta |
+| Revisión y aprobación del pull request #3 (Sprint 3) | Joaquín | `semana-09` | Lo abrió la cuenta de Gonzalo, así que lo aprueba Joaquín |
+| Sprint 4: HU-15 a HU-19 | Ambos | `semana-10` | HU-14 terminada. Siguen el retorno (HU-15), las alertas (HU-16), el listado (HU-17) y las ventas (HU-18, HU-19) |
+| Campos del tablero (Status, Épica, Puntos, Sprint) | Ambos | — | Los *issues* ya existen; falta completar esos campos a mano en el tablero |
 
 ## Siguiente
 
-1. Revisión cruzada de `semana-09` y pull request a `main`.
-2. Sprint 4 (HU-14 a HU-19): registro de arriendos validando disponibilidad, retornos (incluido
-   el retorno en otra bodega), ventas y alertas de retorno. Las entidades ya están (D16); faltan
-   sus constructores, `ArriendoService` con `buscarParaActualizar` (D15) y las pantallas.
-3. PNF-03 (concurrencia con 10 usuarios) con k6, cuando existan los arriendos.
+1. **Decidir cómo se registran los clientes.** HU-14 exige elegir un cliente "de los clientes
+   registrados de la empresa", pero ninguna historia del backlog permite registrarlos. Hoy solo se
+   pueden cargar con SQL. Hay que acordarlo con el docente: una historia nueva (por ejemplo,
+   "Administrar clientes"), o incluirlo en E005 o E006 y registrarlo en `docs/08-decisiones.md`.
+2. HU-15: retorno por línea, incluida la bodega receptora distinta (CF-04).
+3. Integrar el pull request #3 y, al cierre de la semana, abrir el de `semana-10`.
 
 ## Bloqueado
 
