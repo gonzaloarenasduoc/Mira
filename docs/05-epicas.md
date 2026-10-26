@@ -53,6 +53,8 @@ de 100 puntos de función. **Si algo no está en este documento, no forma parte 
 - Al registrar el arriendo, el equipo cambia de estado y queda asociado al cliente.
 - Al registrar el retorno, el equipo vuelve a quedar disponible en la bodega indicada.
 - Alerta cuando la fecha de retorno se aproxima o está vencida.
+- Administración de los clientes de la empresa, que se eligen al registrar arriendos y ventas
+  (HU-29, agregada en la semana 11; ver D17).
 
 Es la épica más grande y la que concentra la lógica transaccional del sistema.
 
