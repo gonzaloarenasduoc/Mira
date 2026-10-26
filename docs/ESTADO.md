@@ -7,9 +7,9 @@ asistente del otro integrante para saber qué está en curso y no pisar nada.
 
 ## Fase actual
 
-Fase 2, semana 10, rama `semana-10` (D11), creada desde `semana-09` porque el pull request #3
-(Sprint 3) todavía no se integra. Comenzó el **Sprint 4** (HU-14 a HU-19, semanas 10 a 13): HU-14
-está implementada y probada.
+Fase 2, semana 11, rama `semana-11` (D11), creada desde `semana-10` porque el pull request #19
+todavía no se integra. **Sprint 4** en curso (HU-14 a HU-19, semanas 10 a 13): HU-14 y HU-15 están
+implementadas y probadas.
 
 ## Terminado
 
@@ -103,6 +103,9 @@ está implementada y probada.
   (CF-02, PNF-10). Si una línea falla no queda nada guardado (CF-03, prueba de integración contra
   PostgreSQL). El equipo cambia de estado solo mediante `EquipoService.despacharEnArriendo`.
   75 pruebas; capturas en `docs/evidencias/semana-10/`.
+- HU-15 en `semana-11`: retorno por línea; el equipo queda disponible en la bodega que lo recibe,
+  aunque sea distinta, con el movimiento `RETORNO_ARRIENDO` y sin traslado adicional (CF-04, con
+  prueba de integración contra PostgreSQL). 85 pruebas; capturas en `docs/evidencias/semana-11/`.
 - Pull request #3 integrado el 26-10 con la aprobación de Joaquín: el Sprint 3 está en `main`.
 - Sprint Backlog y retrospectiva de los sprints 1 a 3, y el backlog del Sprint 4, en `docs/sprints/`.
   Actas de control de avance de las semanas 9 y 10 en `docs/actas/`.
@@ -111,7 +114,7 @@ está implementada y probada.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 4: HU-15 a HU-19 | Ambos | `semana-10` | HU-14 terminada. Siguen el retorno (HU-15), las alertas (HU-16), el listado (HU-17) y las ventas (HU-18, HU-19) |
+| Sprint 4: HU-16 a HU-19 | Ambos | `semana-11` | HU-14 y HU-15 terminadas. Siguen las alertas (HU-16), el listado (HU-17) y las ventas (HU-18, HU-19) |
 | Campos del tablero (Status, Épica, Puntos, Sprint) | Ambos | — | Los *issues* ya existen; falta completar esos campos a mano en el tablero |
 | Revisión e integración del pull request #19 (semana 10) | Joaquín | `semana-10` | El #3 (semana 9) ya está integrado |
 
@@ -121,7 +124,7 @@ está implementada y probada.
    registrados de la empresa", pero ninguna historia del backlog permite registrarlos. Hoy solo se
    pueden cargar con SQL. Hay que acordarlo con el docente: una historia nueva (por ejemplo,
    "Administrar clientes"), o incluirlo en E005 o E006 y registrarlo en `docs/08-decisiones.md`.
-2. HU-15: retorno por línea, incluida la bodega receptora distinta (CF-04).
+2. HU-16: alertas de retorno próximo o vencido (CF-10), en la próxima sesión.
 3. Integrar el pull request #3 y, al cierre de la semana, abrir el de `semana-10`.
 
 ## Bloqueado
