@@ -9,7 +9,8 @@ asistente del otro integrante para saber qué está en curso y no pisar nada.
 
 Fase 2, semana 11, rama `semana-11` (D11), creada desde `semana-10` porque el pull request #19
 todavía no se integra. **Sprint 4** en curso (HU-14 a HU-19, semanas 10 a 13): HU-14 y HU-15 están
-implementadas y probadas.
+implementadas y probadas, igual que HU-29 (administrar clientes), agregada al backlog con la decisión
+D17.
 
 ## Terminado
 
@@ -106,6 +107,9 @@ implementadas y probadas.
 - HU-15 en `semana-11`: retorno por línea; el equipo queda disponible en la bodega que lo recibe,
   aunque sea distinta, con el movimiento `RETORNO_ARRIENDO` y sin traslado adicional (CF-04, con
   prueba de integración contra PostgreSQL). 85 pruebas; capturas en `docs/evidencias/semana-11/`.
+- HU-29 en `semana-11` (D17): clientes con RUT validado por dígito verificador, único por empresa y
+  con baja lógica. Menú Clientes; la jefatura solo consulta. 106 pruebas.
+- Pull request #19 (semana 10) integrado el 26-10 con la aprobación de Joaquín.
 - Pull request #3 integrado el 26-10 con la aprobación de Joaquín: el Sprint 3 está en `main`.
 - Sprint Backlog y retrospectiva de los sprints 1 a 3, y el backlog del Sprint 4, en `docs/sprints/`.
   Actas de control de avance de las semanas 9 y 10 en `docs/actas/`.
@@ -120,12 +124,9 @@ implementadas y probadas.
 
 ## Siguiente
 
-1. **Decidir cómo se registran los clientes.** HU-14 exige elegir un cliente "de los clientes
-   registrados de la empresa", pero ninguna historia del backlog permite registrarlos. Hoy solo se
-   pueden cargar con SQL. Hay que acordarlo con el docente: una historia nueva (por ejemplo,
-   "Administrar clientes"), o incluirlo en E005 o E006 y registrarlo en `docs/08-decisiones.md`.
+1. Informar en el acta de la semana 11 el ajuste al backlog: HU-29 y la decisión D17 (de 100 a 103 PF).
 2. HU-16: alertas de retorno próximo o vencido (CF-10), en la próxima sesión.
-3. Integrar el pull request #3 y, al cierre de la semana, abrir el de `semana-10`.
+3. Al cierre de la semana 11, abrir el pull request de `semana-11` (HU-15, HU-29 y HU-16).
 
 ## Bloqueado
 
