@@ -103,14 +103,17 @@ está implementada y probada.
   (CF-02, PNF-10). Si una línea falla no queda nada guardado (CF-03, prueba de integración contra
   PostgreSQL). El equipo cambia de estado solo mediante `EquipoService.despacharEnArriendo`.
   75 pruebas; capturas en `docs/evidencias/semana-10/`.
+- Pull request #3 integrado el 26-10 con la aprobación de Joaquín: el Sprint 3 está en `main`.
+- Sprint Backlog y retrospectiva de los sprints 1 a 3, y el backlog del Sprint 4, en `docs/sprints/`.
+  Actas de control de avance de las semanas 9 y 10 en `docs/actas/`.
 
 ## En curso
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Revisión y aprobación del pull request #3 (Sprint 3) | Joaquín | `semana-09` | Lo abrió la cuenta de Gonzalo, así que lo aprueba Joaquín |
 | Sprint 4: HU-15 a HU-19 | Ambos | `semana-10` | HU-14 terminada. Siguen el retorno (HU-15), las alertas (HU-16), el listado (HU-17) y las ventas (HU-18, HU-19) |
 | Campos del tablero (Status, Épica, Puntos, Sprint) | Ambos | — | Los *issues* ya existen; falta completar esos campos a mano en el tablero |
+| Revisión e integración del pull request #19 (semana 10) | Joaquín | `semana-10` | El #3 (semana 9) ya está integrado |
 
 ## Siguiente
 
