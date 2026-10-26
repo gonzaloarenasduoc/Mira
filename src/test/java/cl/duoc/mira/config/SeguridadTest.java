@@ -74,7 +74,7 @@ class SeguridadTest {
     @ParameterizedTest
     @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios",
             "/traslados", "/traslados/nuevo?equipoId=1", "/disponibilidad",
-            "/arriendos/nuevo"})
+            "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1"})
     void rutaProtegida_sinSesion_redirigeAlLogin(String ruta) throws Exception {
         mvc.perform(get(ruta))
                 .andExpect(status().is3xxRedirection())
@@ -158,6 +158,16 @@ class SeguridadTest {
     void registrarArriendo_rolesQueOperan_permiteElAcceso(String rol) throws Exception {
         mvc.perform(get("/arriendos/nuevo").with(user(con(RolUsuario.valueOf(rol)))))
                 .andExpect(status().isOk());
+    }
+
+    /** E005: la jefatura tampoco registra retornos. */
+    @Test
+    void registrarRetorno_comoJefatura_accesoDenegado() throws Exception {
+        mvc.perform(get("/arriendos/1/retorno").param("equipoId", "1").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/arriendos/1/retornos").param("equipoId", "1").param("bodegaId", "1")
+                        .with(csrf()).with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
     }
 
     @Test

@@ -35,13 +35,21 @@
                     <h2 class="h6 text-uppercase text-secondary mb-3">Equipos arrendados</h2>
                     <div class="table-responsive">
                         <table class="table align-middle mb-0 tabla-mira">
-                            <thead><tr><th>Número de serie</th><th>Equipo</th><th>Tarifa diaria</th><th>Retorno</th></tr></thead>
+                            <thead><tr><th>Número de serie</th><th>Equipo</th><th>Tarifa diaria</th><th>Retorno</th><th th:if="${puedeArrendar}"></th></tr></thead>
                             <tbody>
                             <tr th:each="l : ${a.lineas()}">
                                 <td><a class="fw-semibold" th:href="@{/equipos/{id}(id=${l.equipoId()})}" th:text="${l.numeroSerie()}">Serie</a></td>
                                 <td th:text="${l.equipo()}">Equipo</td>
                                 <td th:text="'$ ' + ${#numbers.formatDecimal(l.tarifaDiaria(), 1, 'POINT', 0, 'COMMA')}">tarifa</td>
-                                <td th:text="${l.fechaRetornoReal() != null} ? ${#temporals.format(l.fechaRetornoReal(), 'dd-MM-yyyy')} : 'Pendiente'">Pendiente</td>
+                                <td>
+                                    <span th:if="${l.fechaRetornoReal() != null}" class="estado estado-DISPONIBLE"
+                                          th:text="'Retornó el ' + ${#temporals.format(l.fechaRetornoReal(), 'dd-MM-yyyy')}">Retornó</span>
+                                    <span th:if="${l.fechaRetornoReal() == null}" class="estado estado-ARRENDADO">Pendiente</span>
+                                </td>
+                                <td class="text-end" th:if="${puedeArrendar}">
+                                    <a class="btn btn-sm btn-primary" th:if="${l.fechaRetornoReal() == null}"
+                                       th:href="@{/arriendos/{id}/retorno(id=${a.id()}, equipoId=${l.equipoId()})}">Registrar retorno</a>
+                                </td>
                             </tr>
                             </tbody>
                         </table>

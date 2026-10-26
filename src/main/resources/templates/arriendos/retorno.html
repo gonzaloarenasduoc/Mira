@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Registrar retorno')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" style="max-width: 760px;" th:with="a=${arriendo}">
+    <div class="encabezado-pagina mb-4">
+        <p class="small mb-1"><a th:href="@{/arriendos/{id}(id=${a.id()})}" th:text="'Arriendo N° ' + ${a.id()}">Arriendo</a> / Retorno</p>
+        <h1>Registrar retorno</h1>
+        <p>El equipo vuelve a quedar disponible en la bodega que lo recibe. Los demás equipos del arriendo siguen arrendados.</p>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Cliente</dt><dd class="col-sm-8" th:text="${a.cliente()}">Cliente</dd>
+                <th:block th:if="${linea != null}">
+                    <dt class="col-sm-4">Equipo</dt>
+                    <dd class="col-sm-8"><span class="fw-semibold" th:text="${linea.numeroSerie()}">Serie</span> · <span th:text="${linea.equipo()}">Equipo</span></dd>
+                </th:block>
+                <dt class="col-sm-4">Inicio</dt><dd class="col-sm-8" th:text="${#temporals.format(a.fechaInicio(), 'dd-MM-yyyy')}">inicio</dd>
+                <dt class="col-sm-4">Retorno comprometido</dt>
+                <dd class="col-sm-8 mb-0" th:text="${#temporals.format(a.fechaRetornoComprometida(), 'dd-MM-yyyy')}">retorno</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-4">
+            <form th:object="${retorno}" th:action="@{/arriendos/{id}/retornos(id=${a.id()})}" method="post" novalidate>
+                <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}">
+                    <div th:each="err : ${#fields.globalErrors()}" th:text="${err}">Error</div>
+                </div>
+                <input type="hidden" th:field="*{equipoId}">
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <label for="bodegaId" class="form-label">Bodega que recibe el equipo</label>
+                        <select id="bodegaId" class="form-select" th:field="*{bodegaId}" th:errorclass="is-invalid">
+                            <option value="">Seleccione…</option>
+                            <option th:each="b : ${bodegas}" th:value="${b.id()}" th:text="${b.nombre()}">Bodega</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{bodegaId}">Error</div>
+                        <div class="form-text">Si es distinta de la bodega de salida, el equipo queda asignado a esta.</div>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="fechaRetorno" class="form-label">Fecha de retorno</label>
+                        <input id="fechaRetorno" type="date" class="form-control" th:field="*{fechaRetorno}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{fechaRetorno}">Error</div>
+                    </div>
+                    <div class="col-12">
+                        <label for="observacion" class="form-label">Observación <span class="text-secondary">(opcional)</span></label>
+                        <input id="observacion" type="text" class="form-control" maxlength="300" th:field="*{observacion}"
+                               th:errorclass="is-invalid" placeholder="Por ejemplo, estado del equipo al recibirlo">
+                        <div class="invalid-feedback" th:errors="*{observacion}">Error</div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-end mt-4">
+                    <a class="btn btn-outline-secondary" th:href="@{/arriendos/{id}(id=${a.id()})}">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Registrar retorno</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
