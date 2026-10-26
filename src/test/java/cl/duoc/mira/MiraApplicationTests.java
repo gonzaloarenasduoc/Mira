@@ -8,16 +8,23 @@ import cl.duoc.mira.inventario.dto.FiltroEquipos;
 import cl.duoc.mira.inventario.dto.RegistrarTrasladoRequest;
 import cl.duoc.mira.inventario.service.EquipoService;
 import cl.duoc.mira.inventario.service.TrasladoService;
+import cl.duoc.mira.common.exception.NegocioException;
+import cl.duoc.mira.operaciones.dto.LineaArriendoRequest;
+import cl.duoc.mira.operaciones.dto.RegistrarArriendoRequest;
 import cl.duoc.mira.operaciones.repository.ArriendoRepository;
+import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.repository.ArriendoVigente;
 import jakarta.persistence.EntityManager;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -47,6 +54,8 @@ class MiraApplicationTests {
     private ArriendoRepository arriendoRepository;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private ArriendoService arriendoService;
 
     @Test
     void arranque_conBaseVacia_aplicaLasDosMigraciones() {
@@ -139,6 +148,64 @@ class MiraApplicationTests {
 
         assertThat(arriendoRepository.vigentes(empresa))
                 .containsExactly(new ArriendoVigente(vigente, LocalDate.of(2026, 3, 25)));
+    }
+
+    /** CF-01 contra la base real: el arriendo queda guardado y el equipo, arrendado con su movimiento. */
+    @Test
+    void arriendo_equipoDisponible_quedaArrendadoConSuMovimiento() {
+        long empresa = crearEmpresa("88.888.888-8");
+        insertarEquipo(empresa, "SN-0007");
+        long equipo = idEquipo(empresa, "SN-0007");
+
+        arriendoService.registrar(empresa, administrador(), arriendo(crearCliente(empresa), equipo));
+        entityManager.flush();
+
+        assertThat(estadoYBodega(equipo)).isEqualTo("ARRENDADO/Bodega de prueba");
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM operacion_detalle WHERE equipo_id = ?", Integer.class, equipo))
+                .isEqualTo(1);
+        assertThat(jdbc.queryForList("SELECT tipo FROM movimiento WHERE equipo_id = ? AND operacion_id IS NOT NULL",
+                String.class, equipo)).containsExactly("SALIDA_ARRIENDO");
+    }
+
+    /**
+     * CF-03 contra la base real: si la segunda línea falla, no queda nada guardado. Corre fuera de
+     * la transacción de la prueba para observar la reversión que hace el servicio.
+     */
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void arriendo_segundaLineaNoDisponible_noGuardaNada() {
+        long empresa = crearEmpresa("99.999.999-9");
+        insertarEquipo(empresa, "SN-0008");
+        insertarEquipo(empresa, "SN-0009");
+        long primero = idEquipo(empresa, "SN-0008");
+        long segundo = idEquipo(empresa, "SN-0009");
+        jdbc.update("UPDATE equipo SET estado = 'EN_MANTENCION' WHERE id = ?", segundo);
+        long cliente = crearCliente(empresa);
+
+        assertThrows(NegocioException.class,
+                () -> arriendoService.registrar(empresa, administrador(), arriendo(cliente, primero, segundo)));
+
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM operacion WHERE empresa_id = ?", Integer.class, empresa))
+                .isZero();
+        assertThat(estadoYBodega(primero)).isEqualTo("DISPONIBLE/Bodega de prueba");
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM movimiento WHERE equipo_id IN (?, ?)", Integer.class,
+                primero, segundo)).isZero();
+    }
+
+    private long crearCliente(long empresaId) {
+        return jdbc.queryForObject(
+                "INSERT INTO cliente (empresa_id, rut, razon_social) VALUES (?, '76.111.111-1', 'Cliente de prueba') RETURNING id",
+                Long.class, empresaId);
+    }
+
+    private static RegistrarArriendoRequest arriendo(long clienteId, Long... equipos) {
+        RegistrarArriendoRequest r = new RegistrarArriendoRequest();
+        r.setClienteId(clienteId);
+        r.setFechaInicio(LocalDate.of(2026, 3, 10));
+        r.setFechaRetornoComprometida(LocalDate.of(2026, 3, 25));
+        r.setLineas(List.of(equipos).stream()
+                .map(id -> new LineaArriendoRequest(id, true, new BigDecimal("50000"))).toList());
+        return r;
     }
 
     private long idEquipo(long empresaId, String numeroSerie) {

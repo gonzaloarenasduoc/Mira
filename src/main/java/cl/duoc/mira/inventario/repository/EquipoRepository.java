@@ -2,6 +2,7 @@ package cl.duoc.mira.inventario.repository;
 
 import cl.duoc.mira.inventario.entity.EstadoEquipo;
 import cl.duoc.mira.inventario.entity.Equipo;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import jakarta.persistence.LockModeType;
@@ -21,6 +22,14 @@ public interface EquipoRepository extends JpaRepository<Equipo, Long> {
             where e.id = :id and e.empresa.id = :empresaId
             """)
     Optional<Equipo> buscarFicha(@Param("empresaId") Long empresaId, @Param("id") Long id);
+
+    @Query("""
+            select e from Equipo e
+            join fetch e.categoria
+            join fetch e.bodega
+            where e.empresa.id = :empresaId and e.id in :ids
+            """)
+    List<Equipo> buscarPorIds(@Param("empresaId") Long empresaId, @Param("ids") Collection<Long> ids);
 
     /**
      * Bloquea la fila del equipo hasta el fin de la transacción: dos operaciones simultáneas sobre

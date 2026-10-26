@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,4 +54,18 @@ public abstract class Operacion extends EntidadAuditable {
 
     @OneToMany(mappedBy = "operacion", cascade = CascadeType.ALL)
     private List<OperacionDetalle> detalles = new ArrayList<>();
+
+    protected Operacion(Empresa empresa, Cliente cliente, Long usuarioId, LocalDate fecha,
+                        String observaciones) {
+        this.empresa = empresa;
+        this.cliente = cliente;
+        this.usuarioId = usuarioId;
+        this.fecha = fecha;
+        this.observaciones = observaciones;
+    }
+
+    /** Agrega una línea: un equipo con su valor (tarifa diaria en un arriendo, precio en una venta). */
+    protected void agregarDetalle(Long equipoId, BigDecimal valorUnitario) {
+        detalles.add(new OperacionDetalle(this, equipoId, valorUnitario));
+    }
 }

@@ -64,7 +64,15 @@ public class Movimiento extends EntidadAuditable {
     public static Movimiento registrar(Equipo equipo, TipoMovimiento tipo, LocalDateTime fecha,
                                        Bodega origen, Bodega destino, Long usuarioId,
                                        String observacion) {
+        return registrar(equipo, tipo, fecha, origen, destino, null, usuarioId, observacion);
+    }
+
+    /** Igual que el anterior, para los movimientos que origina una venta o un arriendo. */
+    public static Movimiento registrar(Equipo equipo, TipoMovimiento tipo, LocalDateTime fecha,
+                                       Bodega origen, Bodega destino, Long operacionId,
+                                       Long usuarioId, String observacion) {
         Movimiento m = new Movimiento();
+        m.operacionId = operacionId;
         m.empresa = equipo.getEmpresa();
         m.equipo = equipo;
         m.tipo = tipo;

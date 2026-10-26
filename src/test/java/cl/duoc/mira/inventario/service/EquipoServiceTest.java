@@ -123,6 +123,44 @@ class EquipoServiceTest {
         verify(equipoRepository).buscar(EMPRESA_ID, null, null, null, "%' or 1=1 -- 100\\%%");
     }
 
+    /** HU-14: entregar en arriendo deja el equipo arrendado, con el movimiento ligado a la operación. */
+    @Test
+    void despacharEnArriendo_equipoDisponible_quedaArrendadoConSuMovimiento() {
+        Equipo equipo = equipoDisponible();
+        when(equipoRepository.buscarParaActualizar(EMPRESA_ID, 30L)).thenReturn(Optional.of(equipo));
+
+        service.despacharEnArriendo(EMPRESA_ID, USUARIO_ID, 30L, 500L);
+
+        ArgumentCaptor<Movimiento> movimiento = ArgumentCaptor.forClass(Movimiento.class);
+        verify(movimientoRepository).save(movimiento.capture());
+        assertThat(equipo.getEstado()).isEqualTo(EstadoEquipo.ARRENDADO);
+        assertThat(equipo.getBodega()).as("sigue asignado a su bodega").isSameAs(bodega);
+        assertThat(movimiento.getValue().getTipo()).isEqualTo(TipoMovimiento.SALIDA_ARRIENDO);
+        assertThat(movimiento.getValue().getOperacionId()).isEqualTo(500L);
+        assertThat(movimiento.getValue().getBodegaOrigen()).isSameAs(bodega);
+    }
+
+    /** CF-02: un equipo que no está disponible no se entrega y no se registra ningún movimiento. */
+    @Test
+    void despacharEnArriendo_equipoEnMantencion_lanzaExcepcionSinMovimiento() {
+        Equipo equipo = equipoDisponible();
+        Movimiento.registrar(equipo, TipoMovimiento.ENTRADA_MANTENCION, LocalDateTime.now(RELOJ), bodega, null, USUARIO_ID, null);
+        when(equipoRepository.buscarParaActualizar(EMPRESA_ID, 30L)).thenReturn(Optional.of(equipo));
+
+        EquipoNoDisponibleException ex = assertThrows(EquipoNoDisponibleException.class,
+                () -> service.despacharEnArriendo(EMPRESA_ID, USUARIO_ID, 30L, 500L));
+        assertThat(ex.getMessage()).isEqualTo("El equipo TS16-001 no está disponible porque se encuentra en mantención.");
+        assertThat(equipo.getEstado()).isEqualTo(EstadoEquipo.EN_MANTENCION);
+        verify(movimientoRepository, never()).save(any());
+    }
+
+    private Equipo equipoDisponible() {
+        Equipo equipo = new Equipo(mock(Empresa.class), mock(Categoria.class), bodega, "TS16-001", "Leica", "TS16",
+                null, null, null, null);
+        Movimiento.registrar(equipo, TipoMovimiento.INGRESO, LocalDateTime.now(RELOJ), null, bodega, USUARIO_ID, null);
+        return equipo;
+    }
+
     private static RegistrarEquipoRequest solicitud() {
         RegistrarEquipoRequest r = new RegistrarEquipoRequest();
         r.setCategoriaId(10L);

@@ -21,6 +21,7 @@ import cl.duoc.mira.inventario.repository.MovimientoRepository;
 import cl.duoc.mira.usuarios.service.UsuarioService;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,6 +80,32 @@ public class EquipoService {
                         filtro.getEstado(), Busqueda.contiene(filtro.getTexto())).stream()
                 .map(EquipoService::aResponse)
                 .toList();
+    }
+
+    /** Datos de varios equipos por identificador, para las vistas de otros módulos. */
+    public Map<Long, EquipoResponse> resumenPorId(Long empresaId, Collection<Long> ids) {
+        if (ids.isEmpty()) {
+            return Map.of();
+        }
+        return equipoRepository.buscarPorIds(empresaId, ids).stream()
+                .collect(Collectors.toMap(Equipo::getId, EquipoService::aResponse));
+    }
+
+    /**
+     * Entrega el equipo en arriendo (HU-14): lo bloquea, exige que esté disponible y registra el
+     * movimiento SALIDA_ARRIENDO ligado a la operación. Lo invoca ArriendoService dentro de su
+     * propia transacción, de modo que si otra línea del arriendo falla, esto también se revierte.
+     */
+    @Transactional
+    public void despacharEnArriendo(Long empresaId, Long usuarioId, Long equipoId, Long operacionId) {
+        Equipo equipo = equipoRepository.buscarParaActualizar(empresaId, equipoId)
+                .filter(Equipo::isActivo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("El equipo"));
+        if (equipo.getEstado() != EstadoEquipo.DISPONIBLE) {
+            throw new EquipoNoDisponibleException(equipo.getNumeroSerie(), equipo.getEstado());
+        }
+        movimientoRepository.save(Movimiento.registrar(equipo, TipoMovimiento.SALIDA_ARRIENDO,
+                LocalDateTime.now(clock), equipo.getBodega(), null, operacionId, usuarioId, null));
     }
 
     /** Un equipo de otra empresa se responde como inexistente (PNF-06). */
