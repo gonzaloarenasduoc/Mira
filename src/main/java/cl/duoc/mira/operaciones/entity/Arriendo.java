@@ -1,10 +1,12 @@
 package cl.duoc.mira.operaciones.entity;
 
+import cl.duoc.mira.common.entity.Empresa;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,4 +32,18 @@ public class Arriendo extends Operacion {
 
     @Column(name = "numero_orden_compra", length = 50)
     private String numeroOrdenCompra;
+
+    public Arriendo(Empresa empresa, Cliente cliente, Long usuarioId, LocalDate fecha,
+                    LocalDate fechaInicio, LocalDate fechaRetornoComprometida,
+                    String numeroOrdenCompra, String observaciones) {
+        super(empresa, cliente, usuarioId, fecha, observaciones);
+        this.fechaInicio = fechaInicio;
+        this.fechaRetornoComprometida = fechaRetornoComprometida;
+        this.numeroOrdenCompra = numeroOrdenCompra;
+    }
+
+    /** Cada línea es un equipo con su tarifa diaria (HU-14). */
+    public void agregarLinea(Long equipoId, BigDecimal tarifaDiaria) {
+        agregarDetalle(equipoId, tarifaDiaria);
+    }
 }

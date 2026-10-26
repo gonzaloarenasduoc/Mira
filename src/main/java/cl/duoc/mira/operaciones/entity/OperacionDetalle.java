@@ -39,4 +39,10 @@ public class OperacionDetalle extends EntidadAuditable {
 
     @Column(length = 300)
     private String observacion;
+
+    OperacionDetalle(Operacion operacion, Long equipoId, BigDecimal valorUnitario) {
+        this.operacion = operacion;
+        this.equipoId = equipoId;
+        this.valorUnitario = valorUnitario;
+    }
 }

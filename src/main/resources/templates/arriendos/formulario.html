@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Registrar arriendo')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div class="encabezado-pagina mb-4">
+        <h1>Registrar arriendo</h1>
+        <p>Los equipos seleccionados pasan a arrendados en una sola operación: si uno no se puede arrendar, no se registra ninguno.</p>
+    </div>
+
+    <form th:object="${arriendo}" th:action="@{/arriendos}" method="post" novalidate>
+        <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}">
+            <div th:each="err : ${#fields.globalErrors()}" th:text="${err}">Error</div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-body p-4">
+                <h2 class="h6 text-uppercase text-secondary mb-3">Datos del arriendo</h2>
+                <div class="alert alert-warning" role="status" th:if="${#lists.isEmpty(clientes)}">
+                    No hay clientes registrados en la empresa: sin un cliente no se puede registrar un arriendo.
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="clienteId" class="form-label">Cliente</label>
+                        <select id="clienteId" class="form-select" th:field="*{clienteId}" th:errorclass="is-invalid">
+                            <option value="">Seleccione…</option>
+                            <option th:each="c : ${clientes}" th:value="${c.id()}" th:text="${c.razonSocial()} + ' · ' + ${c.rut()}">Cliente</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{clienteId}">Error</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fechaInicio" class="form-label">Fecha de inicio</label>
+                        <input id="fechaInicio" type="date" class="form-control" th:field="*{fechaInicio}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{fechaInicio}">Error</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fechaRetornoComprometida" class="form-label">Retorno comprometido</label>
+                        <input id="fechaRetornoComprometida" type="date" class="form-control" th:field="*{fechaRetornoComprometida}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{fechaRetornoComprometida}">Error</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="numeroOrdenCompra" class="form-label">Orden de compra <span class="text-secondary">(opcional)</span></label>
+                        <input id="numeroOrdenCompra" type="text" class="form-control" maxlength="50" th:field="*{numeroOrdenCompra}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{numeroOrdenCompra}">Error</div>
+                    </div>
+                    <div class="col-md-8">
+                        <label for="observaciones" class="form-label">Observaciones <span class="text-secondary">(opcional)</span></label>
+                        <input id="observaciones" type="text" class="form-control" maxlength="2000" th:field="*{observaciones}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{observaciones}">Error</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <h2 class="h6 text-uppercase text-secondary mb-0">Equipos disponibles</h2>
+                    <input id="filtroEquipos" type="search" class="form-control form-control-sm" style="max-width: 280px;"
+                           placeholder="Filtrar por serie, marca o modelo">
+                </div>
+                <p class="text-secondary mb-0" th:if="${#maps.isEmpty(equipos)}">No hay equipos disponibles para arrendar.</p>
+                <div class="table-responsive" th:unless="${#maps.isEmpty(equipos)}">
+                    <table class="table align-middle mb-0 tabla-mira" id="tablaEquipos">
+                        <thead>
+                        <tr><th style="width: 3rem;"></th><th>Número de serie</th><th>Equipo</th><th>Bodega</th><th style="width: 14rem;">Tarifa diaria</th></tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:each="linea, i : *{lineas}" th:with="e=${equipos.get(linea.equipoId)}">
+                            <tr th:if="${e != null}" class="fila-equipo">
+                                <td>
+                                    <input type="hidden" th:field="*{lineas[__${i.index}__].equipoId}">
+                                    <input class="form-check-input" type="checkbox" th:field="*{lineas[__${i.index}__].incluir}"
+                                           th:attr="aria-label='Incluir ' + ${e.numeroSerie()}">
+                                </td>
+                                <td class="fw-semibold" th:text="${e.numeroSerie()}">Serie</td>
+                                <td th:text="${e.categoria()} + ' ' + ${e.marca()} + ' ' + ${e.modelo()}">Equipo</td>
+                                <td th:text="${e.bodega()}">Bodega</td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" min="0" step="1" class="form-control"
+                                               th:field="*{lineas[__${i.index}__].tarifaDiaria}" th:errorclass="is-invalid">
+                                    </div>
+                                    <div class="invalid-feedback d-block small" th:errors="*{lineas[__${i.index}__].tarifaDiaria}">Error</div>
+                                </td>
+                            </tr>
+                        </th:block>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white small text-secondary" id="resumenSeleccion" th:unless="${#maps.isEmpty(equipos)}">
+                Ningún equipo seleccionado.
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 justify-content-end">
+            <a class="btn btn-outline-secondary" th:href="@{/disponibilidad}">Cancelar</a>
+            <button type="submit" class="btn btn-primary"
+                    th:disabled="${#lists.isEmpty(clientes) or #maps.isEmpty(equipos)}">Registrar arriendo</button>
+        </div>
+    </form>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script>
+    (function () {
+        const filas = Array.from(document.querySelectorAll('#tablaEquipos .fila-equipo'));
+        const filtro = document.getElementById('filtroEquipos');
+        const resumen = document.getElementById('resumenSeleccion');
+        const pesos = new Intl.NumberFormat('es-CL');
+        function actualizar() {
+            let cantidad = 0, total = 0;
+            filas.forEach(f => {
+                if (f.querySelector('input[type=checkbox]').checked) {
+                    cantidad++;
+                    total += Number(f.querySelector('input[type=number]').value || 0);
+                }
+            });
+            if (resumen) {
+                resumen.textContent = cantidad === 0 ? 'Ningún equipo seleccionado.'
+                    : cantidad + (cantidad === 1 ? ' equipo seleccionado' : ' equipos seleccionados')
+                      + ' · tarifa diaria total $ ' + pesos.format(total);
+            }
+        }
+        if (filtro) {
+            filtro.addEventListener('input', () => {
+                const texto = filtro.value.trim().toLowerCase();
+                filas.forEach(f => { f.hidden = texto !== '' && !f.textContent.toLowerCase().includes(texto); });
+            });
+        }
+        filas.forEach(f => f.querySelectorAll('input').forEach(i => i.addEventListener('input', actualizar)));
+        actualizar();
+    })();
+</script>
+</body>
+</html>

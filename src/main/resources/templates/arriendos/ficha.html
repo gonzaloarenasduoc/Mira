@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Arriendo')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" th:with="a=${arriendo}">
+    <div class="encabezado-pagina mb-4">
+        <h1 th:text="'Arriendo N° ' + ${a.id()}">Arriendo</h1>
+        <p th:text="${a.cliente()} + ' · ' + ${a.rutCliente()}">Cliente</p>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-secondary mb-3">Datos del arriendo</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-6">Registrado</dt><dd class="col-sm-6" th:text="${#temporals.format(a.fecha(), 'dd-MM-yyyy')}">fecha</dd>
+                        <dt class="col-sm-6">Inicio</dt><dd class="col-sm-6" th:text="${#temporals.format(a.fechaInicio(), 'dd-MM-yyyy')}">inicio</dd>
+                        <dt class="col-sm-6">Retorno comprometido</dt><dd class="col-sm-6 fw-semibold" th:text="${#temporals.format(a.fechaRetornoComprometida(), 'dd-MM-yyyy')}">retorno</dd>
+                        <dt class="col-sm-6">Orden de compra</dt><dd class="col-sm-6" th:text="${a.numeroOrdenCompra() ?: '—'}">OC</dd>
+                        <dt class="col-sm-6">Tarifa diaria total</dt>
+                        <dd class="col-sm-6" th:text="'$ ' + ${#numbers.formatDecimal(a.tarifaDiariaTotal(), 1, 'POINT', 0, 'COMMA')}">total</dd>
+                        <dt class="col-sm-12" th:if="${a.observaciones() != null}">Observaciones</dt>
+                        <dd class="col-sm-12 mb-0" th:if="${a.observaciones() != null}" th:text="${a.observaciones()}">obs</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-secondary mb-3">Equipos arrendados</h2>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0 tabla-mira">
+                            <thead><tr><th>Número de serie</th><th>Equipo</th><th>Tarifa diaria</th><th>Retorno</th></tr></thead>
+                            <tbody>
+                            <tr th:each="l : ${a.lineas()}">
+                                <td><a class="fw-semibold" th:href="@{/equipos/{id}(id=${l.equipoId()})}" th:text="${l.numeroSerie()}">Serie</a></td>
+                                <td th:text="${l.equipo()}">Equipo</td>
+                                <td th:text="'$ ' + ${#numbers.formatDecimal(l.tarifaDiaria(), 1, 'POINT', 0, 'COMMA')}">tarifa</td>
+                                <td th:text="${l.fechaRetornoReal() != null} ? ${#temporals.format(l.fechaRetornoReal(), 'dd-MM-yyyy')} : 'Pendiente'">Pendiente</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
