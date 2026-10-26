@@ -11,6 +11,7 @@ import cl.duoc.mira.inventario.service.TrasladoService;
 import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.operaciones.dto.LineaArriendoRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarArriendoRequest;
+import cl.duoc.mira.operaciones.dto.RegistrarRetornoRequest;
 import cl.duoc.mira.operaciones.repository.ArriendoRepository;
 import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.repository.ArriendoVigente;
@@ -190,6 +191,36 @@ class MiraApplicationTests {
         assertThat(estadoYBodega(primero)).isEqualTo("DISPONIBLE/Bodega de prueba");
         assertThat(jdbc.queryForObject("SELECT count(*) FROM movimiento WHERE equipo_id IN (?, ?)", Integer.class,
                 primero, segundo)).isZero();
+    }
+
+    /** CF-04 contra la base real: retorno en otra bodega, sin traslado adicional. */
+    @Test
+    void retorno_enOtraBodega_reasignaElEquipoYCierraLaLinea() {
+        long empresa = crearEmpresa("12.121.212-1");
+        insertarEquipo(empresa, "SN-0010");
+        long equipo = idEquipo(empresa, "SN-0010");
+        long sur = jdbc.queryForObject(
+                "INSERT INTO bodega (empresa_id, nombre) VALUES (?, 'Bodega Sur') RETURNING id", Long.class, empresa);
+        RegistrarArriendoRequest solicitud = arriendo(crearCliente(empresa), equipo);
+        solicitud.setFechaInicio(LocalDate.now());
+        solicitud.setFechaRetornoComprometida(LocalDate.now().plusDays(15));
+        long arriendoId = arriendoService.registrar(empresa, administrador(), solicitud).id();
+
+        RegistrarRetornoRequest retorno = new RegistrarRetornoRequest();
+        retorno.setEquipoId(equipo);
+        retorno.setBodegaId(sur);
+        retorno.setFechaRetorno(LocalDate.now());
+        arriendoService.registrarRetorno(empresa, administrador(), arriendoId, retorno);
+        entityManager.flush();
+
+        assertThat(estadoYBodega(equipo)).isEqualTo("DISPONIBLE/Bodega Sur");
+        assertThat(jdbc.queryForObject("SELECT fecha_retorno_real FROM operacion_detalle WHERE equipo_id = ?",
+                LocalDate.class, equipo)).isEqualTo(LocalDate.now());
+        assertThat(jdbc.queryForList("SELECT tipo FROM movimiento WHERE equipo_id = ? ORDER BY id", String.class, equipo))
+                .containsExactly("SALIDA_ARRIENDO", "RETORNO_ARRIENDO");
+        assertThat(jdbc.queryForObject(
+                "SELECT bodega_destino_id FROM movimiento WHERE equipo_id = ? AND tipo = 'RETORNO_ARRIENDO'",
+                Long.class, equipo)).isEqualTo(sur);
     }
 
     private long crearCliente(long empresaId) {

@@ -22,6 +22,7 @@ import cl.duoc.mira.inventario.service.EquipoNoDisponibleException;
 import cl.duoc.mira.inventario.service.EquipoService;
 import cl.duoc.mira.operaciones.dto.LineaArriendoRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarArriendoRequest;
+import cl.duoc.mira.operaciones.dto.RegistrarRetornoRequest;
 import cl.duoc.mira.operaciones.entity.Arriendo;
 import cl.duoc.mira.operaciones.entity.Cliente;
 import cl.duoc.mira.operaciones.repository.ArriendoRepository;
@@ -33,6 +34,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -166,6 +168,76 @@ class ArriendoServiceTest {
 
         assertThrows(RecursoNoEncontradoException.class, () -> service.registrar(EMPRESA_ID, USUARIO_ID, r));
         verify(arriendoRepository, never()).save(any());
+    }
+
+    /** HU-15: el cliente devuelve un equipo y conserva el otro; solo esa línea queda cerrada. */
+    @Test
+    void registrarRetorno_unaLinea_cierraSoloEsaLineaYRecibeElEquipo() {
+        Arriendo arriendo = arriendoConDosEquipos();
+
+        var respuesta = service.registrarRetorno(EMPRESA_ID, USUARIO_ID, 500L, retorno(1L, 30L, LocalDate.of(2026, 3, 10)));
+
+        assertThat(arriendo.getDetalles().get(0).getFechaRetornoReal()).isEqualTo(LocalDate.of(2026, 3, 10));
+        assertThat(arriendo.getDetalles().get(1).estaPendienteDeRetorno()).isTrue();
+        verify(equipoService).recibirDeArriendo(EMPRESA_ID, USUARIO_ID, 1L, 500L, 30L, "Sin daños");
+        assertThat(respuesta.lineas()).extracting(l -> l.fechaRetornoReal())
+                .containsExactly(LocalDate.of(2026, 3, 10), null);
+    }
+
+    @Test
+    void registrarRetorno_lineaYaRetornada_lanzaExcepcion() {
+        arriendoConDosEquipos();
+        service.registrarRetorno(EMPRESA_ID, USUARIO_ID, 500L, retorno(1L, 30L, LocalDate.of(2026, 3, 10)));
+
+        NegocioException ex = assertThrows(NegocioException.class,
+                () -> service.registrarRetorno(EMPRESA_ID, USUARIO_ID, 500L, retorno(1L, 30L, LocalDate.of(2026, 3, 10))));
+        assertThat(ex.getMessage()).isEqualTo("El equipo SN-1 ya retornó el 10 de marzo de 2026.");
+    }
+
+    @Test
+    void registrarRetorno_fechaAnteriorAlInicio_lanzaExcepcionSinRecibirElEquipo() {
+        arriendoConDosEquipos();
+
+        NegocioException ex = assertThrows(NegocioException.class,
+                () -> service.registrarRetorno(EMPRESA_ID, USUARIO_ID, 500L, retorno(1L, 30L, LocalDate.of(2026, 3, 9))));
+        assertThat(ex.getMessage()).contains("anterior al inicio");
+        verify(equipoService, never()).recibirDeArriendo(anyLong(), anyLong(), anyLong(), anyLong(), anyLong(), any());
+    }
+
+    @Test
+    void registrarRetorno_fechaFutura_lanzaExcepcion() {
+        arriendoConDosEquipos();
+
+        NegocioException ex = assertThrows(NegocioException.class,
+                () -> service.registrarRetorno(EMPRESA_ID, USUARIO_ID, 500L, retorno(1L, 30L, LocalDate.of(2026, 3, 11))));
+        assertThat(ex.getMessage()).contains("futura");
+    }
+
+    @Test
+    void registrarRetorno_equipoQueNoEstaEnElArriendo_lanzaNoEncontrado() {
+        arriendoConDosEquipos();
+
+        assertThrows(RecursoNoEncontradoException.class,
+                () -> service.registrarRetorno(EMPRESA_ID, USUARIO_ID, 500L, retorno(3L, 30L, LocalDate.of(2026, 3, 10))));
+    }
+
+    private Arriendo arriendoConDosEquipos() {
+        Arriendo arriendo = new Arriendo(mock(Empresa.class), cliente, USUARIO_ID, LocalDate.of(2026, 3, 10),
+                LocalDate.of(2026, 3, 10), LocalDate.of(2026, 3, 25), null, null);
+        arriendo.agregarLinea(1L, new BigDecimal("50000"));
+        arriendo.agregarLinea(2L, new BigDecimal("70000"));
+        ReflectionTestUtils.setField(arriendo, "id", 500L);
+        when(arriendoRepository.buscarFicha(EMPRESA_ID, 500L)).thenReturn(Optional.of(arriendo));
+        return arriendo;
+    }
+
+    private static RegistrarRetornoRequest retorno(Long equipoId, Long bodegaId, LocalDate fecha) {
+        RegistrarRetornoRequest r = new RegistrarRetornoRequest();
+        r.setEquipoId(equipoId);
+        r.setBodegaId(bodegaId);
+        r.setFechaRetorno(fecha);
+        r.setObservacion("Sin daños");
+        return r;
     }
 
     private static RegistrarArriendoRequest solicitud(LineaArriendoRequest... lineas) {
