@@ -4,6 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import cl.duoc.mira.inventario.dto.FiltroEquipos;
+import cl.duoc.mira.inventario.dto.RegistrarTrasladoRequest;
+import cl.duoc.mira.inventario.service.EquipoService;
+import cl.duoc.mira.inventario.service.TrasladoService;
+import cl.duoc.mira.operaciones.repository.ArriendoRepository;
+import cl.duoc.mira.operaciones.repository.ArriendoVigente;
+import jakarta.persistence.EntityManager;
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +39,14 @@ class MiraApplicationTests {
 
     @Autowired
     private JdbcTemplate jdbc;
+    @Autowired
+    private TrasladoService trasladoService;
+    @Autowired
+    private EquipoService equipoService;
+    @Autowired
+    private ArriendoRepository arriendoRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     void arranque_conBaseVacia_aplicaLasDosMigraciones() {
@@ -62,6 +78,88 @@ class MiraApplicationTests {
         long otraEmpresa = crearEmpresa("44.444.444-4");
 
         assertDoesNotThrow(() -> insertarEquipo(otraEmpresa, "SN-0002"));
+    }
+
+    /** CF-08 contra la base real: la llegada reasigna la bodega y quedan los dos movimientos. */
+    @Test
+    void traslado_salidaYLlegada_dejaElEquipoEnElDestinoConSusMovimientos() {
+        long empresa = crearEmpresa("55.555.555-5");
+        insertarEquipo(empresa, "SN-0003");
+        long equipo = idEquipo(empresa, "SN-0003");
+        long destino = jdbc.queryForObject(
+                "INSERT INTO bodega (empresa_id, nombre) VALUES (?, 'Bodega Sur') RETURNING id", Long.class, empresa);
+        RegistrarTrasladoRequest solicitud = new RegistrarTrasladoRequest();
+        solicitud.setEquipoId(equipo);
+        solicitud.setBodegaDestinoId(destino);
+
+        trasladoService.registrarSalida(empresa, administrador(), solicitud);
+        entityManager.flush();
+        assertThat(estadoYBodega(equipo)).isEqualTo("EN_TRANSITO/Bodega de prueba");
+        trasladoService.confirmarLlegada(empresa, administrador(), equipo);
+        entityManager.flush();
+
+        assertThat(estadoYBodega(equipo)).isEqualTo("DISPONIBLE/Bodega Sur");
+        assertThat(jdbc.queryForList("SELECT tipo FROM movimiento WHERE equipo_id = ? ORDER BY id", String.class, equipo))
+                .containsExactly("TRASLADO_SALIDA", "TRASLADO_LLEGADA");
+    }
+
+    /** PNF-07 contra la base real: comodines e inyección se buscan como texto literal. */
+    @Test
+    void buscar_textoConComodinesOInyeccion_noAlteraElResultado() {
+        long empresa = crearEmpresa("66.666.666-6");
+        insertarEquipo(empresa, "SN-0004");
+
+        assertThat(equipoService.buscar(empresa, texto("marc"))).hasSize(1);
+        assertThat(equipoService.buscar(empresa, texto("%"))).isEmpty();
+        assertThat(equipoService.buscar(empresa, texto("_"))).isEmpty();
+        assertThat(equipoService.buscar(empresa, texto("' OR 1=1 --"))).isEmpty();
+    }
+
+    /** HU-13: solo las líneas de arriendo sin retorno registrado cuentan como vigentes. */
+    @Test
+    void arriendosVigentes_soloIncluyeLineasSinRetorno() {
+        long empresa = crearEmpresa("77.777.777-7");
+        insertarEquipo(empresa, "SN-0005");
+        insertarEquipo(empresa, "SN-0006");
+        long cliente = jdbc.queryForObject(
+                "INSERT INTO cliente (empresa_id, rut, razon_social) VALUES (?, '76.000.000-0', 'Minera de prueba') RETURNING id",
+                Long.class, empresa);
+        long operacion = jdbc.queryForObject("""
+                INSERT INTO operacion (empresa_id, tipo, cliente_id, usuario_id, fecha)
+                VALUES (?, 'ARRIENDO', ?, ?, DATE '2026-03-01') RETURNING id
+                """, Long.class, empresa, cliente, administrador());
+        jdbc.update("INSERT INTO arriendo (id, fecha_inicio, fecha_retorno_comprometida) VALUES (?, DATE '2026-03-01', DATE '2026-03-25')",
+                operacion);
+        jdbc.update("""
+                INSERT INTO operacion_detalle (operacion_id, equipo_id, valor_unitario, fecha_retorno_real)
+                SELECT ?, id, 50000, CASE WHEN numero_serie = 'SN-0006' THEN DATE '2026-03-20' END
+                FROM equipo WHERE empresa_id = ?
+                """, operacion, empresa);
+        long vigente = idEquipo(empresa, "SN-0005");
+
+        assertThat(arriendoRepository.vigentes(empresa))
+                .containsExactly(new ArriendoVigente(vigente, LocalDate.of(2026, 3, 25)));
+    }
+
+    private long idEquipo(long empresaId, String numeroSerie) {
+        return jdbc.queryForObject("SELECT id FROM equipo WHERE empresa_id = ? AND numero_serie = ?",
+                Long.class, empresaId, numeroSerie);
+    }
+
+    private long administrador() {
+        return jdbc.queryForObject("SELECT id FROM usuario WHERE email = 'admin@mira.cl'", Long.class);
+    }
+
+    private String estadoYBodega(long equipo) {
+        return jdbc.queryForObject(
+                "SELECT e.estado || '/' || b.nombre FROM equipo e JOIN bodega b ON b.id = e.bodega_id WHERE e.id = ?",
+                String.class, equipo);
+    }
+
+    private static FiltroEquipos texto(String texto) {
+        FiltroEquipos filtro = new FiltroEquipos();
+        filtro.setTexto(texto);
+        return filtro;
     }
 
     private long crearEmpresa(String rut) {

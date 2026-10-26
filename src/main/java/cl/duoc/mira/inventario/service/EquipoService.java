@@ -3,6 +3,7 @@ package cl.duoc.mira.inventario.service;
 import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.common.exception.RecursoNoEncontradoException;
 import cl.duoc.mira.common.repository.EmpresaRepository;
+import cl.duoc.mira.common.util.Busqueda;
 import cl.duoc.mira.inventario.dto.EquipoResponse;
 import cl.duoc.mira.inventario.dto.FichaEquipoResponse;
 import cl.duoc.mira.inventario.dto.FiltroEquipos;
@@ -11,6 +12,7 @@ import cl.duoc.mira.inventario.dto.RegistrarEquipoRequest;
 import cl.duoc.mira.inventario.entity.Bodega;
 import cl.duoc.mira.inventario.entity.Categoria;
 import cl.duoc.mira.inventario.entity.Equipo;
+import cl.duoc.mira.inventario.entity.EstadoEquipo;
 import cl.duoc.mira.inventario.entity.Movimiento;
 import cl.duoc.mira.inventario.entity.TipoMovimiento;
 import cl.duoc.mira.inventario.repository.CategoriaRepository;
@@ -71,10 +73,10 @@ public class EquipoService {
         return aResponse(equipo);
     }
 
+    /** El texto se busca como parámetro y con sus comodines escapados: no altera la consulta (PNF-07). */
     public List<EquipoResponse> buscar(Long empresaId, FiltroEquipos filtro) {
-        String serie = filtro.getNumeroSerie() == null ? "" : filtro.getNumeroSerie().trim();
         return equipoRepository.buscar(empresaId, filtro.getCategoriaId(), filtro.getBodegaId(),
-                        filtro.getEstado(), serie).stream()
+                        filtro.getEstado(), Busqueda.contiene(filtro.getTexto())).stream()
                 .map(EquipoService::aResponse)
                 .toList();
     }
@@ -93,14 +95,17 @@ public class EquipoService {
                         m.getBodegaDestino() == null ? null : m.getBodegaDestino().getNombre(),
                         nombres.getOrDefault(m.getUsuarioId(), "—"), m.getObservacion()))
                 .toList();
-        return new FichaEquipoResponse(aResponse(equipo), historial);
+        String trasladoHacia = equipo.getEstado() != EstadoEquipo.EN_TRANSITO ? null
+                : historial.stream().filter(m -> m.tipo() == TipoMovimiento.TRASLADO_SALIDA)
+                        .map(MovimientoResponse::bodegaDestino).findFirst().orElse(null);
+        return new FichaEquipoResponse(aResponse(equipo), historial, trasladoHacia);
     }
 
     private static String vacioANulo(String valor) {
         return valor == null || valor.isBlank() ? null : valor.trim();
     }
 
-    private static EquipoResponse aResponse(Equipo e) {
+    static EquipoResponse aResponse(Equipo e) {
         return new EquipoResponse(e.getId(), e.getNumeroSerie(), e.getCategoria().getNombre(),
                 e.getMarca(), e.getModelo(), e.getEstado(), e.getBodega().getNombre(),
                 e.getFechaAdquisicion(), e.getValorAdquisicion(), e.getTarifaDiaria(),

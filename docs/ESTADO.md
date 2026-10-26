@@ -3,17 +3,15 @@
 Este archivo se actualiza al terminar cada sesión de trabajo. Es lo primero que lee el
 asistente del otro integrante para saber qué está en curso y no pisar nada.
 
-**Última actualización:** 16-10-2026
+**Última actualización:** 19-10-2026
 
 ## Fase actual
 
-Fase 2, semana 8. Sprint 2 (semanas 8 y 9), que retoma el objetivo no cumplido del Sprint 1:
-un usuario se autentica con su rol y registra un equipo por número de serie que aparece en un
-listado filtrado por empresa. Desde esta semana rige **una rama por semana** (D11): la de esta
-semana es `semana-08`.
+Fase 2, semana 9, rama `semana-09` (D11). El Sprint 2 quedó cerrado en la semana 8 e integrado a
+`main` con el pull request #2. El **Sprint 3** (HU-09 a HU-13, planificado para las semanas 10 y 11)
+se adelantó a esta rama y está implementado y probado; falta la revisión cruzada y el pull request.
 
-Entregas de la asignatura: documentos de la Fase 2 el sábado 17-10 y presentación (7 minutos
-más un video de 3 minutos) el domingo 18-10.
+Los documentos de la Fase 2 se entregaron el sábado 17-10 y la presentación el domingo 18-10.
 
 ## Terminado
 
@@ -75,26 +73,49 @@ más un video de 3 minutos) el domingo 18-10.
   - 29 pruebas: 25 corren sin base de datos y 4 de integración con Testcontainers, que se omiten
     si no hay Docker.
   - Capturas del recorrido en `docs/evidencias/semana-08/`.
+- Pull request #2 (`semana-08` → `main`) integrado. Quedó sin revisión registrada en GitHub.
+- Entregas de la semana 9: diario 2.1 de Gonzalo, video `Demo/Demo_v3.mp4` y presentación en el AVA, y
+  Acta de Control de Avance del 19-10-2026. La aplicación de Claude ya tiene acceso al repositorio:
+  no se necesitan más bundles.
+- Sprint 3 implementado en `semana-09` (HU-09 a HU-13, 18 PF):
+  - **Traslados (HU-09, D14):** la salida deja el equipo `EN_TRANSITO`, todavía asignado a la
+    bodega de origen; la llegada lo deja `DISPONIBLE` en la de destino. Cada paso es un
+    movimiento, en la misma transacción que el cambio de estado. Solo se trasladan equipos
+    disponibles, a una bodega activa y distinta del origen. Se inicia desde la ficha del equipo
+    y la llegada se confirma desde la ficha o desde la página Traslados.
+  - **Historial de traslados (HU-10):** página Traslados con los equipos en tránsito y el
+    historial paginado (20 por página), filtrable por serie, bodega y fechas.
+  - **Búsqueda (HU-11):** el texto busca en serie, marca y modelo, como parámetro y con los
+    comodines escapados (`common.util.Busqueda`, PNF-07).
+  - **Disponibilidad (HU-12, HU-13):** página Disponibilidad, agrupada por bodega. Disponible =
+    estado `DISPONIBLE` y sin arriendo vigente; los vendidos no aparecen; los arrendados muestran
+    la fecha comprometida de retorno y los vencidos se destacan con los días de atraso.
+  - Entidades de operaciones mapeadas sin migración nueva (D16): `Cliente`, `Operacion`,
+    `Arriendo`, `Venta` y `OperacionDetalle`. Solo se leen; su registro es del Sprint 4.
+  - El equipo se bloquea con `PESSIMISTIC_WRITE` mientras cambia de estado (D15).
+  - 57 pruebas: 50 corren sin base de datos y 7 de integración con Testcontainers. Las 7 se
+    verificaron contra un PostgreSQL 16 local.
+  - PNF-01 medido con 500 equipos: percentil 95 de 0,20 s. PNF-08 resuelto con el perfil `demo`.
+  - Capturas y mediciones en `docs/evidencias/semana-09/`.
 
 ## En curso
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 2: HU-01 a HU-08 | Ambos | `semana-08` | **Implementadas y probadas.** Falta la revisión cruzada del otro integrante y el pull request a `main` |
-| Revisión de los documentos de la Fase 2 y subida de los diarios 2.1 | Ambos | `semana-08` | Cada uno sube su diario con el nombre exacto del formato del docente |
+| Sprint 3: HU-09 a HU-13 | Ambos | `semana-09` | **Implementadas y probadas.** Falta la revisión cruzada y el pull request a `main`, esta vez con la aprobación del otro integrante antes de integrar |
+| Tablero en GitHub Projects ("Mira - Tablero del proyecto", público) | Ambos | — | Creado el 19-10 con las columnas Backlog, Sprint actual, En curso, En revisión y Terminado, y los campos Épica, Puntos y Sprint. Falta completar esos campos en cada tarjeta |
 
 ## Siguiente
 
-1. Revisión cruzada del código del Sprint 2 y pull request de `semana-08` a `main`.
-2. Presentación del domingo 18-10 y guion del video de 3 minutos.
-3. Sprint 3: traslados (HU-09, HU-10) y disponibilidad consolidada (HU-11 a HU-13).
+1. Revisión cruzada de `semana-09` y pull request a `main`.
+2. Sprint 4 (HU-14 a HU-19): registro de arriendos validando disponibilidad, retornos (incluido
+   el retorno en otra bodega), ventas y alertas de retorno. Las entidades ya están (D16); faltan
+   sus constructores, `ArriendoService` con `buscarParaActualizar` (D15) y las pantallas.
+3. PNF-03 (concurrencia con 10 usuarios) con k6, cuando existan los arriendos.
 
 ## Bloqueado
 
-| Qué | Por qué | Quién lo destraba |
-|---|---|---|
-| Push desde las sesiones de Claude Code en la nube | GitHub responde 403: la aplicación de Claude no tiene permiso sobre el repositorio | Gonzalo, reconectando GitHub en claude.ai e instalando la aplicación de Claude en el repositorio |
-| Tablero en GitHub Projects | Compromiso de la semana 7 aún no cumplido | Gonzalo |
+Nada bloqueado.
 
 Las reuniones con la empresa se aplazaron: con autorización del docente, los supuestos de la
 sección 6 del modelo de datos se tratan como decisiones de diseño declaradas. Docker y el acceso de Joaquín a GitHub ya
@@ -109,8 +130,13 @@ funcionan.
   Fase 1 y en el acta del 08-10. Los documentos de la Fase 2 ya dicen catorce.
 - Usuario inicial: `admin@mira.cl`, contraseña `admin123`, solo para demostración.
   Los demás usuarios se crean desde la pantalla Usuarios con el rol que corresponda.
-- La cookie de sesión todavía no lleva el atributo `Secure` (PNF-08): en local se usa HTTP y la
-  sesión dejaría de funcionar. Se activa en el perfil del ambiente de demostración, con HTTPS.
+- La cookie de sesión lleva `Secure` solo con el perfil `demo` (`SPRING_PROFILES_ACTIVE=demo`),
+  que es para el ambiente con HTTPS. En local no se activa: con HTTP la sesión dejaría de funcionar.
+- Un equipo en tránsito sigue asignado a su bodega de origen hasta que se confirma la llegada (D14).
+  No hay forma de anular un traslado iniciado: si el destino fue un error, se confirma la llegada y
+  se registra el traslado de vuelta.
+- Las pantallas de arriendos no existen todavía. Para ver HU-13 en local hay que cargar un arriendo
+  con SQL, como se explica en `docs/evidencias/semana-09/README.md`.
 - Los DTOs de formulario son clases con `@Data`, no `record` (ver `docs/04-convenciones-codigo.md`).
 
 - El modelo de datos está definido y se puede implementar. Respeta el diccionario tal como

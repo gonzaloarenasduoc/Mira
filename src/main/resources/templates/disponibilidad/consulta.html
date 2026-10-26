@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Disponibilidad')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" th:with="r=${resultado}">
+    <div class="encabezado-pagina mb-4">
+        <h1>Disponibilidad</h1>
+        <p>Unidades de todas las bodegas en una sola consulta. Un equipo está disponible si no está arrendado,
+            en tránsito ni en mantención.</p>
+    </div>
+
+    <form class="card mb-3" method="get" th:action="@{/disponibilidad}" th:object="${filtro}">
+        <div class="card-body row g-2 align-items-end">
+            <div class="col-md-5">
+                <label for="texto" class="form-label small mb-1">Serie, marca o modelo</label>
+                <input id="texto" type="search" class="form-control" th:field="*{texto}" placeholder="Por ejemplo, GS18 o Leica">
+            </div>
+            <div class="col-md-4">
+                <label for="categoriaId" class="form-label small mb-1">Categoría</label>
+                <select id="categoriaId" class="form-select" th:field="*{categoriaId}">
+                    <option value="">Todas</option>
+                    <option th:each="c : ${categorias}" th:value="${c.id()}" th:text="${c.nombre()}">Categoría</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-fill">Consultar</button>
+                <a class="btn btn-outline-secondary" th:href="@{/disponibilidad}" title="Quitar filtros">Limpiar</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="card" th:if="${#lists.isEmpty(r.bodegas())}">
+        <div class="card-body text-secondary">No hay equipos que coincidan con la consulta.</div>
+    </div>
+
+    <th:block th:unless="${#lists.isEmpty(r.bodegas())}">
+        <p class="resumen-disponibilidad mb-3">
+            <span class="cifra" th:text="${r.disponibles()}">0</span>
+            <span th:text="(${r.disponibles()} == 1 ? 'unidad disponible' : 'unidades disponibles') + ' de ' + ${r.unidades()}
+                    + ' en ' + ${#lists.size(r.bodegas())} + (${#lists.size(r.bodegas())} == 1 ? ' bodega' : ' bodegas')">resumen</span>
+            <span class="text-secondary small" th:text="'· al ' + ${#temporals.format(r.hoy(), 'dd-MM-yyyy')}">fecha</span>
+        </p>
+
+        <div class="card mb-3" th:each="b : ${r.bodegas()}">
+            <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h2 class="h6 mb-0 fw-semibold" style="color: var(--mira-azul);" th:text="${b.bodega()}">Bodega</h2>
+                <span>
+                    <span class="estado" th:classappend="${b.disponibles() > 0} ? 'estado-DISPONIBLE' : 'estado-VENDIDO'"
+                          th:text="${b.disponibles()} + (${b.disponibles()} == 1 ? ' disponible' : ' disponibles')">0 disponibles</span>
+                    <span class="small text-secondary ms-1" th:text="'de ' + ${b.total()}">de 0</span>
+                </span>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0 tabla-mira tabla-disponibilidad">
+                    <colgroup><col style="width: 20%"><col style="width: 38%"><col style="width: 15%"><col style="width: 27%"></colgroup>
+                    <thead>
+                    <tr><th>Número de serie</th><th>Equipo</th><th>Estado</th><th>Retorno comprometido</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="u : ${b.unidades()}" th:classappend="${u.vencido()} ? 'fila-vencida'">
+                        <td><a class="fw-semibold" th:href="@{/equipos/{id}(id=${u.id()})}" th:text="${u.numeroSerie()}">Serie</a></td>
+                        <td th:text="${u.categoria()} + ' ' + ${u.marca()} + ' ' + ${u.modelo()}">Equipo</td>
+                        <td><span class="estado" th:classappend="'estado-' + ${u.estado()}" th:text="${u.estado().etiqueta}">Estado</span></td>
+                        <td>
+                            <span th:if="${u.fechaRetorno() == null}" class="text-secondary">—</span>
+                            <span th:if="${u.fechaRetorno() != null and !u.vencido()}"
+                                  th:text="${#temporals.format(u.fechaRetorno(), 'dd-MM-yyyy')}">fecha</span>
+                            <span th:if="${u.vencido()}" class="text-danger fw-semibold"
+                                  th:text="${#temporals.format(u.fechaRetorno(), 'dd-MM-yyyy')} + ' · vencido hace ' + ${u.diasAtraso()}
+                                           + (${u.diasAtraso()} == 1 ? ' día' : ' días')">vencido</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </th:block>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

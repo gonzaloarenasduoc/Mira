@@ -24,9 +24,9 @@ public class SeguridadConfig {
             .authorizeHttpRequests(acceso -> acceso
                 .requestMatchers("/login", "/error", "/webjars/**", "/css/**", "/img/**").permitAll()
                 .requestMatchers("/usuarios/**").hasRole("ADMINISTRADOR")
-                .requestMatchers("/bodegas/nueva", "/bodegas/*/editar", "/equipos/nuevo")
+                .requestMatchers("/bodegas/nueva", "/bodegas/*/editar", "/equipos/nuevo", "/traslados/nuevo")
                     .hasAnyRole(EDITAN_INVENTARIO)
-                .requestMatchers(HttpMethod.POST, "/bodegas/**", "/equipos/**")
+                .requestMatchers(HttpMethod.POST, "/bodegas/**", "/equipos/**", "/traslados/**")
                     .hasAnyRole(EDITAN_INVENTARIO)
                 .anyRequest().authenticated())
             .formLogin(login -> login
