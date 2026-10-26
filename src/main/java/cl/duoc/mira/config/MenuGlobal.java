@@ -29,6 +29,7 @@ public class MenuGlobal {
             new OpcionMenu("Arriendos", "/arriendos/nuevo", EnumSet.of(ADMINISTRADOR, ENCARGADO_BODEGA, VENDEDOR)),
             new OpcionMenu("Equipos", "/equipos", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Traslados", "/traslados", EnumSet.allOf(RolUsuario.class)),
+            new OpcionMenu("Clientes", "/clientes", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Bodegas", "/bodegas", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Usuarios", "/usuarios", EnumSet.of(ADMINISTRADOR)));
 

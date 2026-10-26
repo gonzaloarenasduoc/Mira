@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Clientes')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div class="encabezado-pagina d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <h1>Clientes</h1>
+            <p>Empresas a las que se arriendan o venden equipos. El RUT no se repite dentro de la empresa.</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/clientes/nuevo}" th:if="${puedeArrendar}">Nuevo cliente</a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <div class="card">
+        <div class="card-body text-secondary" th:if="${#lists.isEmpty(clientes)}">
+            Aún no hay clientes registrados. Registre el primero para poder arrendar o vender equipos.
+        </div>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(clientes)}">
+            <table class="table table-hover align-middle mb-0 tabla-mira">
+                <thead>
+                <tr><th>RUT</th><th>Razón social</th><th>Comuna</th><th>Contacto</th><th>Estado</th>
+                    <th class="text-end" th:if="${puedeArrendar}">Acciones</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${clientes}">
+                    <td class="text-nowrap" th:text="${c.rut()}">RUT</td>
+                    <td class="fw-semibold" th:text="${c.razonSocial()}">Razón social</td>
+                    <td th:text="${c.comuna()} ?: '—'">Comuna</td>
+                    <td>
+                        <div th:text="${c.contactoNombre()} ?: '—'">Contacto</div>
+                        <div class="small text-secondary" th:if="${c.contactoEmail() != null}" th:text="${c.contactoEmail()}">correo</div>
+                        <div class="small text-secondary" th:if="${c.contactoTelefono() != null}" th:text="${c.contactoTelefono()}">teléfono</div>
+                    </td>
+                    <td>
+                        <span class="estado estado-DISPONIBLE" th:if="${c.activo()}">Activo</span>
+                        <span class="estado estado-VENDIDO" th:unless="${c.activo()}">Inactivo</span>
+                    </td>
+                    <td class="text-end text-nowrap" th:if="${puedeArrendar}">
+                        <a class="btn btn-sm btn-outline-primary" th:href="@{/clientes/{id}/editar(id=${c.id()})}">Editar</a>
+                        <form class="d-inline" method="post" th:if="${c.activo()}"
+                              th:action="@{/clientes/{id}/desactivar(id=${c.id()})}">
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Desactivar</button>
+                        </form>
+                        <form class="d-inline" method="post" th:unless="${c.activo()}"
+                              th:action="@{/clientes/{id}/activar(id=${c.id()})}">
+                            <button class="btn btn-sm btn-outline-success" type="submit">Activar</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

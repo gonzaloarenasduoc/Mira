@@ -1,7 +1,11 @@
 # Evidencias de la semana 11
 
-Capturas de HU-15 (Sprint 4), tomadas con un navegador automatizado sobre la aplicación levantada
-contra PostgreSQL 16. El arriendo N° 4 tiene dos equipos; se registra el retorno de uno solo, en una
+Capturas de HU-15 y HU-29 (Sprint 4), tomadas con un navegador automatizado sobre la aplicación levantada
+contra PostgreSQL 16.
+
+## Retorno de equipos (HU-15)
+
+El arriendo N° 4 tiene dos equipos; se registra el retorno de uno solo, en una
 bodega distinta de la de salida.
 
 | Captura | Qué muestra |
@@ -12,6 +16,16 @@ bodega distinta de la de salida.
 | [04-retorno-parcial.png](04-retorno-parcial.png) | HU-15 retorno de un equipo: el otro sigue arrendado |
 | [05-ficha-equipo-retornado.png](05-ficha-equipo-retornado.png) | CF-04 el equipo queda disponible en Bodega Norte, con el movimiento de retorno y su observación |
 | [06-disponibilidad-tras-retorno.png](06-disponibilidad-tras-retorno.png) | La disponibilidad cuenta de nuevo el equipo retornado |
+
+## Clientes (HU-29, D17)
+
+| Captura | Qué muestra |
+|---|---|
+| [07-clientes.png](07-clientes.png) | Listado de clientes, con la opción Clientes en el menú del vendedor |
+| [08-rut-invalido.png](08-rut-invalido.png) | HU-29 un RUT con dígito verificador incorrecto se rechaza |
+| [09-cliente-registrado.png](09-cliente-registrado.png) | HU-29 cliente registrado; el RUT escrito sin puntos queda con formato 76.555.444-6 |
+| [10-rut-repetido.png](10-rut-repetido.png) | HU-29 el RUT no se repite dentro de la empresa |
+| [11-arriendo-con-cliente-nuevo.png](11-arriendo-con-cliente-nuevo.png) | El cliente nuevo ya se puede elegir al registrar un arriendo |
 
 CF-04 también se verifica con la prueba de integración `retorno_enOtraBodega_reasignaElEquipoYCierraLaLinea`
 contra PostgreSQL: el equipo se reasigna a la bodega receptora, la línea registra su fecha de retorno

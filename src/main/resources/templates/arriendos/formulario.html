@@ -19,6 +19,7 @@
                 <h2 class="h6 text-uppercase text-secondary mb-3">Datos del arriendo</h2>
                 <div class="alert alert-warning" role="status" th:if="${#lists.isEmpty(clientes)}">
                     No hay clientes registrados en la empresa: sin un cliente no se puede registrar un arriendo.
+                    <a th:href="@{/clientes/nuevo}">Registrar un cliente</a>.
                 </div>
                 <div class="row g-3">
                     <div class="col-md-6">

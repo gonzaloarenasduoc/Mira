@@ -19,6 +19,7 @@ import cl.duoc.mira.inventario.service.CategoriaService;
 import cl.duoc.mira.inventario.service.EquipoService;
 import cl.duoc.mira.inventario.service.TrasladoService;
 import cl.duoc.mira.operaciones.controller.ArriendoController;
+import cl.duoc.mira.operaciones.controller.ClienteController;
 import cl.duoc.mira.operaciones.controller.DisponibilidadController;
 import cl.duoc.mira.operaciones.dto.DisponibilidadResponse;
 import cl.duoc.mira.operaciones.service.ArriendoService;
@@ -46,7 +47,7 @@ import org.springframework.test.web.servlet.MockMvc;
  */
 @WebMvcTest(controllers = {InicioController.class, UsuarioController.class,
         BodegaController.class, EquipoController.class, TrasladoController.class,
-        DisponibilidadController.class, ArriendoController.class})
+        DisponibilidadController.class, ArriendoController.class, ClienteController.class})
 @Import({SeguridadConfig.class, MenuGlobal.class, RelojConfig.class})
 class SeguridadTest {
 
@@ -74,7 +75,7 @@ class SeguridadTest {
     @ParameterizedTest
     @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios",
             "/traslados", "/traslados/nuevo?equipoId=1", "/disponibilidad",
-            "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1"})
+            "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo"})
     void rutaProtegida_sinSesion_redirigeAlLogin(String ruta) throws Exception {
         mvc.perform(get(ruta))
                 .andExpect(status().is3xxRedirection())
@@ -157,6 +158,24 @@ class SeguridadTest {
     @ValueSource(strings = {"ADMINISTRADOR", "ENCARGADO_BODEGA", "VENDEDOR"})
     void registrarArriendo_rolesQueOperan_permiteElAcceso(String rol) throws Exception {
         mvc.perform(get("/arriendos/nuevo").with(user(con(RolUsuario.valueOf(rol)))))
+                .andExpect(status().isOk());
+    }
+
+    /** D17: la jefatura consulta los clientes, pero no los registra ni los modifica. */
+    @Test
+    void clientes_comoJefatura_consultaPeroNoRegistra() throws Exception {
+        mvc.perform(get("/clientes").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isOk());
+        mvc.perform(get("/clientes/nuevo").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/clientes").param("rut", "12.345.678-5").param("razonSocial", "X")
+                        .with(csrf()).with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void registrarCliente_comoVendedor_permiteElAcceso() throws Exception {
+        mvc.perform(get("/clientes/nuevo").with(user(con(RolUsuario.VENDEDOR))))
                 .andExpect(status().isOk());
     }
 
