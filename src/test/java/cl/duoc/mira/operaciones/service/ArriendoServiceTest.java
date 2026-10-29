@@ -20,6 +20,7 @@ import cl.duoc.mira.inventario.dto.EquipoResponse;
 import cl.duoc.mira.inventario.entity.EstadoEquipo;
 import cl.duoc.mira.inventario.service.EquipoNoDisponibleException;
 import cl.duoc.mira.inventario.service.EquipoService;
+import cl.duoc.mira.operaciones.dto.AlertaRetornoResponse;
 import cl.duoc.mira.operaciones.dto.LineaArriendoRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarArriendoRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarRetornoRequest;
@@ -27,6 +28,7 @@ import cl.duoc.mira.operaciones.entity.Arriendo;
 import cl.duoc.mira.operaciones.entity.Cliente;
 import cl.duoc.mira.operaciones.repository.ArriendoRepository;
 import cl.duoc.mira.operaciones.repository.ArriendoVigente;
+import cl.duoc.mira.operaciones.repository.LineaPorRetornar;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
@@ -219,6 +221,31 @@ class ArriendoServiceTest {
 
         assertThrows(RecursoNoEncontradoException.class,
                 () -> service.registrarRetorno(EMPRESA_ID, USUARIO_ID, 500L, retorno(3L, 30L, LocalDate.of(2026, 3, 10))));
+    }
+
+    /** HU-16 y CF-10: vencidos primero, con los días de atraso; los próximos, con los días que faltan. */
+    @Test
+    void alertasDeRetorno_vencidoVenceHoyYProximo_calculaLosDiasDeCadaUno() {
+        when(arriendoRepository.porRetornarHasta(EMPRESA_ID, LocalDate.of(2026, 3, 13))).thenReturn(List.of(
+                new LineaPorRetornar(41L, "Minera Norte SpA", 1L, LocalDate.of(2026, 3, 5)),
+                new LineaPorRetornar(42L, "Constructora Andes SpA", 2L, LocalDate.of(2026, 3, 10)),
+                new LineaPorRetornar(43L, "Constructora Andes SpA", 3L, LocalDate.of(2026, 3, 13))));
+
+        List<AlertaRetornoResponse> alertas = service.alertasDeRetorno(EMPRESA_ID);
+
+        assertThat(alertas).extracting(AlertaRetornoResponse::dias).containsExactly(-5L, 0L, 3L);
+        AlertaRetornoResponse vencida = alertas.get(0);
+        assertThat(vencida.vencido()).isTrue();
+        assertThat(vencida.diasAtraso()).isEqualTo(5);
+        assertThat(vencida.cliente()).isEqualTo("Minera Norte SpA");
+        assertThat(vencida.numeroSerie()).isEqualTo("SN-1");
+        assertThat(alertas.get(1).vencido()).as("vence hoy: todavía no está vencido").isFalse();
+        assertThat(alertas.get(2).diasAtraso()).isZero();
+    }
+
+    @Test
+    void alertasDeRetorno_sinLineasPorRetornar_quedaVacio() {
+        assertThat(service.alertasDeRetorno(EMPRESA_ID)).isEmpty();
     }
 
     private Arriendo arriendoConDosEquipos() {

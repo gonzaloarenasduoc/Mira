@@ -17,6 +17,7 @@ import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.repository.ArriendoVigente;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,9 @@ class MiraApplicationTests {
     private EntityManager entityManager;
     @Autowired
     private ArriendoService arriendoService;
+    /** El reloj de la aplicación (America/Santiago): "hoy" en UTC puede ser otro día. */
+    @Autowired
+    private Clock reloj;
 
     @Test
     void arranque_conBaseVacia_aplicaLasDosMigraciones() {
@@ -202,25 +206,57 @@ class MiraApplicationTests {
         long sur = jdbc.queryForObject(
                 "INSERT INTO bodega (empresa_id, nombre) VALUES (?, 'Bodega Sur') RETURNING id", Long.class, empresa);
         RegistrarArriendoRequest solicitud = arriendo(crearCliente(empresa), equipo);
-        solicitud.setFechaInicio(LocalDate.now());
-        solicitud.setFechaRetornoComprometida(LocalDate.now().plusDays(15));
+        solicitud.setFechaInicio(LocalDate.now(reloj));
+        solicitud.setFechaRetornoComprometida(LocalDate.now(reloj).plusDays(15));
         long arriendoId = arriendoService.registrar(empresa, administrador(), solicitud).id();
 
         RegistrarRetornoRequest retorno = new RegistrarRetornoRequest();
         retorno.setEquipoId(equipo);
         retorno.setBodegaId(sur);
-        retorno.setFechaRetorno(LocalDate.now());
+        retorno.setFechaRetorno(LocalDate.now(reloj));
         arriendoService.registrarRetorno(empresa, administrador(), arriendoId, retorno);
         entityManager.flush();
 
         assertThat(estadoYBodega(equipo)).isEqualTo("DISPONIBLE/Bodega Sur");
         assertThat(jdbc.queryForObject("SELECT fecha_retorno_real FROM operacion_detalle WHERE equipo_id = ?",
-                LocalDate.class, equipo)).isEqualTo(LocalDate.now());
+                LocalDate.class, equipo)).isEqualTo(LocalDate.now(reloj));
         assertThat(jdbc.queryForList("SELECT tipo FROM movimiento WHERE equipo_id = ? ORDER BY id", String.class, equipo))
                 .containsExactly("SALIDA_ARRIENDO", "RETORNO_ARRIENDO");
         assertThat(jdbc.queryForObject(
                 "SELECT bodega_destino_id FROM movimiento WHERE equipo_id = ? AND tipo = 'RETORNO_ARRIENDO'",
                 Long.class, equipo)).isEqualTo(sur);
+    }
+
+    /**
+     * CF-10 contra la base real: entran las líneas sin retorno que vencen en 3 días o menos, incluidas
+     * las vencidas; no entran las ya retornadas ni las que vencen más adelante.
+     */
+    @Test
+    void alertasDeRetorno_soloLineasPendientesQueVencenPronto() {
+        long empresa = crearEmpresa("13.131.313-1");
+        for (String serie : List.of("SN-0011", "SN-0012", "SN-0013", "SN-0014")) {
+            insertarEquipo(empresa, serie);
+        }
+        long cliente = crearCliente(empresa);
+        arriendoDirecto(empresa, cliente, "SN-0011", LocalDate.now(reloj).minusDays(4), null);
+        arriendoDirecto(empresa, cliente, "SN-0012", LocalDate.now(reloj).minusDays(4), LocalDate.now(reloj).minusDays(1));
+        arriendoDirecto(empresa, cliente, "SN-0013", LocalDate.now(reloj).plusDays(2), null);
+        arriendoDirecto(empresa, cliente, "SN-0014", LocalDate.now(reloj).plusDays(10), null);
+
+        assertThat(arriendoService.alertasDeRetorno(empresa))
+                .extracting(a -> a.numeroSerie() + "/" + a.dias())
+                .containsExactly("SN-0011/-4", "SN-0013/2");
+    }
+
+    private void arriendoDirecto(long empresa, long cliente, String serie, LocalDate retorno, LocalDate retornoReal) {
+        long operacion = jdbc.queryForObject("""
+                INSERT INTO operacion (empresa_id, tipo, cliente_id, usuario_id, fecha)
+                VALUES (?, 'ARRIENDO', ?, ?, ?) RETURNING id
+                """, Long.class, empresa, cliente, administrador(), retorno.minusDays(10));
+        jdbc.update("INSERT INTO arriendo (id, fecha_inicio, fecha_retorno_comprometida) VALUES (?, ?, ?)",
+                operacion, retorno.minusDays(10), retorno);
+        jdbc.update("INSERT INTO operacion_detalle (operacion_id, equipo_id, valor_unitario, fecha_retorno_real) VALUES (?, ?, 50000, ?)",
+                operacion, idEquipo(empresa, serie), retornoReal);
     }
 
     private long crearCliente(long empresaId) {

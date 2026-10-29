@@ -8,6 +8,7 @@ import cl.duoc.mira.inventario.dto.FiltroEquipos;
 import cl.duoc.mira.inventario.entity.EstadoEquipo;
 import cl.duoc.mira.inventario.service.EquipoNoDisponibleException;
 import cl.duoc.mira.inventario.service.EquipoService;
+import cl.duoc.mira.operaciones.dto.AlertaRetornoResponse;
 import cl.duoc.mira.operaciones.dto.ArriendoResponse;
 import cl.duoc.mira.operaciones.dto.LineaArriendoRequest;
 import cl.duoc.mira.operaciones.dto.LineaArriendoResponse;
@@ -18,10 +19,12 @@ import cl.duoc.mira.operaciones.entity.Cliente;
 import cl.duoc.mira.operaciones.entity.OperacionDetalle;
 import cl.duoc.mira.operaciones.repository.ArriendoRepository;
 import cl.duoc.mira.operaciones.repository.ArriendoVigente;
+import cl.duoc.mira.operaciones.repository.LineaPorRetornar;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -41,6 +44,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ArriendoService {
+
+    /** Días de anticipación con que se avisa un retorno próximo (HU-16). */
+    static final int DIAS_DE_AVISO = 3;
 
     private static final DateTimeFormatter FECHA_LARGA =
             DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-CL"));
@@ -119,6 +125,27 @@ public class ArriendoService {
         equipoService.recibirDeArriendo(empresaId, usuarioId, linea.getEquipoId(), arriendo.getId(),
                 request.getBodegaId(), observacion);
         return aResponse(empresaId, arriendo);
+    }
+
+    /**
+     * Alertas de retorno (HU-16, CF-10): equipos sin retornar cuya fecha comprometida vence en
+     * {@value #DIAS_DE_AVISO} días o menos, o que ya venció. Primero los más atrasados.
+     */
+    public List<AlertaRetornoResponse> alertasDeRetorno(Long empresaId) {
+        LocalDate hoy = LocalDate.now(clock);
+        List<LineaPorRetornar> lineas = arriendoRepository.porRetornarHasta(empresaId, hoy.plusDays(DIAS_DE_AVISO));
+        Map<Long, EquipoResponse> equipos = equipoService.resumenPorId(empresaId,
+                lineas.stream().map(LineaPorRetornar::equipoId).collect(Collectors.toSet()));
+        return lineas.stream()
+                .map(l -> {
+                    EquipoResponse e = equipos.get(l.equipoId());
+                    return new AlertaRetornoResponse(l.arriendoId(), l.cliente(), l.equipoId(),
+                            e == null ? "—" : e.numeroSerie(),
+                            e == null ? "—" : e.categoria() + " " + e.marca() + " " + e.modelo(),
+                            l.fechaRetornoComprometida(),
+                            ChronoUnit.DAYS.between(hoy, l.fechaRetornoComprometida()));
+                })
+                .toList();
     }
 
     /** Equipos que se pueden arrendar: estado disponible y sin arriendo vigente (D05). */
