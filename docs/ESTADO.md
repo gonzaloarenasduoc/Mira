@@ -112,6 +112,9 @@ D17.
 - HU-16 en `semana-11`: alertas de retorno en el inicio, con los vencidos destacados y los que
   vencen en 3 días o menos (CF-10). Las pruebas de integración usan el reloj de la aplicación
   (America/Santiago); con la fecha en UTC fallaban de noche. 110 pruebas.
+- 28-10: la suite completa (110 pruebas) pasó en el equipo de Gonzalo (Ubuntu, Docker Engine 29,
+  Java 21) **sin omitir ninguna**: las 11 pruebas de integración corrieron con Testcontainers sobre
+  PostgreSQL 16. Se corrigió `./mvnw`, que no funcionaba en Linux ni en macOS.
 - Pull request #19 (semana 10) integrado el 26-10 con la aprobación de Joaquín.
 - Pull request #3 integrado el 26-10 con la aprobación de Joaquín: el Sprint 3 está en `main`.
 - Sprint Backlog y retrospectiva de los sprints 1 a 3, y el backlog del Sprint 4, en `docs/sprints/`.
@@ -170,6 +173,10 @@ funcionan.
 - Gonzalo no hace commits sobre una rama que llegó por bundle. Las correcciones se piden
   en el pull request y llegan en un bundle nuevo, para que el historial siga reflejando
   quién escribió cada cosa.
+- **En Linux:** usar Docker Engine (`get.docker.com`) en vez de Docker Desktop, agregar el usuario al
+  grupo `docker` (`sudo usermod -aG docker $USER` y volver a iniciar sesión) e instalar
+  `openjdk-21-jdk`, dejándolo como predeterminado con `update-alternatives`. Las pruebas se corren con
+  `./mvnw test`.
 - Java 17 no sirve. El proyecto compila contra 21 y el compilador se detiene. En el equipo
   de Joaquín, el `java` del PATH era 17 (shim de Oracle) y `JAVA_HOME` estaba vacío. Se
   configuró `JAVA_HOME` a Temurin 21 a nivel de usuario: **afecta a cualquier otro proyecto
