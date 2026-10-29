@@ -91,3 +91,7 @@ main { flex: 1; }
 .resumen-disponibilidad .cifra { font-size: 1.6rem; font-weight: 700; color: var(--mira-azul); margin-right: .25rem; }
 .fila-vencida > td { background-color: #FDECEC; }
 .tabla-disponibilidad { table-layout: fixed; min-width: 640px; }
+
+/* Alertas de retorno (HU-16) */
+.estado-vencido { background: #F8D7DA; color: #842029; }
+.alertas-retorno { border-left: 4px solid var(--mira-amarillo); }

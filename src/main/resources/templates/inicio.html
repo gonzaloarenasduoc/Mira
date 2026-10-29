@@ -9,6 +9,49 @@
         <p th:text="'Ingresaste como ' + ${#strings.toLowerCase(usuarioActual.rol().etiqueta)} + '. Estas son las opciones disponibles para tu rol.'">Opciones</p>
     </div>
 
+    <div class="card mb-4 alertas-retorno" th:unless="${#lists.isEmpty(alertas)}"
+         th:with="vencidas=${#lists.size(alertas.?[vencido()])}">
+        <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h2 class="h6 mb-0 fw-semibold" style="color: var(--mira-azul);">Alertas de retorno</h2>
+            <span class="small">
+                <span class="estado estado-vencido" th:if="${vencidas > 0}"
+                      th:text="${vencidas} + (${vencidas} == 1 ? ' vencido' : ' vencidos')">0 vencidos</span>
+                <span class="estado estado-ARRENDADO" th:if="${#lists.size(alertas) - vencidas > 0}"
+                      th:text="(${#lists.size(alertas)} - ${vencidas}) + ' por vencer en 3 días o menos'">0 por vencer</span>
+            </span>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 tabla-mira">
+                <thead>
+                <tr><th>Estado</th><th>Cliente</th><th>Equipo</th><th>Retorno comprometido</th><th>Arriendo</th>
+                    <th th:if="${puedeArrendar}"></th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${alertas}" th:classappend="${a.vencido()} ? 'fila-vencida'">
+                    <td class="text-nowrap">
+                        <span th:if="${a.vencido()}" class="text-danger fw-semibold"
+                              th:text="'Vencido hace ' + ${a.diasAtraso()} + (${a.diasAtraso()} == 1 ? ' día' : ' días')">Vencido</span>
+                        <span th:if="${!a.vencido() and a.dias() == 0}" class="fw-semibold">Vence hoy</span>
+                        <span th:if="${a.dias() > 0}"
+                              th:text="'Vence en ' + ${a.dias()} + (${a.dias()} == 1 ? ' día' : ' días')">Vence en</span>
+                    </td>
+                    <td th:text="${a.cliente()}">Cliente</td>
+                    <td>
+                        <a class="fw-semibold" th:href="@{/equipos/{id}(id=${a.equipoId()})}" th:text="${a.numeroSerie()}">Serie</a>
+                        <div class="small text-secondary" th:text="${a.equipo()}">Equipo</div>
+                    </td>
+                    <td th:text="${#temporals.format(a.fechaRetornoComprometida(), 'dd-MM-yyyy')}">fecha</td>
+                    <td><a th:href="@{/arriendos/{id}(id=${a.arriendoId()})}" th:text="'N° ' + ${a.arriendoId()}">N°</a></td>
+                    <td class="text-end" th:if="${puedeArrendar}">
+                        <a class="btn btn-sm btn-primary"
+                           th:href="@{/arriendos/{id}/retorno(id=${a.arriendoId()}, equipoId=${a.equipoId()})}">Registrar retorno</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div class="row g-3">
         <div class="col-md-6 col-lg-4" th:each="opcion : ${menu}" th:unless="${opcion.etiqueta() == 'Inicio'}">
             <a class="card h-100 acceso-rapido" th:href="@{${opcion.url()}}">

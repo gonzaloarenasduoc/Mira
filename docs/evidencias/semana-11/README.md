@@ -1,6 +1,6 @@
 # Evidencias de la semana 11
 
-Capturas de HU-15 y HU-29 (Sprint 4), tomadas con un navegador automatizado sobre la aplicación levantada
+Capturas de HU-15, HU-29 y HU-16 (Sprint 4), tomadas con un navegador automatizado sobre la aplicación levantada
 contra PostgreSQL 16.
 
 ## Retorno de equipos (HU-15)
@@ -26,6 +26,15 @@ bodega distinta de la de salida.
 | [09-cliente-registrado.png](09-cliente-registrado.png) | HU-29 cliente registrado; el RUT escrito sin puntos queda con formato 76.555.444-6 |
 | [10-rut-repetido.png](10-rut-repetido.png) | HU-29 el RUT no se repite dentro de la empresa |
 | [11-arriendo-con-cliente-nuevo.png](11-arriendo-con-cliente-nuevo.png) | El cliente nuevo ya se puede elegir al registrar un arriendo |
+
+## Alertas de retorno (HU-16)
+
+| Captura | Qué muestra |
+|---|---|
+| [12-inicio-alertas.png](12-inicio-alertas.png) | CF-10 el inicio muestra el arriendo vencido destacado, con cliente, equipo y días de atraso, y el que vence en 2 días |
+| [13-retorno-desde-alerta.png](13-retorno-desde-alerta.png) | Desde la alerta se registra directamente el retorno del equipo |
+
+Un arriendo que vence en 12 días no aparece: el aviso empieza 3 días antes de la fecha comprometida.
 
 CF-04 también se verifica con la prueba de integración `retorno_enOtraBodega_reasignaElEquipoYCierraLaLinea`
 contra PostgreSQL: el equipo se reasigna a la bodega receptora, la línea registra su fecha de retorno

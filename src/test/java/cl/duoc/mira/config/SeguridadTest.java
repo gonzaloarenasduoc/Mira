@@ -7,6 +7,9 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,6 +24,7 @@ import cl.duoc.mira.inventario.service.TrasladoService;
 import cl.duoc.mira.operaciones.controller.ArriendoController;
 import cl.duoc.mira.operaciones.controller.ClienteController;
 import cl.duoc.mira.operaciones.controller.DisponibilidadController;
+import cl.duoc.mira.operaciones.dto.AlertaRetornoResponse;
 import cl.duoc.mira.operaciones.dto.DisponibilidadResponse;
 import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.service.ClienteService;
@@ -159,6 +163,20 @@ class SeguridadTest {
     void registrarArriendo_rolesQueOperan_permiteElAcceso(String rol) throws Exception {
         mvc.perform(get("/arriendos/nuevo").with(user(con(RolUsuario.valueOf(rol)))))
                 .andExpect(status().isOk());
+    }
+
+    /** CF-10: al entrar, el inicio muestra el arriendo vencido con el cliente, el equipo y los días de atraso. */
+    @Test
+    void inicio_conUnArriendoVencido_loMuestraDestacado() throws Exception {
+        when(arriendoService.alertasDeRetorno(any())).thenReturn(List.of(new AlertaRetornoResponse(4L,
+                "Constructora Andes SpA", 3L, "M300-1A2B3C", "Dron DJI Matrice 300 RTK", LocalDate.of(2026, 10, 15), -13)));
+
+        mvc.perform(get("/").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Vencido hace 13 días")))
+                .andExpect(content().string(containsString("Constructora Andes SpA")))
+                .andExpect(content().string(containsString("M300-1A2B3C")))
+                .andExpect(content().string(not(containsString("Registrar retorno"))));
     }
 
     /** D17: la jefatura consulta los clientes, pero no los registra ni los modifica. */
