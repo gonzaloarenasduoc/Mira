@@ -8,7 +8,7 @@ asistente del otro integrante para saber qué está en curso y no pisar nada.
 ## Fase actual
 
 Fase 2, semana 11, rama `semana-11` (D11), creada desde `semana-10` porque el pull request #19
-todavía no se integra. **Sprint 4** en curso (HU-14 a HU-19, semanas 10 a 13): HU-14 y HU-15 están
+todavía no se integra. **Sprint 4** en curso (HU-14 a HU-19, semanas 10 a 13): HU-14, HU-15 y HU-16 están
 implementadas y probadas, igual que HU-29 (administrar clientes), agregada al backlog con la decisión
 D17.
 
@@ -109,6 +109,9 @@ D17.
   prueba de integración contra PostgreSQL). 85 pruebas; capturas en `docs/evidencias/semana-11/`.
 - HU-29 en `semana-11` (D17): clientes con RUT validado por dígito verificador, único por empresa y
   con baja lógica. Menú Clientes; la jefatura solo consulta. 106 pruebas.
+- HU-16 en `semana-11`: alertas de retorno en el inicio, con los vencidos destacados y los que
+  vencen en 3 días o menos (CF-10). Las pruebas de integración usan el reloj de la aplicación
+  (America/Santiago); con la fecha en UTC fallaban de noche. 110 pruebas.
 - Pull request #19 (semana 10) integrado el 26-10 con la aprobación de Joaquín.
 - Pull request #3 integrado el 26-10 con la aprobación de Joaquín: el Sprint 3 está en `main`.
 - Sprint Backlog y retrospectiva de los sprints 1 a 3, y el backlog del Sprint 4, en `docs/sprints/`.
@@ -118,15 +121,15 @@ D17.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 4: HU-16 a HU-19 | Ambos | `semana-11` | HU-14 y HU-15 terminadas. Siguen las alertas (HU-16), el listado (HU-17) y las ventas (HU-18, HU-19) |
+| Sprint 4: HU-17 a HU-19 | Ambos | `semana-11` | HU-14, HU-15, HU-16 y HU-29 terminadas. Siguen el listado de arriendos (HU-17) y las ventas (HU-18, HU-19) |
 | Campos del tablero (Status, Épica, Puntos, Sprint) | Ambos | — | Los *issues* ya existen; falta completar esos campos a mano en el tablero |
 | Revisión e integración del pull request #19 (semana 10) | Joaquín | `semana-10` | El #3 (semana 9) ya está integrado |
 
 ## Siguiente
 
 1. Informar en el acta de la semana 11 el ajuste al backlog: HU-29 y la decisión D17 (de 100 a 103 PF).
-2. HU-16: alertas de retorno próximo o vencido (CF-10), en la próxima sesión.
-3. Al cierre de la semana 11, abrir el pull request de `semana-11` (HU-15, HU-29 y HU-16).
+2. Cierre de la semana 11: pull request de `semana-11` (HU-15, HU-29 y HU-16) y acta.
+3. Semana 12: HU-17 (listado de arriendos con su total) y HU-18 (ventas).
 
 ## Bloqueado
 
