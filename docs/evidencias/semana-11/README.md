@@ -39,3 +39,9 @@ Un arriendo que vence en 12 días no aparece: el aviso empieza 3 días antes de 
 CF-04 también se verifica con la prueba de integración `retorno_enOtraBodega_reasignaElEquipoYCierraLaLinea`
 contra PostgreSQL: el equipo se reasigna a la bodega receptora, la línea registra su fecha de retorno
 y solo existen los movimientos de salida y retorno, sin un traslado adicional.
+
+## Tablero del proyecto
+
+| Captura | Qué muestra |
+|---|---|
+| [14-tablero-github-projects.png](14-tablero-github-projects.png) | Tablero de GitHub Projects al 28-10: HU-14 terminada; HU-15, HU-16 y HU-29 en revisión con su responsable, épica, puntos e iteración; HU-17 a HU-19 en el backlog |

@@ -96,8 +96,12 @@ D17.
     verificaron contra un PostgreSQL 16 local.
   - PNF-01 medido con 500 equipos: percentil 95 de 0,20 s. PNF-08 resuelto con el perfil `demo`.
   - Capturas y mediciones en `docs/evidencias/semana-09/`.
-- Tablero de GitHub Projects con las 9 épicas (#4 a #12) y las 6 historias del Sprint 4 (#13 a
-  #18) como *issues*, cada historia colgada de su épica. E001 y E002 están cerradas.
+- Tablero de GitHub Projects con las 9 épicas (#4 a #12) y las historias del Sprint 4 (#13 a
+  #18 y #20) como *issues*, cada historia colgada de su épica. El 28-10 se completaron sus campos:
+  Status, responsable, Épica, Puntos y Sprint. Las iteraciones del campo Sprint se nombran por
+  semanas ("Semanas 10 y 11"), porque el Sprint 4 abarca las semanas 10 a 13. HU-14 terminada;
+  HU-15, HU-16 y HU-29 en revisión; HU-17 a HU-19 en el backlog. Captura en
+  `docs/evidencias/semana-11/14-tablero-github-projects.png`.
 - Pull request #3 (`semana-09` → `main`) abierto el 26-10, con la revisión pedida a Joaquín.
 - HU-14 en `semana-10`: registro de un arriendo con varias líneas, en una sola transacción.
   Rechaza equipos no disponibles o con arriendo vigente, con la fecha de retorno en el mensaje
@@ -125,8 +129,6 @@ D17.
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
 | Sprint 4: HU-17 a HU-19 | Ambos | `semana-11` | HU-14, HU-15, HU-16 y HU-29 terminadas. Siguen el listado de arriendos (HU-17) y las ventas (HU-18, HU-19) |
-| Campos del tablero (Status, Épica, Puntos, Sprint) | Ambos | — | Los *issues* ya existen; falta completar esos campos a mano en el tablero |
-| Revisión e integración del pull request #19 (semana 10) | Joaquín | `semana-10` | El #3 (semana 9) ya está integrado |
 
 ## Siguiente
 
