@@ -122,19 +122,23 @@ D17.
 - Pull request #19 (semana 10) integrado el 26-10 con la aprobación de Joaquín.
 - Pull request #3 integrado el 26-10 con la aprobación de Joaquín: el Sprint 3 está en `main`.
 - Sprint Backlog y retrospectiva de los sprints 1 a 3, y el backlog del Sprint 4, en `docs/sprints/`.
-  Actas de control de avance de las semanas 9 y 10 en `docs/actas/`.
+  Actas de control de avance de las semanas 9, 10 y 11 en `docs/actas/`. El acta de la semana 11
+  (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
+- Pull request #21 (`semana-11` → `main`) abierto el 02-11 con HU-15, HU-16 y HU-29, con la revisión
+  pedida a Joaquín.
 
 ## En curso
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 4: HU-17 a HU-19 | Ambos | `semana-11` | HU-14, HU-15, HU-16 y HU-29 terminadas. Siguen el listado de arriendos (HU-17) y las ventas (HU-18, HU-19) |
+| Sprint 4: HU-17 a HU-19 | Ambos | `semana-12` | HU-14, HU-15, HU-16 y HU-29 terminadas. Siguen el listado de arriendos (HU-17) y las ventas (HU-18, HU-19) |
 
 ## Siguiente
 
-1. Informar en el acta de la semana 11 el ajuste al backlog: HU-29 y la decisión D17 (de 100 a 103 PF).
-2. Cierre de la semana 11: pull request de `semana-11` (HU-15, HU-29 y HU-16) y acta.
-3. Semana 12: HU-17 (listado de arriendos con su total) y HU-18 (ventas).
+1. Joaquín revisa e integra el pull request #21. Al integrarse, las tarjetas #14, #15 y #20 pasan a
+   Terminado en el tablero.
+2. Semana 12: HU-17 (listado de arriendos con su total, Gonzalo) y HU-18 (ventas, Joaquín).
+3. Semana 13: HU-19 (historial de operaciones de un cliente) y retrospectiva del Sprint 4.
 
 ## Bloqueado
 
@@ -158,8 +162,8 @@ funcionan.
 - Un equipo en tránsito sigue asignado a su bodega de origen hasta que se confirma la llegada (D14).
   No hay forma de anular un traslado iniciado: si el destino fue un error, se confirma la llegada y
   se registra el traslado de vuelta.
-- Las pantallas de arriendos no existen todavía. Para ver HU-13 en local hay que cargar un arriendo
-  con SQL, como se explica en `docs/evidencias/semana-09/README.md`.
+- Para ver HU-13 en local ya no hace falta cargar un arriendo con SQL: se registra desde la pantalla
+  Arriendos (HU-14), con un cliente creado en Clientes (HU-29).
 - Los DTOs de formulario son clases con `@Data`, no `record` (ver `docs/04-convenciones-codigo.md`).
 
 - El modelo de datos está definido y se puede implementar. Respeta el diccionario tal como
