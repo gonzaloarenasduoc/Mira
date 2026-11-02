@@ -7,9 +7,10 @@ asistente del otro integrante para saber qué está en curso y no pisar nada.
 
 ## Fase actual
 
-Fase 2, semana 10, rama `semana-10` (D11), creada desde `semana-09` porque el pull request #3
-(Sprint 3) todavía no se integra. Comenzó el **Sprint 4** (HU-14 a HU-19, semanas 10 a 13): HU-14
-está implementada y probada.
+Fase 2, semana 11, rama `semana-11` (D11), creada desde `semana-10` porque el pull request #19
+todavía no se integra. **Sprint 4** en curso (HU-14 a HU-19, semanas 10 a 13): HU-14, HU-15 y HU-16 están
+implementadas y probadas, igual que HU-29 (administrar clientes), agregada al backlog con la decisión
+D17.
 
 ## Terminado
 
@@ -95,34 +96,54 @@ está implementada y probada.
     verificaron contra un PostgreSQL 16 local.
   - PNF-01 medido con 500 equipos: percentil 95 de 0,20 s. PNF-08 resuelto con el perfil `demo`.
   - Capturas y mediciones en `docs/evidencias/semana-09/`.
-- Tablero de GitHub Projects con las 9 épicas (#4 a #12) y las 6 historias del Sprint 4 (#13 a
-  #18) como *issues*, cada historia colgada de su épica. E001 y E002 están cerradas.
+- Tablero de GitHub Projects con las 9 épicas (#4 a #12) y las historias del Sprint 4 (#13 a
+  #18 y #20) como *issues*, cada historia colgada de su épica. El 28-10 se completaron sus campos:
+  Status, responsable, Épica, Puntos y Sprint. Las iteraciones del campo Sprint se nombran por
+  semanas ("Semanas 10 y 11"), porque el Sprint 4 abarca las semanas 10 a 13. HU-14 terminada;
+  HU-15, HU-16 y HU-29 en revisión; HU-17 a HU-19 en el backlog. Captura en
+  `docs/evidencias/semana-11/14-tablero-github-projects.png`.
 - Pull request #3 (`semana-09` → `main`) abierto el 26-10, con la revisión pedida a Joaquín.
 - HU-14 en `semana-10`: registro de un arriendo con varias líneas, en una sola transacción.
   Rechaza equipos no disponibles o con arriendo vigente, con la fecha de retorno en el mensaje
   (CF-02, PNF-10). Si una línea falla no queda nada guardado (CF-03, prueba de integración contra
   PostgreSQL). El equipo cambia de estado solo mediante `EquipoService.despacharEnArriendo`.
   75 pruebas; capturas en `docs/evidencias/semana-10/`.
+- HU-15 en `semana-11`: retorno por línea; el equipo queda disponible en la bodega que lo recibe,
+  aunque sea distinta, con el movimiento `RETORNO_ARRIENDO` y sin traslado adicional (CF-04, con
+  prueba de integración contra PostgreSQL). 85 pruebas; capturas en `docs/evidencias/semana-11/`.
+- HU-29 en `semana-11` (D17): clientes con RUT validado por dígito verificador, único por empresa y
+  con baja lógica. Menú Clientes; la jefatura solo consulta. 106 pruebas.
+- HU-16 en `semana-11`: alertas de retorno en el inicio, con los vencidos destacados y los que
+  vencen en 3 días o menos (CF-10). Las pruebas de integración usan el reloj de la aplicación
+  (America/Santiago); con la fecha en UTC fallaban de noche. 110 pruebas.
+- 28-10: la suite completa (110 pruebas) pasó en el equipo de Gonzalo (Ubuntu, Docker Engine 29,
+  Java 21) **sin omitir ninguna**: las 11 pruebas de integración corrieron con Testcontainers sobre
+  PostgreSQL 16. Se corrigió `./mvnw`, que no funcionaba en Linux ni en macOS.
+- Pull request #19 (semana 10) integrado el 26-10 con la aprobación de Joaquín.
 - Pull request #3 integrado el 26-10 con la aprobación de Joaquín: el Sprint 3 está en `main`.
 - Sprint Backlog y retrospectiva de los sprints 1 a 3, y el backlog del Sprint 4, en `docs/sprints/`.
-  Actas de control de avance de las semanas 9 y 10 en `docs/actas/`.
+  Actas de control de avance de las semanas 9, 10 y 11 en `docs/actas/`. El acta de la semana 11
+  (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
+- Pull request #21 (`semana-11` → `main`) abierto el 02-11 con HU-15, HU-16 y HU-29, con la revisión
+  pedida a Joaquín.
+- Tercer informe de avance (02-11): `Fase 2/Evidencias Grupales/Informe_Avance_3_Semana11.docx`
+  (copia de la guía 2.6 actualizada a la semana 11; el informe 2.6 entregado no se modificó), el acta
+  del 02-11 y el video `Demo/Demo_v4.mp4` (7 min 21 s, sin audio): repositorio y código, Flyway aplicando
+  V1 y V2 sobre una base vacía, recorrido de HU-01 a HU-16 y HU-29, consultas a PostgreSQL con lo
+  registrado en la demo, la suite de pruebas y el tablero.
 
 ## En curso
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 4: HU-15 a HU-19 | Ambos | `semana-10` | HU-14 terminada. Siguen el retorno (HU-15), las alertas (HU-16), el listado (HU-17) y las ventas (HU-18, HU-19) |
-| Campos del tablero (Status, Épica, Puntos, Sprint) | Ambos | — | Los *issues* ya existen; falta completar esos campos a mano en el tablero |
-| Revisión e integración del pull request #19 (semana 10) | Joaquín | `semana-10` | El #3 (semana 9) ya está integrado |
+| Sprint 4: HU-17 a HU-19 | Ambos | `semana-12` | HU-14, HU-15, HU-16 y HU-29 terminadas. Siguen el listado de arriendos (HU-17) y las ventas (HU-18, HU-19) |
 
 ## Siguiente
 
-1. **Decidir cómo se registran los clientes.** HU-14 exige elegir un cliente "de los clientes
-   registrados de la empresa", pero ninguna historia del backlog permite registrarlos. Hoy solo se
-   pueden cargar con SQL. Hay que acordarlo con el docente: una historia nueva (por ejemplo,
-   "Administrar clientes"), o incluirlo en E005 o E006 y registrarlo en `docs/08-decisiones.md`.
-2. HU-15: retorno por línea, incluida la bodega receptora distinta (CF-04).
-3. Integrar el pull request #3 y, al cierre de la semana, abrir el de `semana-10`.
+1. Joaquín revisa e integra el pull request #21. Al integrarse, las tarjetas #14, #15 y #20 pasan a
+   Terminado en el tablero.
+2. Semana 12: HU-17 (listado de arriendos con su total, Gonzalo) y HU-18 (ventas, Joaquín).
+3. Semana 13: HU-19 (historial de operaciones de un cliente) y retrospectiva del Sprint 4.
 
 ## Bloqueado
 
@@ -146,8 +167,8 @@ funcionan.
 - Un equipo en tránsito sigue asignado a su bodega de origen hasta que se confirma la llegada (D14).
   No hay forma de anular un traslado iniciado: si el destino fue un error, se confirma la llegada y
   se registra el traslado de vuelta.
-- Las pantallas de arriendos no existen todavía. Para ver HU-13 en local hay que cargar un arriendo
-  con SQL, como se explica en `docs/evidencias/semana-09/README.md`.
+- Para ver HU-13 en local ya no hace falta cargar un arriendo con SQL: se registra desde la pantalla
+  Arriendos (HU-14), con un cliente creado en Clientes (HU-29).
 - Los DTOs de formulario son clases con `@Data`, no `record` (ver `docs/04-convenciones-codigo.md`).
 
 - El modelo de datos está definido y se puede implementar. Respeta el diccionario tal como
@@ -163,6 +184,10 @@ funcionan.
 - Gonzalo no hace commits sobre una rama que llegó por bundle. Las correcciones se piden
   en el pull request y llegan en un bundle nuevo, para que el historial siga reflejando
   quién escribió cada cosa.
+- **En Linux:** usar Docker Engine (`get.docker.com`) en vez de Docker Desktop, agregar el usuario al
+  grupo `docker` (`sudo usermod -aG docker $USER` y volver a iniciar sesión) e instalar
+  `openjdk-21-jdk`, dejándolo como predeterminado con `update-alternatives`. Las pruebas se corren con
+  `./mvnw test`.
 - Java 17 no sirve. El proyecto compila contra 21 y el compilador se detiene. En el equipo
   de Joaquín, el `java` del PATH era 17 (shim de Oracle) y `JAVA_HOME` estaba vacío. Se
   configuró `JAVA_HOME` a Temurin 21 a nivel de usuario: **afecta a cualquier otro proyecto

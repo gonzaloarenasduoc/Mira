@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${id == null} ? 'Nuevo cliente' : 'Editar cliente')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" style="max-width: 860px;">
+    <div class="encabezado-pagina mb-4">
+        <h1 th:text="${id == null} ? 'Nuevo cliente' : 'Editar cliente'">Cliente</h1>
+        <p th:text="${id == null} ? 'El RUT se valida con su dígito verificador y no puede repetirse dentro de la empresa.' : 'El RUT no se modifica: identifica al cliente en sus operaciones.'">Ayuda</p>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-4">
+            <form th:object="${cliente}" method="post" novalidate
+                  th:action="${id == null} ? @{/clientes} : @{/clientes/{id}(id=${id})}">
+                <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}">
+                    <div th:each="e : ${#fields.globalErrors()}" th:text="${e}">Error</div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="rut" class="form-label">RUT</label>
+                        <input id="rut" type="text" class="form-control" th:field="*{rut}" th:errorclass="is-invalid"
+                               th:readonly="${id != null}" placeholder="12.345.678-9">
+                        <div class="invalid-feedback" th:errors="*{rut}">Error</div>
+                    </div>
+                    <div class="col-md-8">
+                        <label for="razonSocial" class="form-label">Razón social</label>
+                        <input id="razonSocial" type="text" class="form-control" th:field="*{razonSocial}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{razonSocial}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="giro" class="form-label">Giro <span class="text-secondary">(opcional)</span></label>
+                        <input id="giro" type="text" class="form-control" th:field="*{giro}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{giro}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="comuna" class="form-label">Comuna <span class="text-secondary">(opcional)</span></label>
+                        <input id="comuna" type="text" class="form-control" th:field="*{comuna}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{comuna}">Error</div>
+                    </div>
+                    <div class="col-12">
+                        <label for="direccion" class="form-label">Dirección <span class="text-secondary">(opcional)</span></label>
+                        <input id="direccion" type="text" class="form-control" th:field="*{direccion}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{direccion}">Error</div>
+                    </div>
+                    <div class="col-12"><h2 class="h6 text-uppercase text-secondary mt-2 mb-0">Contacto</h2></div>
+                    <div class="col-md-4">
+                        <label for="contactoNombre" class="form-label">Nombre <span class="text-secondary">(opcional)</span></label>
+                        <input id="contactoNombre" type="text" class="form-control" th:field="*{contactoNombre}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{contactoNombre}">Error</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="contactoEmail" class="form-label">Correo <span class="text-secondary">(opcional)</span></label>
+                        <input id="contactoEmail" type="email" class="form-control" th:field="*{contactoEmail}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{contactoEmail}">Error</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="contactoTelefono" class="form-label">Teléfono <span class="text-secondary">(opcional)</span></label>
+                        <input id="contactoTelefono" type="text" class="form-control" th:field="*{contactoTelefono}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{contactoTelefono}">Error</div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-end mt-4">
+                    <a class="btn btn-outline-secondary" th:href="@{/clientes}">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

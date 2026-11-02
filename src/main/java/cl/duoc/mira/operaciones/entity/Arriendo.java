@@ -42,6 +42,14 @@ public class Arriendo extends Operacion {
         this.numeroOrdenCompra = numeroOrdenCompra;
     }
 
+    /**
+     * Registra el retorno de una línea (HU-15). Cada equipo retorna por separado: el cliente puede
+     * devolver uno y conservar otro. Las reglas de fecha las valida ArriendoService.
+     */
+    public void registrarRetorno(OperacionDetalle linea, LocalDate fecha, String observacion) {
+        linea.registrarRetorno(fecha, observacion);
+    }
+
     /** Cada línea es un equipo con su tarifa diaria (HU-14). */
     public void agregarLinea(Long equipoId, BigDecimal tarifaDiaria) {
         agregarDetalle(equipoId, tarifaDiaria);

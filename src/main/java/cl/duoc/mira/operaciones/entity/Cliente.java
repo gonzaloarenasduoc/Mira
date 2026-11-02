@@ -12,7 +12,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** Empresa que compra o arrienda equipos. El RUT es único por empresa; la baja es lógica. */
+/** Empresa que compra o arrienda equipos. El RUT es único por empresa; la baja es lógica (HU-29). */
 @Getter
 @Entity
 @Table(name = "cliente")
@@ -49,4 +49,27 @@ public class Cliente extends EntidadAuditable {
 
     @Column(nullable = false)
     private boolean activo;
+
+    public Cliente(Empresa empresa, String rut) {
+        this.empresa = empresa;
+        this.rut = rut;
+        this.activo = true;
+    }
+
+    /** El RUT no se edita: identifica al cliente en sus operaciones y documentos. */
+    public void actualizar(String razonSocial, String giro, String direccion, String comuna,
+                           String contactoNombre, String contactoEmail, String contactoTelefono) {
+        this.razonSocial = razonSocial;
+        this.giro = giro;
+        this.direccion = direccion;
+        this.comuna = comuna;
+        this.contactoNombre = contactoNombre;
+        this.contactoEmail = contactoEmail;
+        this.contactoTelefono = contactoTelefono;
+    }
+
+    /** Baja lógica: un cliente con operaciones no se elimina. */
+    public void cambiarEstado(boolean activo) {
+        this.activo = activo;
+    }
 }

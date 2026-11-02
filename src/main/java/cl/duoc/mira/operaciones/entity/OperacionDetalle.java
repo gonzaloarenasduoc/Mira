@@ -40,6 +40,15 @@ public class OperacionDetalle extends EntidadAuditable {
     @Column(length = 300)
     private String observacion;
 
+    public boolean estaPendienteDeRetorno() {
+        return fechaRetornoReal == null;
+    }
+
+    void registrarRetorno(LocalDate fecha, String observacion) {
+        this.fechaRetornoReal = fecha;
+        this.observacion = observacion;
+    }
+
     OperacionDetalle(Operacion operacion, Long equipoId, BigDecimal valorUnitario) {
         this.operacion = operacion;
         this.equipoId = equipoId;

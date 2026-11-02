@@ -154,6 +154,38 @@ class EquipoServiceTest {
         verify(movimientoRepository, never()).save(any());
     }
 
+    /** CF-04: si se recibe en otra bodega, el equipo queda asignado a ella sin un traslado adicional. */
+    @Test
+    void recibirDeArriendo_enOtraBodega_quedaDisponibleEnLaBodegaReceptora() {
+        Equipo equipo = equipoDisponible();
+        Movimiento.registrar(equipo, TipoMovimiento.SALIDA_ARRIENDO, LocalDateTime.now(RELOJ), bodega, null, 500L, USUARIO_ID, null);
+        Bodega sur = new Bodega(mock(Empresa.class), "Bodega Sur", null, null);
+        when(bodegaService.obtener(EMPRESA_ID, 21L)).thenReturn(sur);
+        when(equipoRepository.buscarParaActualizar(EMPRESA_ID, 30L)).thenReturn(Optional.of(equipo));
+
+        service.recibirDeArriendo(EMPRESA_ID, USUARIO_ID, 30L, 500L, 21L, " Sin daños ");
+
+        ArgumentCaptor<Movimiento> movimiento = ArgumentCaptor.forClass(Movimiento.class);
+        verify(movimientoRepository).save(movimiento.capture());
+        assertThat(equipo.getEstado()).isEqualTo(EstadoEquipo.DISPONIBLE);
+        assertThat(equipo.getBodega()).isSameAs(sur);
+        Movimiento m = movimiento.getValue();
+        assertThat(m.getTipo()).isEqualTo(TipoMovimiento.RETORNO_ARRIENDO);
+        assertThat(m.getBodegaDestino()).isSameAs(sur);
+        assertThat(m.getOperacionId()).isEqualTo(500L);
+        assertThat(m.getObservacion()).isEqualTo("Sin daños");
+    }
+
+    @Test
+    void recibirDeArriendo_equipoQueNoEstaArrendado_lanzaExcepcionSinMovimiento() {
+        when(equipoRepository.buscarParaActualizar(EMPRESA_ID, 30L)).thenReturn(Optional.of(equipoDisponible()));
+
+        NegocioException ex = assertThrows(NegocioException.class,
+                () -> service.recibirDeArriendo(EMPRESA_ID, USUARIO_ID, 30L, 500L, 20L, null));
+        assertThat(ex.getMessage()).isEqualTo("El equipo TS16-001 no está arrendado: su estado es disponible.");
+        verify(movimientoRepository, never()).save(any());
+    }
+
     private Equipo equipoDisponible() {
         Equipo equipo = new Equipo(mock(Empresa.class), mock(Categoria.class), bodega, "TS16-001", "Leica", "TS16",
                 null, null, null, null);

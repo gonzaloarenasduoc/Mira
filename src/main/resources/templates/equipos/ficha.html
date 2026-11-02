@@ -73,6 +73,9 @@
                                 <span th:if="${m.bodegaDestino() != null}" th:text="(${m.bodegaOrigen() != null} ? 'hacia ' : 'Hacia ') + ${m.bodegaDestino()}">destino</span>
                             </div>
                             <div class="small text-secondary fst-italic" th:if="${m.observacion() != null}" th:text="${m.observacion()}">obs</div>
+                            <div class="small" th:if="${m.operacionId() != null and (m.tipo().name() == 'SALIDA_ARRIENDO' or m.tipo().name() == 'RETORNO_ARRIENDO')}">
+                                <a th:href="@{/arriendos/{id}(id=${m.operacionId()})}" th:text="'Ver arriendo N° ' + ${m.operacionId()}">Ver arriendo</a>
+                            </div>
                         </li>
                     </ul>
                 </div>

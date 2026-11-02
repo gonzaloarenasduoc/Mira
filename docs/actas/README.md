@@ -7,3 +7,4 @@ planificación, observaciones y control de acuerdos.
 |---|---|
 | [Acta_Control_de_Avance_2026_10_19.docx](Acta_Control_de_Avance_2026_10_19.docx) | 9 |
 | [Acta_Control_de_Avance_2026_10_26.docx](Acta_Control_de_Avance_2026_10_26.docx) | 10 |
+| [Acta_Control_de_Avance_2026_11_02.docx](Acta_Control_de_Avance_2026_11_02.docx) | 11 |

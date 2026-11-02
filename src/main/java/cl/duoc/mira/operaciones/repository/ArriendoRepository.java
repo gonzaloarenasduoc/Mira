@@ -1,6 +1,7 @@
 package cl.duoc.mira.operaciones.repository;
 
 import cl.duoc.mira.operaciones.entity.Arriendo;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,6 +28,21 @@ public interface ArriendoRepository extends JpaRepository<Arriendo, Long> {
             where a.empresa.id = :empresaId and d.equipoId = :equipoId and d.fechaRetornoReal is null
             """)
     List<ArriendoVigente> vigentesDelEquipo(@Param("empresaId") Long empresaId, @Param("equipoId") Long equipoId);
+
+    /**
+     * Líneas sin retorno cuya fecha comprometida es igual o anterior al límite, de la más atrasada a la
+     * más próxima (HU-16). Una sola consulta, apoyada en el índice ix_arriendo_fecha_retorno.
+     */
+    @Query("""
+            select new cl.duoc.mira.operaciones.repository.LineaPorRetornar(
+                a.id, c.razonSocial, d.equipoId, a.fechaRetornoComprometida)
+            from Arriendo a join a.cliente c join a.detalles d
+            where a.empresa.id = :empresaId
+              and d.fechaRetornoReal is null
+              and a.fechaRetornoComprometida <= :limite
+            order by a.fechaRetornoComprometida, a.id
+            """)
+    List<LineaPorRetornar> porRetornarHasta(@Param("empresaId") Long empresaId, @Param("limite") LocalDate limite);
 
     @Query("""
             select distinct a from Arriendo a

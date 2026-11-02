@@ -236,6 +236,30 @@ guarda el equipo como `equipoId` y `Operacion` guarda el usuario como `usuarioId
 entidades, HU-12 y HU-13 dependerían solo del estado. `ddl-auto: validate` comprueba el mapeo
 contra el esquema real en cada arranque.
 
+## D17 · Los clientes se administran desde la aplicación (HU-29)
+
+**Fecha.** 26-10-2026.
+
+**Decisión.** Se agrega al backlog la historia HU-29, "Administrar clientes", dentro de E005, con
+3 PF, en el Sprint 4. Permite registrar, editar, activar y desactivar los clientes de la empresa.
+El RUT se valida con su dígito verificador, se guarda con formato `12.345.678-9` y es único por
+empresa. Los clientes no se eliminan: se desactivan, porque tienen operaciones asociadas. Los
+administran el administrador, el encargado de bodega y el vendedor, que son los roles que registran
+operaciones; la jefatura solo los consulta.
+
+**Motivo.** HU-14, HU-18 y HU-19 exigen elegir un cliente "de los clientes registrados de la
+empresa", pero ninguna historia permitía registrarlos. Se detectó al implementar HU-14. Mira se
+plantea como un SaaS multiempresa: cada empresa agrega sus clientes a diario, y cargarlos en la
+base de datos haría depender a cada empresa de un desarrollador. El modelo ya lo preveía: `cliente`
+tiene `empresa_id` y el RUT es único por empresa.
+
+**Efecto en el alcance.** El backlog pasa de 100 a 103 PF. El ajuste se informa en el acta de
+control de avance de la semana 11.
+
+**Descartado.** Cargar los clientes con SQL o con una migración de datos: sirve para una
+demostración, no para un producto que usan varias empresas. Incluirlo dentro de HU-14: esa historia
+ya estaba terminada e integrada, y los clientes también los usan las ventas y las capacitaciones.
+
 ---
 
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo

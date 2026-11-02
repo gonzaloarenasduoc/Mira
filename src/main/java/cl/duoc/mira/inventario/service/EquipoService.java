@@ -23,6 +23,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -108,6 +109,29 @@ public class EquipoService {
                 LocalDateTime.now(clock), equipo.getBodega(), null, operacionId, usuarioId, null));
     }
 
+    /**
+     * Recibe el equipo de vuelta de un arriendo (HU-15): queda disponible y asignado a la bodega que lo
+     * recibe, aunque sea distinta de la de salida. El movimiento RETORNO_ARRIENDO documenta el cambio
+     * de bodega: no se genera un traslado adicional (03-modelo-datos.md, sección 5, regla 4).
+     */
+    @Transactional
+    public void recibirDeArriendo(Long empresaId, Long usuarioId, Long equipoId, Long operacionId,
+                                  Long bodegaId, String observacion) {
+        Equipo equipo = equipoRepository.buscarParaActualizar(empresaId, equipoId)
+                .filter(Equipo::isActivo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("El equipo"));
+        if (equipo.getEstado() != EstadoEquipo.ARRENDADO) {
+            throw new NegocioException("El equipo " + equipo.getNumeroSerie() + " no está arrendado: su estado es "
+                    + equipo.getEstado().getEtiqueta().toLowerCase(Locale.ROOT) + ".");
+        }
+        Bodega receptora = bodegaService.obtener(empresaId, bodegaId);
+        if (!receptora.isActiva()) {
+            throw new NegocioException("La bodega " + receptora.getNombre() + " está inactiva y no recibe equipos.");
+        }
+        movimientoRepository.save(Movimiento.registrar(equipo, TipoMovimiento.RETORNO_ARRIENDO,
+                LocalDateTime.now(clock), null, receptora, operacionId, usuarioId, vacioANulo(observacion)));
+    }
+
     /** Un equipo de otra empresa se responde como inexistente (PNF-06). */
     public FichaEquipoResponse ficha(Long empresaId, Long id) {
         Equipo equipo = equipoRepository.buscarFicha(empresaId, id)
@@ -117,7 +141,7 @@ public class EquipoService {
         Map<Long, String> nombres = usuarioService.nombresPorId(empresaId, responsables);
 
         List<MovimientoResponse> historial = movimientos.stream()
-                .map(m -> new MovimientoResponse(m.getTipo(), m.getFecha(),
+                .map(m -> new MovimientoResponse(m.getTipo(), m.getFecha(), m.getOperacionId(),
                         m.getBodegaOrigen() == null ? null : m.getBodegaOrigen().getNombre(),
                         m.getBodegaDestino() == null ? null : m.getBodegaDestino().getNombre(),
                         nombres.getOrDefault(m.getUsuarioId(), "—"), m.getObservacion()))
