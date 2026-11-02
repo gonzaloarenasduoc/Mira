@@ -126,6 +126,11 @@ D17.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) abierto el 02-11 con HU-15, HU-16 y HU-29, con la revisión
   pedida a Joaquín.
+- Tercer informe de avance (02-11): `Fase 2/Evidencias Grupales/Informe_Avance_3_Semana11.docx`
+  (copia de la guía 2.6 actualizada a la semana 11; el informe 2.6 entregado no se modificó), el acta
+  del 02-11 y el video `Demo/Demo_v4.mp4` (7 min 21 s, sin audio): repositorio y código, Flyway aplicando
+  V1 y V2 sobre una base vacía, recorrido de HU-01 a HU-16 y HU-29, consultas a PostgreSQL con lo
+  registrado en la demo, la suite de pruebas y el tablero.
 
 ## En curso
 
