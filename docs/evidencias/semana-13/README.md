@@ -121,3 +121,15 @@ JavaScript.
 | [22-tecnicos.png](22-tecnicos.png) | Tres técnicos registrados por el vendedor, uno de ellos desactivado |
 
 La jefatura ve la lista sin el botón para registrar; el encargado de bodega recibe 403 (matriz de E007).
+
+## Agendar una capacitación (HU-20)
+
+| Captura | Qué muestra |
+|---|---|
+| [23-ficha-sugiere-capacitacion.png](23-ficha-sugiere-capacitacion.png) | El arriendo N° 3 (TS16 y GS18, categorías que requieren capacitación) sugiere agendarla |
+| [24-capacitacion-fecha-pasada.png](24-capacitacion-fecha-pasada.png) | Una fecha anterior a hoy se rechaza |
+| [25-capacitacion-agendada.png](25-capacitacion-agendada.png) | Agendada con Andrés Pérez para el 12-11 a las 09:30; queda programada y la sugerencia desaparece |
+
+Solo se ofrecen los técnicos activos (Diego Fuentes, desactivado, no aparece). La jefatura ve la
+capacitación sin el botón para agendar y recibe 403 en el formulario; el encargado de bodega no ve la
+sección y también recibe 403.

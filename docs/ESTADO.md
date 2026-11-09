@@ -3,14 +3,13 @@
 Este archivo se actualiza al terminar cada sesión de trabajo. Es lo primero que lee el
 asistente del otro integrante para saber qué está en curso y no pisar nada.
 
-**Última actualización:** 26-10-2026
+**Última actualización:** 09-11-2026
 
 ## Fase actual
 
-Fase 2, semana 11, rama `semana-11` (D11), creada desde `semana-10` porque el pull request #19
-todavía no se integra. **Sprint 4** en curso (HU-14 a HU-19, semanas 10 a 13): HU-14, HU-15 y HU-16 están
-implementadas y probadas, igual que HU-29 (administrar clientes), agregada al backlog con la decisión
-D17.
+Fase 2, semana 13, rama `semana-13` (D11). **Sprint 5** en curso (HU-20 a HU-28 y HU-30, 31 PF):
+E008 y E009 terminadas; de E007 están HU-30 (técnicos) y HU-20 (agendar capacitación). Faltan HU-21
+y HU-22. El Sprint 4 está integrado en `main` (pull request #22).
 
 ## Terminado
 
@@ -126,6 +125,11 @@ D17.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- HU-20 en `semana-13` (09-11): agendar la capacitación de un arriendo o una venta, con técnico
+  activo, fecha (hoy o posterior), hora y lugar; queda programada y vinculada a la operación. La ficha
+  sugiere agendarla cuando algún equipo es de una categoría que la requiere y no hay una programada o
+  realizada. Agendan administrador y vendedor; la jefatura solo consulta y el encargado no ve la
+  sección. 207 pruebas.
 - HU-30 en `semana-13` (09-11, D25): administrar técnicos (nueva, 2 PF, como HU-29 con los clientes).
   El backlog pasa de 103 a 105 PF; informarlo en el acta de la semana 13. Menú Técnicos para
   administrador, vendedor y jefatura (que solo consulta); el encargado de bodega no accede. 197 pruebas.
@@ -184,7 +188,7 @@ D17.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 5: HU-20 a HU-28 | Ambos | `semana-13` | E008 y E009 terminadas (adelantadas). Falta E007: HU-20, HU-21 y HU-22 (capacitaciones) |
+| Sprint 5: HU-20 a HU-28 y HU-30 | Ambos | `semana-13` | E008 y E009 terminadas. De E007, HU-30 y HU-20 listas; faltan HU-21 (aviso de técnico ocupado, CF-12) y HU-22 (calendario y marcar realizada o cancelada) |
 
 ## Siguiente
 
