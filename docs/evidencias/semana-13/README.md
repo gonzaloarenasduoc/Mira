@@ -133,3 +133,15 @@ La jefatura ve la lista sin el botón para registrar; el encargado de bodega rec
 Solo se ofrecen los técnicos activos (Diego Fuentes, desactivado, no aparece). La jefatura ve la
 capacitación sin el botón para agendar y recibe 403 en el formulario; el encargado de bodega no ve la
 sección y también recibe 403.
+
+## Técnico ocupado (HU-21, CF-12, D26)
+
+| Captura | Qué muestra |
+|---|---|
+| [26-tecnico-ocupado-aviso.png](26-tecnico-ocupado-aviso.png) | Al elegir a Andrés Pérez y el 12-11, el formulario advierte su capacitación de las 09:30, antes de enviar |
+| [27-tecnico-ocupado-sin-confirmar.png](27-tecnico-ocupado-sin-confirmar.png) | Enviado sin marcar "Agendar de todas formas": no se guarda y el aviso se mantiene |
+| [28-capacitacion-confirmada.png](28-capacitacion-confirmada.png) | Con la marca, la capacitación de la venta N° 4 queda agendada a las 16:00 |
+
+El 13-11 no hay aviso, y tampoco para Camila Rojas el 12-11. Con dos capacitaciones ese día, el aviso
+detalla ambas. El campo de fecha se ve en formato mes/día porque el navegador de prueba usa la
+configuración regional en inglés; el valor enviado es el 12-11-2026.

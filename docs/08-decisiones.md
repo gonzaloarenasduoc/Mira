@@ -424,6 +424,22 @@ informa en el acta de control de avance de la semana 13.
 **Descartado.** Cargar los técnicos con una migración. Registrar un técnico dentro del formulario de
 agendar: mezcla dos responsabilidades en una historia.
 
+## D26 · El técnico ocupado se advierte, no se bloquea (HU-21)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** Si el técnico ya tiene otra capacitación **programada** el mismo día, el formulario lo
+advierte apenas se eligen técnico y fecha, con la hora y el lugar de las otras capacitaciones. Para
+agendar igual hay que marcar "Agendar de todas formas"; el servidor vuelve a revisar al enviar, de modo
+que sin esa marca no se guarda. Las capacitaciones realizadas o canceladas no cuentan. El aviso es por
+día calendario, porque la capacitación no registra duración.
+
+**Motivo.** E007 y CF-12 piden que el sistema "advierta" el conflicto antes de confirmar, no que lo
+impida: un técnico puede dar una capacitación en la mañana y otra en la tarde.
+
+**Descartado.** Bloquear: impediría un caso válido. Avisar solo al enviar: el criterio de HU-21 pide el
+aviso al elegir técnico y fecha.
+
 ---
 
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
