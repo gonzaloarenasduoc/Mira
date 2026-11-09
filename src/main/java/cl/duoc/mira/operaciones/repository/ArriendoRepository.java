@@ -65,6 +65,13 @@ public interface ArriendoRepository extends JpaRepository<Arriendo, Long> {
             countQuery = "select count(a) from Arriendo a where a.empresa.id = :empresaId")
     Page<Arriendo> listar(@Param("empresaId") Long empresaId, Pageable pagina);
 
+    /** Arriendos de un cliente con sus líneas, para su historial (HU-19). */
+    @Query("""
+            select distinct a from Arriendo a left join fetch a.detalles
+            where a.empresa.id = :empresaId and a.cliente.id = :clienteId
+            """)
+    List<Arriendo> delCliente(@Param("empresaId") Long empresaId, @Param("clienteId") Long clienteId);
+
     /** Líneas de los arriendos de una página, en una sola consulta (sin N+1). */
     @Query("select distinct a from Arriendo a left join fetch a.detalles where a.id in :ids")
     List<Arriendo> conDetalles(@Param("ids") Collection<Long> ids);

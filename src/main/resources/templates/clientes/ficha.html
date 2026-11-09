@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Cliente')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" th:with="c=${cliente}">
+    <div class="encabezado-pagina d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <div class="small"><a th:href="@{/clientes}">Clientes</a> / Ficha</div>
+            <h1 th:text="${c.razonSocial()}">Cliente</h1>
+            <p th:text="'RUT ' + ${c.rut()}">RUT</p>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="estado fs-6 estado-DISPONIBLE" th:if="${c.activo()}">Activo</span>
+            <span class="estado fs-6 estado-VENDIDO" th:unless="${c.activo()}">Inactivo</span>
+            <a class="btn btn-outline-primary" th:if="${puedeArrendar}" th:href="@{/clientes/{id}/editar(id=${c.id()})}">Editar</a>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-secondary mb-3">Datos del cliente</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Giro</dt><dd class="col-sm-7" th:text="${c.giro()} ?: '—'">giro</dd>
+                        <dt class="col-sm-5">Dirección</dt><dd class="col-sm-7" th:text="${c.direccion()} ?: '—'">dirección</dd>
+                        <dt class="col-sm-5">Comuna</dt><dd class="col-sm-7" th:text="${c.comuna()} ?: '—'">comuna</dd>
+                        <dt class="col-sm-5">Contacto</dt><dd class="col-sm-7" th:text="${c.contactoNombre()} ?: '—'">contacto</dd>
+                        <dt class="col-sm-5">Correo</dt><dd class="col-sm-7" th:text="${c.contactoEmail()} ?: '—'">correo</dd>
+                        <dt class="col-sm-5">Teléfono</dt><dd class="col-sm-7 mb-0" th:text="${c.contactoTelefono()} ?: '—'">teléfono</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-secondary mb-3" th:text="${veVentas} ? 'Historial de operaciones' : 'Historial de arriendos'">Historial</h2>
+                    <p class="text-secondary mb-0" th:if="${#lists.isEmpty(operaciones)}">Este cliente aún no tiene operaciones registradas.</p>
+                    <div class="table-responsive" th:unless="${#lists.isEmpty(operaciones)}">
+                        <table class="table table-hover align-middle mb-0 tabla-mira">
+                            <thead><tr><th>Fecha</th><th>Operación</th><th>Equipos</th><th>Estado</th><th class="text-end">Total</th></tr></thead>
+                            <tbody>
+                            <tr th:each="o : ${operaciones}" th:classappend="${o.estado() != null and o.estado().name() == 'VENCIDO'} ? 'fila-vencida'">
+                                <td class="text-nowrap" th:text="${#temporals.format(o.fecha(), 'dd-MM-yyyy')}">fecha</td>
+                                <td class="text-nowrap">
+                                    <a class="fw-semibold" th:if="${o.venta()}" th:href="@{/ventas/{id}(id=${o.id()})}" th:text="'Venta N° ' + ${o.id()}">Venta</a>
+                                    <a class="fw-semibold" th:unless="${o.venta()}" th:href="@{/arriendos/{id}(id=${o.id()})}" th:text="'Arriendo N° ' + ${o.id()}">Arriendo</a>
+                                </td>
+                                <td><div class="small text-nowrap" th:each="serie : ${o.equipos()}" th:text="${serie}">Serie</div></td>
+                                <td>
+                                    <span class="estado estado-VENDIDO" th:if="${o.venta()}">Vendido</span>
+                                    <th:block th:unless="${o.venta()}">
+                                        <span class="estado estado-ARRENDADO" th:if="${o.estado().name() == 'VIGENTE'}" th:text="${o.estado().etiqueta}">Vigente</span>
+                                        <span class="estado estado-vencido" th:if="${o.estado().name() == 'VENCIDO'}" th:text="${o.estado().etiqueta}">Vencido</span>
+                                        <span class="estado estado-VENDIDO" th:if="${o.estado().name() == 'CERRADO'}" th:text="${o.estado().etiqueta}">Cerrado</span>
+                                    </th:block>
+                                </td>
+                                <td class="text-end text-nowrap">
+                                    <div class="fw-semibold" th:text="'$ ' + ${#numbers.formatDecimal(o.total(), 1, 'POINT', 0, 'COMMA')}">total</div>
+                                    <div class="small text-secondary" th:text="${o.totalEstimado()} ? 'Estimado' : 'Definitivo'">Definitivo</div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="small text-secondary mt-3 mb-0" th:unless="${veVentas}">Su rol no tiene acceso a las ventas: solo se muestran los arriendos.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

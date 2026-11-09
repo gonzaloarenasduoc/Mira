@@ -4,6 +4,8 @@ import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.operaciones.dto.ClienteResponse;
 import cl.duoc.mira.operaciones.dto.GuardarClienteRequest;
 import cl.duoc.mira.operaciones.service.ClienteService;
+import cl.duoc.mira.operaciones.service.HistorialClienteService;
+import cl.duoc.mira.usuarios.entity.RolUsuario;
 import cl.duoc.mira.usuarios.service.UsuarioAutenticado;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +20,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/** Administración de clientes (HU-29). Consultan todos los roles; editan los que registran operaciones. */
+/**
+ * Administración de clientes (HU-29) y su historial de operaciones (HU-19). Consultan todos los roles;
+ * editan los que registran operaciones.
+ */
 @Controller
 @RequestMapping("/clientes")
 @RequiredArgsConstructor
 public class ClienteController {
 
     private final ClienteService clienteService;
+    private final HistorialClienteService historialClienteService;
 
     @ModelAttribute("seccion")
     public String seccion() {
@@ -35,6 +41,19 @@ public class ClienteController {
     public String listar(@AuthenticationPrincipal UsuarioAutenticado actual, Model model) {
         model.addAttribute("clientes", clienteService.listar(actual.empresaId()));
         return "clientes/lista";
+    }
+
+    /**
+     * Ficha del cliente con su historial de ventas y arriendos (HU-19). El encargado de bodega no tiene
+     * acceso a las ventas (E006), así que en su historial solo aparecen los arriendos.
+     */
+    @GetMapping("/{id}")
+    public String ficha(@AuthenticationPrincipal UsuarioAutenticado actual, @PathVariable Long id, Model model) {
+        boolean veVentas = actual.tieneRol(RolUsuario.ADMINISTRADOR, RolUsuario.VENDEDOR, RolUsuario.JEFATURA);
+        model.addAttribute("cliente", clienteService.buscar(actual.empresaId(), id));
+        model.addAttribute("operaciones", historialClienteService.historial(actual.empresaId(), id, veVentas));
+        model.addAttribute("veVentas", veVentas);
+        return "clientes/ficha";
     }
 
     @GetMapping("/nuevo")

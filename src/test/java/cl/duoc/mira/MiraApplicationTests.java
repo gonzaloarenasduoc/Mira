@@ -17,6 +17,7 @@ import cl.duoc.mira.operaciones.dto.RegistrarVentaRequest;
 import cl.duoc.mira.operaciones.repository.ArriendoRepository;
 import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.service.VentaService;
+import cl.duoc.mira.operaciones.service.HistorialClienteService;
 import cl.duoc.mira.operaciones.repository.ArriendoVigente;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -63,6 +64,8 @@ class MiraApplicationTests {
     private ArriendoService arriendoService;
     @Autowired
     private VentaService ventaService;
+    @Autowired
+    private HistorialClienteService historialClienteService;
     /** El reloj de la aplicación (America/Santiago): "hoy" en UTC puede ser otro día. */
     @Autowired
     private Clock reloj;
@@ -236,6 +239,32 @@ class MiraApplicationTests {
         assertThat(jdbc.queryForObject("SELECT o.cliente_id FROM operacion o JOIN venta v ON v.id = o.id WHERE v.id = ?",
                 Long.class, ventaId)).isEqualTo(cliente);
         assertThat(arriendoService.equiposDisponibles(empresa)).extracting(e -> e.id()).doesNotContain(equipo);
+    }
+
+    /** HU-19 y CF-09 contra la base real: la venta y el arriendo quedan en el historial del cliente. */
+    @Test
+    void historialCliente_ventaYArriendo_aparecenConSuTipo() {
+        long empresa = crearEmpresa("14.141.414-1");
+        insertarEquipo(empresa, "SN-0030");
+        insertarEquipo(empresa, "SN-0031");
+        long arrendado = idEquipo(empresa, "SN-0030");
+        long vendido = idEquipo(empresa, "SN-0031");
+        long cliente = crearCliente(empresa);
+        arriendoService.registrar(empresa, administrador(), arriendo(cliente, arrendado));
+        RegistrarVentaRequest venta = new RegistrarVentaRequest();
+        venta.setClienteId(cliente);
+        venta.setFecha(LocalDate.now(reloj));
+        venta.setLineas(List.of(new LineaVentaRequest(vendido, true, new BigDecimal("9800000"))));
+        ventaService.registrar(empresa, administrador(), venta);
+        entityManager.flush();
+        entityManager.clear();
+
+        var historial = historialClienteService.historial(empresa, cliente, true);
+
+        assertThat(historial).extracting(o -> o.venta()).containsExactly(true, false);
+        assertThat(historial.get(0).equipos()).containsExactly("SN-0031");
+        assertThat(historial.get(1).equipos()).containsExactly("SN-0030");
+        assertThat(historialClienteService.historial(empresa, cliente, false)).hasSize(1);
     }
 
     /** CF-04 contra la base real: retorno en otra bodega, sin traslado adicional. */

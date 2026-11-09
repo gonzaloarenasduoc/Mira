@@ -31,10 +31,13 @@ import cl.duoc.mira.operaciones.dto.DisponibilidadResponse;
 import cl.duoc.mira.operaciones.dto.EstadoArriendo;
 import cl.duoc.mira.operaciones.dto.ResumenArriendoResponse;
 import cl.duoc.mira.operaciones.dto.VentaResponse;
+import cl.duoc.mira.operaciones.dto.OperacionClienteResponse;
+import cl.duoc.mira.operaciones.dto.ClienteResponse;
 import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.service.ClienteService;
 import cl.duoc.mira.operaciones.service.DisponibilidadService;
 import cl.duoc.mira.operaciones.service.VentaService;
+import cl.duoc.mira.operaciones.service.HistorialClienteService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -84,12 +87,14 @@ class SeguridadTest {
     private ClienteService clienteService;
     @MockitoBean
     private VentaService ventaService;
+    @MockitoBean
+    private HistorialClienteService historialClienteService;
 
     /** PNF-05: toda URL protegida, accedida sin sesión, redirige al inicio de sesión. */
     @ParameterizedTest
     @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios",
             "/traslados", "/traslados/nuevo?equipoId=1", "/disponibilidad",
-            "/arriendos", "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo", "/ventas/nueva", "/ventas/1"})
+            "/arriendos", "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo", "/ventas/nueva", "/ventas/1", "/clientes/1"})
     void rutaProtegida_sinSesion_redirigeAlLogin(String ruta) throws Exception {
         mvc.perform(get(ruta))
                 .andExpect(status().is3xxRedirection())
@@ -251,6 +256,37 @@ class SeguridadTest {
                 .andExpect(status().isForbidden());
     }
 
+    /** HU-19: la ficha del cliente muestra su historial; con acceso a E006 incluye las ventas. */
+    @Test
+    void fichaCliente_comoJefatura_muestraVentasYArriendos() throws Exception {
+        when(clienteService.buscar(any(), eq(3L))).thenReturn(clienteDePrueba());
+        when(historialClienteService.historial(any(), eq(3L), eq(true))).thenReturn(List.of(
+                new OperacionClienteResponse(9L, true, LocalDate.of(2026, 11, 9), List.of("TS13-221045"), null,
+                        new BigDecimal("12900000"), false),
+                new OperacionClienteResponse(1L, false, LocalDate.of(2026, 10, 20), List.of("NA2-55021"),
+                        EstadoArriendo.CERRADO, new BigDecimal("195000"), false)));
+
+        mvc.perform(get("/clientes/3").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Historial de operaciones")))
+                .andExpect(content().string(containsString("Venta N° 9")))
+                .andExpect(content().string(containsString("Arriendo N° 1")))
+                .andExpect(content().string(containsString("$ 12.900.000")))
+                .andExpect(content().string(not(containsString("Editar"))));
+    }
+
+    /** HU-19 y matriz de permisos: el encargado de bodega ve solo los arriendos del cliente. */
+    @Test
+    void fichaCliente_comoEncargadoDeBodega_noPideLasVentas() throws Exception {
+        when(clienteService.buscar(any(), eq(3L))).thenReturn(clienteDePrueba());
+        when(historialClienteService.historial(any(), eq(3L), eq(false))).thenReturn(List.of());
+
+        mvc.perform(get("/clientes/3").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Historial de arriendos")))
+                .andExpect(content().string(containsString("solo se muestran los arriendos")));
+    }
+
     /** D17: la jefatura consulta los clientes, pero no los registra ni los modifica. */
     @Test
     void clientes_comoJefatura_consultaPeroNoRegistra() throws Exception {
@@ -286,6 +322,11 @@ class SeguridadTest {
         mvc.perform(post("/arriendos").param("clienteId", "1")
                         .with(csrf()).with(user(con(RolUsuario.JEFATURA))))
                 .andExpect(status().isForbidden());
+    }
+
+    private static ClienteResponse clienteDePrueba() {
+        return new ClienteResponse(3L, "76.123.456-0", "Constructora Los Andes SpA", null, null, "Las Condes",
+                null, null, null, true);
     }
 
     private static UsuarioAutenticado con(RolUsuario rol) {
