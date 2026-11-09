@@ -126,6 +126,10 @@ D17.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- HU-19 en `semana-13` (adelantada el 09-11, D21): ficha del cliente con su historial de ventas y
+  arriendos, del más reciente al más antiguo, con tipo, equipos, estado y total. El encargado de
+  bodega ve solo los arriendos (matriz de permisos). Verificado contra PostgreSQL; 148 pruebas.
+  La rama `semana-13` parte de `semana-12`: el PR #22 aún no estaba integrado.
 - Cierre de la semana 12 (09-11): pull request #22 (`semana-12` → `main`) con HU-17, HU-18 y la
   migración V3, con la revisión pedida a Joaquín, y acta de control de avance del 09-11 en
   `docs/actas/`. Avance: 19 de 29 historias, 71 de 103 PF.
@@ -152,15 +156,14 @@ D17.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 4: HU-19 | Ambos | `semana-13` | HU-14 a HU-18 y HU-29 terminadas. Falta el historial de operaciones de un cliente (HU-19) |
+| Cierre del Sprint 4 | Ambos | `semana-13` | Las 7 historias del sprint están terminadas. Falta integrar los PR #22 y de la semana 13, la retrospectiva y planificar el Sprint 5 |
 
 ## Siguiente
 
 1. Joaquín revisa e integra el pull request #22. Al integrarse, cerrar #16 y #17 si no se cierran solos.
 2. Actualizar el tablero: HU-15, HU-16 y HU-29 a Terminado; HU-17 y HU-18 a En revisión.
 3. Consultar con el docente las categorías que no son equipos físicos (D19).
-4. Semana 13: HU-19 (historial de operaciones de un cliente, Gonzalo), retrospectiva del Sprint 4 y
-   planificación del Sprint 5.
+4. Semana 13: retrospectiva del Sprint 4 y planificación del Sprint 5. HU-19 ya está terminada.
 
 ## Bloqueado
 

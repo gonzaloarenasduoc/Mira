@@ -327,5 +327,20 @@ dato; el equipo lo decidió al implementarla.
 
 ---
 
+## D21 · Historial de operaciones de un cliente (HU-19)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** La ficha del cliente muestra sus ventas y arriendos del más reciente al más antiguo.
+La fecha de un arriendo es su fecha de inicio, no la de registro, porque refleja cuándo empezó; la de
+una venta es la fecha de la venta. El total de un arriendo sigue la regla de D18 y el de una venta es
+la suma de sus valores. Según la matriz de permisos, el encargado de bodega no tiene acceso a las
+ventas (E006): en su historial solo aparecen los arriendos.
+
+**Motivo.** HU-19 pide las operaciones "ordenadas por fecha" sin decir cuál fecha usar en un
+arriendo; el equipo lo decidió al implementarla.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.
