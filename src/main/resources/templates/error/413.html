@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Archivo demasiado grande')}"></head>
+<body>
+<main class="container py-5" style="max-width: 640px;">
+    <!-- Un envío sobre el límite de subida se rechaza antes de llegar a la aplicación (HU-23, D22). -->
+    <div class="card">
+        <div class="card-body p-4 text-center">
+            <h1 class="h4 mb-3">El archivo supera el máximo de 10 MB</h1>
+            <p class="text-secondary">Los documentos se adjuntan en PDF, JPG o PNG, de hasta 10 MB. Reduzca el
+                archivo, por ejemplo escaneándolo con menor resolución, y vuelva a intentarlo.</p>
+            <a class="btn btn-primary" href="javascript:history.back()">Volver al formulario</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

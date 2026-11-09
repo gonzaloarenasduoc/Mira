@@ -76,6 +76,11 @@ public class VentaService {
         return aResponse(empresaId, venta);
     }
 
+    /** Si el venta existe y es de la empresa; lo usan otros módulos, como documentos (HU-23). */
+    public boolean existe(Long empresaId, Long id) {
+        return ventaRepository.existsByIdAndEmpresaId(id, empresaId);
+    }
+
     /** Una venta de otra empresa se responde como inexistente (PNF-06). */
     public VentaResponse ficha(Long empresaId, Long id) {
         return aResponse(empresaId, ventaRepository.buscarFicha(empresaId, id)

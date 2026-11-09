@@ -166,6 +166,11 @@ public class ArriendoService {
                 .toList();
     }
 
+    /** Si el arriendo existe y es de la empresa; lo usan otros módulos, como documentos (HU-23). */
+    public boolean existe(Long empresaId, Long id) {
+        return arriendoRepository.existsByIdAndEmpresaId(id, empresaId);
+    }
+
     /** Un arriendo de otra empresa se responde como inexistente (PNF-06). */
     public ArriendoResponse ficha(Long empresaId, Long id) {
         return aResponse(empresaId, arriendoRepository.buscarFicha(empresaId, id)

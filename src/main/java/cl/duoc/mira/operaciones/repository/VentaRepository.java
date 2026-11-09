@@ -23,4 +23,6 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
             where v.empresa.id = :empresaId and v.cliente.id = :clienteId
             """)
     List<Venta> delCliente(@Param("empresaId") Long empresaId, @Param("clienteId") Long clienteId);
+
+    boolean existsByIdAndEmpresaId(Long id, Long empresaId);
 }

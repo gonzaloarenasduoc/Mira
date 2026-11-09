@@ -37,10 +37,11 @@ public class SeguridadConfig {
                     .hasAnyRole(EDITAN_INVENTARIO)
                 .requestMatchers(HttpMethod.POST, "/bodegas/**", "/equipos/**", "/traslados/**")
                     .hasAnyRole(EDITAN_INVENTARIO)
-                .requestMatchers("/arriendos/nuevo", "/arriendos/*/retorno", "/clientes/nuevo", "/clientes/*/editar")
+                .requestMatchers("/arriendos/nuevo", "/arriendos/*/retorno", "/arriendos/*/documentos/nuevo",
+                        "/clientes/nuevo", "/clientes/*/editar")
                     .hasAnyRole(REGISTRAN_ARRIENDOS)
                 .requestMatchers(HttpMethod.POST, "/arriendos/**", "/clientes/**").hasAnyRole(REGISTRAN_ARRIENDOS)
-                .requestMatchers("/ventas/nueva").hasAnyRole(REGISTRAN_VENTAS)
+                .requestMatchers("/ventas/nueva", "/ventas/*/documentos/nuevo").hasAnyRole(REGISTRAN_VENTAS)
                 .requestMatchers(HttpMethod.POST, "/ventas/**").hasAnyRole(REGISTRAN_VENTAS)
                 .requestMatchers("/ventas/**").hasAnyRole(CONSULTAN_VENTAS)
                 .anyRequest().authenticated())

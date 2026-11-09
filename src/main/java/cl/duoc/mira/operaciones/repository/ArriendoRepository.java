@@ -75,4 +75,6 @@ public interface ArriendoRepository extends JpaRepository<Arriendo, Long> {
     /** Líneas de los arriendos de una página, en una sola consulta (sin N+1). */
     @Query("select distinct a from Arriendo a left join fetch a.detalles where a.id in :ids")
     List<Arriendo> conDetalles(@Param("ids") Collection<Long> ids);
+
+    boolean existsByIdAndEmpresaId(Long id, Long empresaId);
 }

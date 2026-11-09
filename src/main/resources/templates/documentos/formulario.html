@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Adjuntar documento')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" style="max-width: 760px;">
+    <div class="encabezado-pagina mb-4">
+        <h1>Adjuntar documento</h1>
+        <p th:text="${operacion}">Operación</p>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <form th:object="${documento}" th:action="@{${accion}}" method="post" enctype="multipart/form-data" novalidate>
+        <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}">
+            <div th:each="err : ${#fields.globalErrors()}" th:text="${err}">Error</div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="tipo" class="form-label">Tipo de documento</label>
+                        <select id="tipo" class="form-select" th:field="*{tipo}" th:errorclass="is-invalid">
+                            <option value="">Seleccione…</option>
+                            <option th:each="t : ${tipos}" th:value="${t}" th:text="${t.etiqueta}">Tipo</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{tipo}">Error</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="numeroFolio" class="form-label">Número o folio</label>
+                        <input id="numeroFolio" type="text" class="form-control" maxlength="50" th:field="*{numeroFolio}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{numeroFolio}">Error</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fechaEmision" class="form-label">Fecha</label>
+                        <input id="fechaEmision" type="date" class="form-control" th:field="*{fechaEmision}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{fechaEmision}">Error</div>
+                    </div>
+                    <div class="col-12">
+                        <label for="archivo" class="form-label">Archivo</label>
+                        <input id="archivo" name="archivo" type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                        <div class="form-text" id="ayudaArchivo">PDF, JPG o PNG, de hasta 10 MB.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-end">
+            <a class="btn btn-outline-secondary" th:href="@{${volver}}">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Adjuntar</button>
+        </div>
+    </form>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script>
+    (function () {
+        const archivo = document.getElementById('archivo');
+        const ayuda = document.getElementById('ayudaArchivo');
+        archivo.addEventListener('change', () => {
+            const f = archivo.files[0];
+            const grande = f && f.size > 10 * 1024 * 1024;
+            archivo.classList.toggle('is-invalid', grande);
+            ayuda.textContent = grande ? 'El archivo supera el máximo de 10 MB.' : 'PDF, JPG o PNG, de hasta 10 MB.';
+            ayuda.classList.toggle('text-danger', grande);
+        });
+    })();
+</script>
+</body>
+</html>

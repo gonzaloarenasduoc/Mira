@@ -4,9 +4,12 @@
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 <main class="container py-4" th:with="v=${venta}">
-    <div class="encabezado-pagina mb-4">
-        <h1 th:text="'Venta N° ' + ${v.id()}">Venta</h1>
-        <p th:text="${v.cliente()} + ' · ' + ${v.rutCliente()}">Cliente</p>
+    <div class="encabezado-pagina d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <h1 th:text="'Venta N° ' + ${v.id()}">Venta</h1>
+            <p th:text="${v.cliente()} + ' · ' + ${v.rutCliente()}">Cliente</p>
+        </div>
+        <a class="btn btn-outline-primary" th:if="${puedeVender}" th:href="@{/ventas/{id}/documentos/nuevo(id=${v.id()})}">Adjuntar documento</a>
     </div>
 
     <div th:replace="~{fragments/layout :: mensajes}"></div>

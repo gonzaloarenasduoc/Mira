@@ -15,6 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import cl.duoc.mira.common.controller.InicioController;
+import cl.duoc.mira.documentos.controller.DocumentoController;
+import cl.duoc.mira.documentos.service.DocumentoService;
+import cl.duoc.mira.operaciones.dto.ArriendoResponse;
 import cl.duoc.mira.inventario.controller.BodegaController;
 import cl.duoc.mira.inventario.controller.EquipoController;
 import cl.duoc.mira.inventario.controller.TrasladoController;
@@ -62,7 +65,8 @@ import org.springframework.test.web.servlet.MockMvc;
  */
 @WebMvcTest(controllers = {InicioController.class, UsuarioController.class,
         BodegaController.class, EquipoController.class, TrasladoController.class,
-        DisponibilidadController.class, ArriendoController.class, ClienteController.class, VentaController.class})
+        DisponibilidadController.class, ArriendoController.class, ClienteController.class, VentaController.class,
+        DocumentoController.class})
 @Import({SeguridadConfig.class, MenuGlobal.class, RelojConfig.class})
 class SeguridadTest {
 
@@ -89,12 +93,14 @@ class SeguridadTest {
     private VentaService ventaService;
     @MockitoBean
     private HistorialClienteService historialClienteService;
+    @MockitoBean
+    private DocumentoService documentoService;
 
     /** PNF-05: toda URL protegida, accedida sin sesión, redirige al inicio de sesión. */
     @ParameterizedTest
     @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios",
             "/traslados", "/traslados/nuevo?equipoId=1", "/disponibilidad",
-            "/arriendos", "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo", "/ventas/nueva", "/ventas/1", "/clientes/1"})
+            "/arriendos", "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo", "/ventas/nueva", "/ventas/1", "/clientes/1", "/arriendos/1/documentos/nuevo", "/ventas/1/documentos/nuevo"})
     void rutaProtegida_sinSesion_redirigeAlLogin(String ruta) throws Exception {
         mvc.perform(get(ruta))
                 .andExpect(status().is3xxRedirection())
@@ -285,6 +291,32 @@ class SeguridadTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Historial de arriendos")))
                 .andExpect(content().string(containsString("solo se muestran los arriendos")));
+    }
+
+    /** HU-23 y matriz de E008: el encargado de bodega adjunta documentos a un arriendo. */
+    @Test
+    void adjuntarDocumento_aArriendoComoEncargado_permiteElAcceso() throws Exception {
+        when(arriendoService.ficha(any(), eq(1L))).thenReturn(new ArriendoResponse(1L, "Constructora Andes SpA",
+                "76.123.456-0", LocalDate.of(2026, 11, 2), LocalDate.of(2026, 11, 2), LocalDate.of(2026, 11, 16),
+                null, null, List.of(), BigDecimal.ZERO));
+
+        mvc.perform(get("/arriendos/1/documentos/nuevo").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Arriendo N° 1 · Constructora Andes SpA")))
+                .andExpect(content().string(containsString("Guía de despacho")));
+    }
+
+    /** E008: la jefatura solo consulta; el encargado no adjunta a ventas porque no accede a ellas. */
+    @Test
+    void adjuntarDocumento_sinPermiso_accesoDenegado() throws Exception {
+        mvc.perform(get("/arriendos/1/documentos/nuevo").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/arriendos/1/documentos").with(csrf()).with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/ventas/1/documentos/nuevo").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/ventas/1/documentos").with(csrf()).with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isForbidden());
     }
 
     /** D17: la jefatura consulta los clientes, pero no los registra ni los modifica. */
