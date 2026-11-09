@@ -126,6 +126,9 @@ D17.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- Cierre de la semana 12 (09-11): pull request #22 (`semana-12` → `main`) con HU-17, HU-18 y la
+  migración V3, con la revisión pedida a Joaquín, y acta de control de avance del 09-11 en
+  `docs/actas/`. Avance: 19 de 29 historias, 71 de 103 PF.
 - HU-17 en `semana-12` (09-11): listado de arriendos con su estado (vigente, vencido o cerrado) y su
   total, estimado o definitivo, calculados al consultar con la regla de D18. La opción Arriendos del
   menú lleva al listado y la ve también la jefatura, que solo consulta. Verificado contra PostgreSQL
@@ -153,9 +156,11 @@ D17.
 
 ## Siguiente
 
-1. Cierre de la semana 12: pull request de `semana-12` y acta.
-2. Avisar a Joaquín que HU-18, asignada a él, quedó implementada (toca `EquipoService` y operaciones).
-3. Semana 13: HU-19 (historial de operaciones de un cliente) y retrospectiva del Sprint 4.
+1. Joaquín revisa e integra el pull request #22. Al integrarse, cerrar #16 y #17 si no se cierran solos.
+2. Actualizar el tablero: HU-15, HU-16 y HU-29 a Terminado; HU-17 y HU-18 a En revisión.
+3. Consultar con el docente las categorías que no son equipos físicos (D19).
+4. Semana 13: HU-19 (historial de operaciones de un cliente, Gonzalo), retrospectiva del Sprint 4 y
+   planificación del Sprint 5.
 
 ## Bloqueado
 
