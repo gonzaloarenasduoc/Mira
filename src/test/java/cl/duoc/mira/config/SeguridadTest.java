@@ -19,6 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import cl.duoc.mira.common.controller.InicioController;
 import cl.duoc.mira.documentos.controller.DocumentoController;
 import cl.duoc.mira.documentos.service.DocumentoService;
+import cl.duoc.mira.indicadores.controller.IndicadoresController;
+import cl.duoc.mira.indicadores.service.IndicadoresService;
 import cl.duoc.mira.documentos.dto.DocumentoResponse;
 import cl.duoc.mira.documentos.dto.ArchivoDocumento;
 import cl.duoc.mira.common.exception.RecursoNoEncontradoException;
@@ -78,7 +80,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = {InicioController.class, UsuarioController.class,
         BodegaController.class, EquipoController.class, TrasladoController.class,
         DisponibilidadController.class, ArriendoController.class, ClienteController.class, VentaController.class,
-        DocumentoController.class})
+        DocumentoController.class, IndicadoresController.class})
 @Import({SeguridadConfig.class, MenuGlobal.class, RelojConfig.class})
 class SeguridadTest {
 
@@ -107,13 +109,15 @@ class SeguridadTest {
     private HistorialClienteService historialClienteService;
     @MockitoBean
     private DocumentoService documentoService;
+    @MockitoBean
+    private IndicadoresService indicadoresService;
 
     /** PNF-05: toda URL protegida, accedida sin sesión, redirige al inicio de sesión. */
     @ParameterizedTest
     @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios",
             "/traslados", "/traslados/nuevo?equipoId=1", "/disponibilidad",
             "/arriendos", "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo", "/ventas/nueva", "/ventas/1", "/clientes/1", "/arriendos/1/documentos/nuevo", "/ventas/1/documentos/nuevo",
-            "/documentos/1/archivo"})
+            "/documentos/1/archivo", "/indicadores"})
     void rutaProtegida_sinSesion_redirigeAlLogin(String ruta) throws Exception {
         mvc.perform(get(ruta))
                 .andExpect(status().is3xxRedirection())
@@ -395,6 +399,27 @@ class SeguridadTest {
 
         mvc.perform(get("/documentos/2/archivo").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
                 .andExpect(status().isNotFound());
+    }
+
+    /** HU-28 y CF-10: al ingresar al panel, el arriendo vencido aparece primero con sus días de atraso. */
+    @Test
+    void panelDeIndicadores_conUnRetornoVencido_loMuestraAlInicio() throws Exception {
+        when(indicadoresService.retornosVencidos(any())).thenReturn(List.of(new AlertaRetornoResponse(2L,
+                "Minera Pampa Norte S.A.", 2L, "M300-1A2B3C", "Dron DJI Matrice 300 RTK", LocalDate.of(2026, 11, 4), -5)));
+
+        mvc.perform(get("/indicadores").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Retornos vencidos")))
+                .andExpect(content().string(containsString("5 días")))
+                .andExpect(content().string(containsString("Minera Pampa Norte S.A.")))
+                .andExpect(content().string(containsString("M300-1A2B3C")));
+    }
+
+    @Test
+    void panelDeIndicadores_sinVencidos_loIndica() throws Exception {
+        mvc.perform(get("/indicadores").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("No hay arriendos con retorno vencido.")));
     }
 
     /** D17: la jefatura consulta los clientes, pero no los registra ni los modifica. */

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Indicadores')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div class="encabezado-pagina mb-4">
+        <h1>Panel de indicadores</h1>
+        <p>Estado general del inventario y sus operaciones, calculado al momento de la consulta.</p>
+    </div>
+
+    <!-- HU-28 y CF-10: los retornos vencidos van primero, destacados, con sus días de atraso. -->
+    <section class="card alertas-retorno mb-4" aria-labelledby="tituloVencidos">
+        <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h2 id="tituloVencidos" class="h6 mb-0">Retornos vencidos</h2>
+            <span class="estado estado-vencido" th:unless="${#lists.isEmpty(vencidos)}"
+                  th:text="${#lists.size(vencidos)} + (${#lists.size(vencidos)} == 1 ? ' equipo inmovilizado' : ' equipos inmovilizados')">0</span>
+        </div>
+        <div class="card-body text-secondary" th:if="${#lists.isEmpty(vencidos)}">
+            No hay arriendos con retorno vencido.
+        </div>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(vencidos)}">
+            <table class="table align-middle mb-0 tabla-mira">
+                <thead>
+                <tr><th>Atraso</th><th>Cliente</th><th>Equipo</th><th>Retorno comprometido</th><th>Arriendo</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${vencidos}" class="fila-vencida">
+                    <td class="text-nowrap text-danger fw-semibold"
+                        th:text="${a.diasAtraso()} + (${a.diasAtraso()} == 1 ? ' día' : ' días')">días</td>
+                    <td th:text="${a.cliente()}">Cliente</td>
+                    <td>
+                        <a class="fw-semibold" th:href="@{/equipos/{id}(id=${a.equipoId()})}" th:text="${a.numeroSerie()}">Serie</a>
+                        <div class="small text-secondary" th:text="${a.equipo()}">Equipo</div>
+                    </td>
+                    <td th:text="${#temporals.format(a.fechaRetornoComprometida(), 'dd-MM-yyyy')}">fecha</td>
+                    <td><a th:href="@{/arriendos/{id}(id=${a.arriendoId()})}" th:text="'N° ' + ${a.arriendoId()}">N°</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
