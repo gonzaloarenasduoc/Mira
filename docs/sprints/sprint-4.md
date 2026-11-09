@@ -11,7 +11,7 @@ retornos con alertas.
 | HU-15 · Registrar el retorno de un equipo arrendado | #14 | 5 | Joaquín (servicios) y Gonzalo (vistas) | Terminada e integrada (PR #21) |
 | HU-16 · Alertas de retorno próximo o vencido | #15 | 5 | Gonzalo (vistas) y Joaquín (servicios) | Terminada e integrada (PR #21) |
 | HU-17 · Consultar los arriendos y su total | #16 | 3 | Gonzalo | Terminada en la semana 12, rama `semana-12` (D18) |
-| HU-18 · Registrar una venta | #17 | 5 | Joaquín | Pendiente |
+| HU-18 · Registrar una venta | #17 | 5 | Joaquín (asignada); la implementó Gonzalo | Terminada en la semana 12, rama `semana-12` (D20) |
 | HU-19 · Consultar el historial de operaciones de un cliente | #18 | 3 | Gonzalo | Pendiente |
 | HU-29 · Administrar clientes (agregada, D17) | #20 | 3 | Joaquín (servicios) y Gonzalo (vistas) | Terminada e integrada (PR #21) |
 

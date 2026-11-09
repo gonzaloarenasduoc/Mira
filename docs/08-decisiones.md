@@ -309,5 +309,23 @@ docente.
 
 ---
 
+## D20 · Reglas del registro de una venta (HU-18)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** La venta lleva una fecha que el formulario propone con el día de hoy y que se puede
+cambiar a una fecha pasada, nunca futura. El valor de venta de cada equipo se escribe siempre: es
+obligatorio y mayor que cero, porque el sistema no guarda precios de venta. Solo se venden equipos
+disponibles y sin arriendo vigente; el equipo vendido queda en estado `VENDIDO` con su movimiento
+`SALIDA_VENTA`, y ningún otro movimiento lo acepta de vuelta. Los permisos siguen la matriz de
+`01-contexto-negocio.md`: registran el administrador y el vendedor, la jefatura consulta la ficha
+de una venta y el encargado de bodega no accede. La opción Ventas del menú lleva a registrar una
+venta; el listado de ventas de un cliente llega con HU-19.
+
+**Motivo.** CF-09 pide registrar la venta "con fecha y valor", pero no definía de dónde sale cada
+dato; el equipo lo decidió al implementarla.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.
