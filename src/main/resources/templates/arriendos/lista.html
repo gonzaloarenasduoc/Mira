@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Arriendos')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div class="encabezado-pagina d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <h1>Arriendos</h1>
+            <p>Qué está arrendado, a quién y por cuánto. El total es estimado mientras algún equipo no retorna.</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/arriendos/nuevo}" th:if="${puedeArrendar}">Registrar arriendo</a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <div class="card">
+        <div class="card-body text-secondary" th:if="${arriendos.isEmpty()}">
+            Aún no hay arriendos registrados.
+        </div>
+        <div class="table-responsive" th:unless="${arriendos.isEmpty()}">
+            <table class="table table-hover align-middle mb-0 tabla-mira">
+                <thead>
+                <tr><th>Arriendo</th><th>Cliente</th><th>Inicio</th><th>Retorno comprometido</th><th>Equipos</th>
+                    <th>Estado</th><th class="text-end">Total</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${arriendos.content}" th:classappend="${a.estado().name() == 'VENCIDO'} ? 'fila-vencida'">
+                    <td><a class="fw-semibold" th:href="@{/arriendos/{id}(id=${a.id()})}" th:text="'N° ' + ${a.id()}">N°</a></td>
+                    <td th:text="${a.cliente()}">Cliente</td>
+                    <td class="text-nowrap" th:text="${#temporals.format(a.fechaInicio(), 'dd-MM-yyyy')}">Inicio</td>
+                    <td class="text-nowrap" th:text="${#temporals.format(a.fechaRetornoComprometida(), 'dd-MM-yyyy')}">Retorno</td>
+                    <td><div class="small text-nowrap" th:each="serie : ${a.equipos()}" th:text="${serie}">Serie</div></td>
+                    <td>
+                        <span class="estado estado-ARRENDADO" th:if="${a.estado().name() == 'VIGENTE'}" th:text="${a.estado().etiqueta}">Vigente</span>
+                        <span class="estado estado-vencido" th:if="${a.estado().name() == 'VENCIDO'}" th:text="${a.estado().etiqueta}">Vencido</span>
+                        <span class="estado estado-VENDIDO" th:if="${a.estado().name() == 'CERRADO'}" th:text="${a.estado().etiqueta}">Cerrado</span>
+                    </td>
+                    <td class="text-end text-nowrap">
+                        <div class="fw-semibold" th:text="'$ ' + ${#numbers.formatDecimal(a.total(), 1, 'POINT', 0, 'COMMA')}">total</div>
+                        <div class="small text-secondary" th:text="${a.totalEstimado()} ? 'Estimado' : 'Definitivo'">Estimado</div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-white d-flex flex-wrap justify-content-between align-items-center gap-2 small"
+             th:unless="${arriendos.isEmpty()}">
+            <span class="text-secondary"
+                  th:text="${arriendos.totalElements} + (${arriendos.totalElements} == 1 ? ' arriendo' : ' arriendos') + ' · página ' + ${arriendos.number + 1} + ' de ' + ${arriendos.totalPages}">0 arriendos</span>
+            <nav aria-label="Páginas del listado" th:if="${arriendos.totalPages > 1}">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item" th:classappend="${arriendos.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/arriendos(pagina=${arriendos.number - 1})}">Anterior</a>
+                    </li>
+                    <li class="page-item" th:classappend="${arriendos.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/arriendos(pagina=${arriendos.number + 1})}">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

@@ -26,7 +26,7 @@ public class MenuGlobal {
     static final List<OpcionMenu> OPCIONES = List.of(
             new OpcionMenu("Inicio", "/", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Disponibilidad", "/disponibilidad", EnumSet.allOf(RolUsuario.class)),
-            new OpcionMenu("Arriendos", "/arriendos/nuevo", EnumSet.of(ADMINISTRADOR, ENCARGADO_BODEGA, VENDEDOR)),
+            new OpcionMenu("Arriendos", "/arriendos", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Equipos", "/equipos", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Traslados", "/traslados", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Clientes", "/clientes", EnumSet.allOf(RolUsuario.class)),

@@ -16,12 +16,12 @@ class MenuGlobalTest {
                 .containsExactly("Inicio", "Disponibilidad", "Arriendos", "Equipos", "Traslados", "Clientes", "Bodegas", "Usuarios");
     }
 
-    /** E005: la jefatura consulta, pero no registra arriendos. */
+    /** HU-17: la jefatura consulta el listado de arriendos (no los registra) y no ve Usuarios. */
     @Test
-    void opcionesPara_jefatura_noIncluyeArriendosNiUsuarios() {
+    void opcionesPara_jefatura_incluyeArriendosPeroNoUsuarios() {
         assertThat(MenuGlobal.opcionesPara(RolUsuario.JEFATURA))
                 .extracting(OpcionMenu::etiqueta)
-                .containsExactly("Inicio", "Disponibilidad", "Equipos", "Traslados", "Clientes", "Bodegas");
+                .containsExactly("Inicio", "Disponibilidad", "Arriendos", "Equipos", "Traslados", "Clientes", "Bodegas");
     }
 
     @Test

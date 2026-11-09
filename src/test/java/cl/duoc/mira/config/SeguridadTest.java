@@ -2,6 +2,7 @@ package cl.duoc.mira.config;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -26,9 +27,12 @@ import cl.duoc.mira.operaciones.controller.ClienteController;
 import cl.duoc.mira.operaciones.controller.DisponibilidadController;
 import cl.duoc.mira.operaciones.dto.AlertaRetornoResponse;
 import cl.duoc.mira.operaciones.dto.DisponibilidadResponse;
+import cl.duoc.mira.operaciones.dto.EstadoArriendo;
+import cl.duoc.mira.operaciones.dto.ResumenArriendoResponse;
 import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.service.ClienteService;
 import cl.duoc.mira.operaciones.service.DisponibilidadService;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import cl.duoc.mira.usuarios.controller.UsuarioController;
@@ -42,6 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -79,7 +84,7 @@ class SeguridadTest {
     @ParameterizedTest
     @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios",
             "/traslados", "/traslados/nuevo?equipoId=1", "/disponibilidad",
-            "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo"})
+            "/arriendos", "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo"})
     void rutaProtegida_sinSesion_redirigeAlLogin(String ruta) throws Exception {
         mvc.perform(get(ruta))
                 .andExpect(status().is3xxRedirection())
@@ -177,6 +182,31 @@ class SeguridadTest {
                 .andExpect(content().string(containsString("Constructora Andes SpA")))
                 .andExpect(content().string(containsString("M300-1A2B3C")))
                 .andExpect(content().string(not(containsString("Registrar retorno"))));
+    }
+
+    /** HU-17: la jefatura consulta el listado con el estado y el total, sin el botón para registrar. */
+    @Test
+    void listadoDeArriendos_comoJefatura_muestraEstadoYTotalSinRegistrar() throws Exception {
+        when(arriendoService.listar(any(), eq(0))).thenReturn(new PageImpl<>(List.of(new ResumenArriendoResponse(4L,
+                "Constructora Andes SpA", LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 15), List.of("M300-1A2B3C"),
+                EstadoArriendo.VENCIDO, new BigDecimal("2400000"), true))));
+
+        mvc.perform(get("/arriendos").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Constructora Andes SpA")))
+                .andExpect(content().string(containsString("Vencido")))
+                .andExpect(content().string(containsString("$ 2.400.000")))
+                .andExpect(content().string(containsString("Estimado")))
+                .andExpect(content().string(not(containsString("Registrar arriendo"))));
+    }
+
+    @Test
+    void listadoDeArriendos_comoVendedor_ofreceRegistrar() throws Exception {
+        when(arriendoService.listar(any(), eq(0))).thenReturn(Page.empty());
+
+        mvc.perform(get("/arriendos").with(user(con(RolUsuario.VENDEDOR))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Registrar arriendo")));
     }
 
     /** D17: la jefatura consulta los clientes, pero no los registra ni los modifica. */
