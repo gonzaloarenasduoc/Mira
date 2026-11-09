@@ -3,6 +3,7 @@ package cl.duoc.mira.config;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -17,6 +18,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import cl.duoc.mira.common.controller.InicioController;
 import cl.duoc.mira.documentos.controller.DocumentoController;
 import cl.duoc.mira.documentos.service.DocumentoService;
+import cl.duoc.mira.documentos.dto.DocumentoResponse;
+import cl.duoc.mira.documentos.entity.TipoDocumento;
+import cl.duoc.mira.inventario.dto.EquipoResponse;
+import cl.duoc.mira.inventario.dto.FichaEquipoResponse;
+import cl.duoc.mira.inventario.entity.EstadoEquipo;
 import cl.duoc.mira.operaciones.dto.ArriendoResponse;
 import cl.duoc.mira.inventario.controller.BodegaController;
 import cl.duoc.mira.inventario.controller.EquipoController;
@@ -317,6 +323,32 @@ class SeguridadTest {
                 .andExpect(status().isForbidden());
         mvc.perform(post("/ventas/1/documentos").with(csrf()).with(user(con(RolUsuario.ENCARGADO_BODEGA))))
                 .andExpect(status().isForbidden());
+    }
+
+    /** HU-25 y CF-13: la ficha del equipo muestra los documentos de sus operaciones. */
+    @Test
+    void fichaEquipo_conDocumentos_losMuestraConSuOperacion() throws Exception {
+        when(equipoService.ficha(any(), eq(30L))).thenReturn(new FichaEquipoResponse(new EquipoResponse(30L, "TS16-334512",
+                "Estación total", "Leica", "TS16", EstadoEquipo.ARRENDADO, "Bodega Norte", null, null, null, null), List.of(), null));
+        when(documentoService.deEquipo(any(), eq(30L), eq(true))).thenReturn(List.of(new DocumentoResponse(1L, 3L, false,
+                TipoDocumento.GUIA_DESPACHO, "1045", LocalDate.of(2026, 11, 2), "guia-1045.png", 3196)));
+
+        mvc.perform(get("/equipos/30").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Guía de despacho")))
+                .andExpect(content().string(containsString("1045")))
+                .andExpect(content().string(containsString("Arriendo N° 3")));
+    }
+
+    /** D21: al encargado de bodega no se le piden los documentos de ventas. */
+    @Test
+    void fichaEquipo_comoEncargado_noIncluyeDocumentosDeVentas() throws Exception {
+        when(equipoService.ficha(any(), eq(30L))).thenReturn(new FichaEquipoResponse(new EquipoResponse(30L, "TS16-334512",
+                "Estación total", "Leica", "TS16", EstadoEquipo.DISPONIBLE, "Bodega Norte", null, null, null, null), List.of(), null));
+
+        mvc.perform(get("/equipos/30").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isOk());
+        verify(documentoService).deEquipo(any(), eq(30L), eq(false));
     }
 
     /** D17: la jefatura consulta los clientes, pero no los registra ni los modifica. */

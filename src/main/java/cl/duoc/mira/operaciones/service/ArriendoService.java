@@ -166,6 +166,11 @@ public class ArriendoService {
                 .toList();
     }
 
+    /** Identificadores de los arriendos en que participó un equipo; lo usa documentos (HU-25). */
+    public List<Long> idsConEquipo(Long empresaId, Long equipoId) {
+        return arriendoRepository.idsConEquipo(empresaId, equipoId);
+    }
+
     /** Si el arriendo existe y es de la empresa; lo usan otros módulos, como documentos (HU-23). */
     public boolean existe(Long empresaId, Long id) {
         return arriendoRepository.existsByIdAndEmpresaId(id, empresaId);

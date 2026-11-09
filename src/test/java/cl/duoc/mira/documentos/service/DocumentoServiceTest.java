@@ -16,6 +16,7 @@ import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.common.exception.RecursoNoEncontradoException;
 import cl.duoc.mira.common.repository.EmpresaRepository;
 import cl.duoc.mira.documentos.dto.AdjuntarDocumentoRequest;
+import cl.duoc.mira.documentos.dto.DocumentoResponse;
 import cl.duoc.mira.documentos.entity.Documento;
 import cl.duoc.mira.documentos.entity.TipoDocumento;
 import cl.duoc.mira.documentos.repository.DocumentoRepository;
@@ -25,11 +26,14 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -160,6 +164,44 @@ class DocumentoServiceTest {
                 .forEach(s -> s.afterCompletion(TransactionSynchronization.STATUS_ROLLED_BACK));
 
         verify(almacen).eliminar("1/generado.pdf");
+    }
+
+    /** CF-13: se ven los documentos de todas las operaciones del equipo, arriendos y ventas. */
+    @Test
+    void deEquipo_documentosDeSusOperaciones_marcaCuálesSonDeVentas() {
+        when(arriendoService.idsConEquipo(EMPRESA_ID, 30L)).thenReturn(List.of(4L));
+        when(ventaService.idsConEquipo(EMPRESA_ID, 30L)).thenReturn(List.of(9L));
+        when(documentoRepository.findByEmpresaIdAndOperacionIdInOrderByFechaEmisionDescIdDesc(eq(EMPRESA_ID), any()))
+                .thenReturn(List.of(documento(2L, 9L, TipoDocumento.FACTURA), documento(1L, 4L, TipoDocumento.GUIA_DESPACHO)));
+
+        List<DocumentoResponse> documentos = service.deEquipo(EMPRESA_ID, 30L, true);
+
+        assertThat(documentos).extracting(DocumentoResponse::operacionId).containsExactly(9L, 4L);
+        assertThat(documentos).extracting(DocumentoResponse::venta).containsExactly(true, false);
+    }
+
+    /** D21: sin acceso a E006 (encargado de bodega) no se consultan las ventas ni sus documentos. */
+    @Test
+    void deEquipo_sinAccesoAVentas_noLasConsulta() {
+        when(arriendoService.idsConEquipo(EMPRESA_ID, 30L)).thenReturn(List.of(4L));
+
+        service.deEquipo(EMPRESA_ID, 30L, false);
+
+        verify(ventaService, never()).idsConEquipo(EMPRESA_ID, 30L);
+        verify(documentoRepository).findByEmpresaIdAndOperacionIdInOrderByFechaEmisionDescIdDesc(EMPRESA_ID, Set.of(4L));
+    }
+
+    @Test
+    void deEquipo_equipoSinOperaciones_quedaVacioSinConsultarDocumentos() {
+        assertThat(service.deEquipo(EMPRESA_ID, 30L, true)).isEmpty();
+        verify(documentoRepository, never()).findByEmpresaIdAndOperacionIdInOrderByFechaEmisionDescIdDesc(any(), any());
+    }
+
+    private static Documento documento(Long id, Long operacionId, TipoDocumento tipo) {
+        Documento d = new Documento(mock(Empresa.class), operacionId, tipo, "100", LocalDate.of(2026, 11, 2),
+                "doc.pdf", "1/x.pdf", "application/pdf", 10);
+        ReflectionTestUtils.setField(d, "id", id);
+        return d;
     }
 
     private static AdjuntarDocumentoRequest solicitud(LocalDate fecha) {

@@ -1,6 +1,7 @@
 package cl.duoc.mira.inventario.controller;
 
 import cl.duoc.mira.common.exception.NegocioException;
+import cl.duoc.mira.documentos.service.DocumentoService;
 import cl.duoc.mira.inventario.dto.EquipoResponse;
 import cl.duoc.mira.inventario.dto.FiltroEquipos;
 import cl.duoc.mira.inventario.dto.RegistrarEquipoRequest;
@@ -8,6 +9,7 @@ import cl.duoc.mira.inventario.entity.EstadoEquipo;
 import cl.duoc.mira.inventario.service.BodegaService;
 import cl.duoc.mira.inventario.service.CategoriaService;
 import cl.duoc.mira.inventario.service.EquipoService;
+import cl.duoc.mira.usuarios.entity.RolUsuario;
 import cl.duoc.mira.usuarios.service.UsuarioAutenticado;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class EquipoController {
     private final EquipoService equipoService;
     private final CategoriaService categoriaService;
     private final BodegaService bodegaService;
+    private final DocumentoService documentoService;
 
     @ModelAttribute("seccion")
     public String seccion() {
@@ -75,6 +78,8 @@ public class EquipoController {
     @GetMapping("/{id}")
     public String ficha(@AuthenticationPrincipal UsuarioAutenticado actual, @PathVariable Long id, Model model) {
         model.addAttribute("ficha", equipoService.ficha(actual.empresaId(), id));
+        model.addAttribute("documentos", documentoService.deEquipo(actual.empresaId(), id,
+                actual.tieneRol(RolUsuario.ADMINISTRADOR, RolUsuario.VENDEDOR, RolUsuario.JEFATURA)));
         return "equipos/ficha";
     }
 

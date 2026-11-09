@@ -9,6 +9,9 @@ import cl.duoc.mira.inventario.dto.RegistrarTrasladoRequest;
 import cl.duoc.mira.inventario.service.EquipoService;
 import cl.duoc.mira.inventario.service.TrasladoService;
 import cl.duoc.mira.common.exception.NegocioException;
+import cl.duoc.mira.documentos.dto.AdjuntarDocumentoRequest;
+import cl.duoc.mira.documentos.entity.TipoDocumento;
+import cl.duoc.mira.documentos.service.DocumentoService;
 import cl.duoc.mira.operaciones.dto.LineaArriendoRequest;
 import cl.duoc.mira.operaciones.dto.LineaVentaRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarArriendoRequest;
@@ -26,6 +29,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -66,6 +70,8 @@ class MiraApplicationTests {
     private VentaService ventaService;
     @Autowired
     private HistorialClienteService historialClienteService;
+    @Autowired
+    private DocumentoService documentoService;
     /** El reloj de la aplicación (America/Santiago): "hoy" en UTC puede ser otro día. */
     @Autowired
     private Clock reloj;
@@ -265,6 +271,28 @@ class MiraApplicationTests {
         assertThat(historial.get(0).equipos()).containsExactly("SN-0031");
         assertThat(historial.get(1).equipos()).containsExactly("SN-0030");
         assertThat(historialClienteService.historial(empresa, cliente, false)).hasSize(1);
+    }
+
+    /** CF-13 contra la base real: el documento del arriendo aparece en la ficha de cada uno de sus equipos. */
+    @Test
+    void documento_deUnArriendoConDosEquipos_apareceEnAmbos() {
+        long empresa = crearEmpresa("15.151.515-1");
+        insertarEquipo(empresa, "SN-0040");
+        insertarEquipo(empresa, "SN-0041");
+        long primero = idEquipo(empresa, "SN-0040");
+        long segundo = idEquipo(empresa, "SN-0041");
+        long arriendoId = arriendoService.registrar(empresa, administrador(),
+                arriendo(crearCliente(empresa), primero, segundo)).id();
+        AdjuntarDocumentoRequest guia = new AdjuntarDocumentoRequest();
+        guia.setTipo(TipoDocumento.GUIA_DESPACHO);
+        guia.setNumeroFolio("1045");
+        guia.setFechaEmision(LocalDate.now(reloj));
+        documentoService.adjuntarAArriendo(empresa, arriendoId, guia,
+                new MockMultipartFile("archivo", "guia.pdf", "application/pdf", "%PDF-1.4".getBytes()));
+        entityManager.flush();
+
+        assertThat(documentoService.deEquipo(empresa, primero, false)).extracting(d -> d.numeroFolio()).containsExactly("1045");
+        assertThat(documentoService.deEquipo(empresa, segundo, false)).extracting(d -> d.numeroFolio()).containsExactly("1045");
     }
 
     /** CF-04 contra la base real: retorno en otra bodega, sin traslado adicional. */

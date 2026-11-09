@@ -14,8 +14,11 @@ import java.io.InputStream;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +58,7 @@ public class DocumentoService {
         if (!arriendoService.existe(empresaId, arriendoId)) {
             throw new RecursoNoEncontradoException("El arriendo");
         }
-        return adjuntar(empresaId, arriendoId, request, archivo);
+        return adjuntar(empresaId, arriendoId, false, request, archivo);
     }
 
     /** HU-23: adjunta un documento a una venta de la empresa. */
@@ -65,15 +68,31 @@ public class DocumentoService {
         if (!ventaService.existe(empresaId, ventaId)) {
             throw new RecursoNoEncontradoException("La venta");
         }
-        return adjuntar(empresaId, ventaId, request, archivo);
+        return adjuntar(empresaId, ventaId, true, request, archivo);
+    }
+
+    /**
+     * Documentos de todas las operaciones en que participó un equipo (HU-25, CF-13): el documento se
+     * adjunta a la operación, así que aparece en la ficha de cada equipo de esa operación. Sin acceso a
+     * E006, como el encargado de bodega, no se incluyen los de ventas (D21).
+     */
+    public List<DocumentoResponse> deEquipo(Long empresaId, Long equipoId, boolean incluirVentas) {
+        Set<Long> ventas = incluirVentas ? Set.copyOf(ventaService.idsConEquipo(empresaId, equipoId)) : Set.of();
+        Set<Long> operaciones = new HashSet<>(arriendoService.idsConEquipo(empresaId, equipoId));
+        operaciones.addAll(ventas);
+        if (operaciones.isEmpty()) {
+            return List.of();
+        }
+        return documentoRepository.findByEmpresaIdAndOperacionIdInOrderByFechaEmisionDescIdDesc(empresaId, operaciones)
+                .stream().map(d -> aResponse(d, ventas.contains(d.getOperacionId()))).toList();
     }
 
     /**
      * Guarda el archivo y su referencia en la misma transacción: si la transacción se revierte, el
      * archivo recién escrito se borra, para no dejar archivos sin documento.
      */
-    private DocumentoResponse adjuntar(Long empresaId, Long operacionId, AdjuntarDocumentoRequest request,
-                                       MultipartFile archivo) {
+    private DocumentoResponse adjuntar(Long empresaId, Long operacionId, boolean venta,
+                                       AdjuntarDocumentoRequest request, MultipartFile archivo) {
         if (request.getFechaEmision().isAfter(LocalDate.now(clock))) {
             throw new NegocioException("La fecha del documento no puede ser futura.");
         }
@@ -100,7 +119,7 @@ public class DocumentoService {
         Documento documento = documentoRepository.save(new Documento(empresaRepository.getReferenceById(empresaId),
                 operacionId, request.getTipo(), request.getNumeroFolio().trim(), request.getFechaEmision(),
                 nombre, ruta, formato.contentType(), archivo.getSize()));
-        return aResponse(documento);
+        return aResponse(documento, venta);
     }
 
     private void borrarSiSeRevierte(String ruta) {
@@ -116,8 +135,8 @@ public class DocumentoService {
         }
     }
 
-    static DocumentoResponse aResponse(Documento d) {
-        return new DocumentoResponse(d.getId(), d.getOperacionId(), d.getTipo(), d.getNumeroFolio(),
+    static DocumentoResponse aResponse(Documento d, boolean venta) {
+        return new DocumentoResponse(d.getId(), d.getOperacionId(), venta, d.getTipo(), d.getNumeroFolio(),
                 d.getFechaEmision(), d.getNombreArchivo(), d.getTamanoBytes());
     }
 

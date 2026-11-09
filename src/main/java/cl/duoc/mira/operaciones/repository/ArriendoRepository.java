@@ -77,4 +77,8 @@ public interface ArriendoRepository extends JpaRepository<Arriendo, Long> {
     List<Arriendo> conDetalles(@Param("ids") Collection<Long> ids);
 
     boolean existsByIdAndEmpresaId(Long id, Long empresaId);
+
+    /** Arriendos en que participó un equipo (HU-25). */
+    @Query("select distinct a.id from Arriendo a join a.detalles d where a.empresa.id = :empresaId and d.equipoId = :equipoId")
+    List<Long> idsConEquipo(@Param("empresaId") Long empresaId, @Param("equipoId") Long equipoId);
 }

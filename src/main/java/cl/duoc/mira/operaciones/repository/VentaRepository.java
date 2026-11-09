@@ -25,4 +25,8 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     List<Venta> delCliente(@Param("empresaId") Long empresaId, @Param("clienteId") Long clienteId);
 
     boolean existsByIdAndEmpresaId(Long id, Long empresaId);
+
+    /** Ventas en que participó un equipo (HU-25). */
+    @Query("select distinct v.id from Venta v join v.detalles d where v.empresa.id = :empresaId and d.equipoId = :equipoId")
+    List<Long> idsConEquipo(@Param("empresaId") Long empresaId, @Param("equipoId") Long equipoId);
 }
