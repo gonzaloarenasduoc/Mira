@@ -14,6 +14,8 @@
             <span class="estado fs-6" th:classappend="'estado-' + ${e.estado()}" th:text="${e.estado().etiqueta}">Estado</span>
             <a class="btn btn-primary" th:if="${puedeArrendar and e.estado().name() == 'DISPONIBLE'}"
                th:href="@{/arriendos/nuevo(equipoId=${e.id()})}">Arrendar</a>
+            <a class="btn btn-outline-primary" th:if="${puedeVender and e.estado().name() == 'DISPONIBLE'}"
+               th:href="@{/ventas/nueva(equipoId=${e.id()})}">Vender</a>
             <a class="btn btn-outline-primary" th:if="${puedeEditarInventario and e.estado().name() == 'DISPONIBLE'}"
                th:href="@{/traslados/nuevo(equipoId=${e.id()})}">Trasladar</a>
         </div>
@@ -75,6 +77,9 @@
                             <div class="small text-secondary fst-italic" th:if="${m.observacion() != null}" th:text="${m.observacion()}">obs</div>
                             <div class="small" th:if="${m.operacionId() != null and (m.tipo().name() == 'SALIDA_ARRIENDO' or m.tipo().name() == 'RETORNO_ARRIENDO')}">
                                 <a th:href="@{/arriendos/{id}(id=${m.operacionId()})}" th:text="'Ver arriendo N° ' + ${m.operacionId()}">Ver arriendo</a>
+                            </div>
+                            <div class="small" th:if="${puedeVerVentas and m.operacionId() != null and m.tipo().name() == 'SALIDA_VENTA'}">
+                                <a th:href="@{/ventas/{id}(id=${m.operacionId()})}" th:text="'Ver venta N° ' + ${m.operacionId()}">Ver venta</a>
                             </div>
                         </li>
                     </ul>

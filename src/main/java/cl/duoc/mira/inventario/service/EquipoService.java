@@ -110,6 +110,23 @@ public class EquipoService {
     }
 
     /**
+     * Entrega el equipo vendido (HU-18, CF-09): lo bloquea, exige que esté disponible y registra el
+     * movimiento SALIDA_VENTA ligado a la operación. El equipo queda vendido y ningún otro movimiento
+     * lo acepta de vuelta: arriendo y traslado exigen un equipo disponible, y el retorno, uno arrendado.
+     */
+    @Transactional
+    public void despacharEnVenta(Long empresaId, Long usuarioId, Long equipoId, Long operacionId) {
+        Equipo equipo = equipoRepository.buscarParaActualizar(empresaId, equipoId)
+                .filter(Equipo::isActivo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("El equipo"));
+        if (equipo.getEstado() != EstadoEquipo.DISPONIBLE) {
+            throw new EquipoNoDisponibleException(equipo.getNumeroSerie(), equipo.getEstado());
+        }
+        movimientoRepository.save(Movimiento.registrar(equipo, TipoMovimiento.SALIDA_VENTA,
+                LocalDateTime.now(clock), equipo.getBodega(), null, operacionId, usuarioId, null));
+    }
+
+    /**
      * Recibe el equipo de vuelta de un arriendo (HU-15): queda disponible y asignado a la bodega que lo
      * recibe, aunque sea distinta de la de salida. El movimiento RETORNO_ARRIENDO documenta el cambio
      * de bodega: no se genera un traslado adicional (03-modelo-datos.md, sección 5, regla 4).

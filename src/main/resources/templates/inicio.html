@@ -60,6 +60,7 @@
                     <div class="text-secondary small" th:switch="${opcion.etiqueta()}">
                         <span th:case="'Disponibilidad'">Unidades disponibles en cada bodega y fecha de retorno de las arrendadas.</span>
                         <span th:case="'Arriendos'">Arriendos con su estado y su total, y registro de uno nuevo validando la disponibilidad.</span>
+                        <span th:case="'Ventas'">Venta de uno o más equipos disponibles a un cliente: quedan vendidos en forma definitiva.</span>
                         <span th:case="'Traslados'">Equipos en tránsito entre bodegas e historial de traslados.</span>
                         <span th:case="'Equipos'">Registro de cada equipo por número de serie, con su estado, bodega e historial.</span>
                         <span th:case="'Clientes'">Empresas a las que se arriendan o venden equipos, con su RUT y su contacto.</span>

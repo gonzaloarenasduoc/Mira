@@ -121,6 +121,17 @@ class TrasladoServiceTest {
         verify(movimientoRepository, never()).save(any());
     }
 
+    /** HU-18: un equipo vendido no vuelve a una bodega por un traslado. */
+    @Test
+    void registrarSalida_equipoVendido_lanzaExcepcionYNoRegistraNada() {
+        Movimiento.registrar(equipo, TipoMovimiento.SALIDA_VENTA, LocalDateTime.now(RELOJ), norte, null, USUARIO_ID, null);
+
+        NegocioException ex = assertThrows(NegocioException.class,
+                () -> service.registrarSalida(EMPRESA_ID, USUARIO_ID, solicitud(2L)));
+        assertThat(ex.getMessage()).contains("GS18-001").contains("vendido");
+        verify(movimientoRepository, never()).save(any());
+    }
+
     @Test
     void registrarSalida_destinoIgualAlOrigen_lanzaExcepcion() {
         NegocioException ex = assertThrows(NegocioException.class,

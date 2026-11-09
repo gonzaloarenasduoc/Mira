@@ -2,6 +2,7 @@ package cl.duoc.mira.config;
 
 import static cl.duoc.mira.usuarios.entity.RolUsuario.ADMINISTRADOR;
 import static cl.duoc.mira.usuarios.entity.RolUsuario.ENCARGADO_BODEGA;
+import static cl.duoc.mira.usuarios.entity.RolUsuario.JEFATURA;
 import static cl.duoc.mira.usuarios.entity.RolUsuario.VENDEDOR;
 
 import cl.duoc.mira.usuarios.entity.RolUsuario;
@@ -27,6 +28,7 @@ public class MenuGlobal {
             new OpcionMenu("Inicio", "/", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Disponibilidad", "/disponibilidad", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Arriendos", "/arriendos", EnumSet.allOf(RolUsuario.class)),
+            new OpcionMenu("Ventas", "/ventas/nueva", EnumSet.of(ADMINISTRADOR, VENDEDOR)),
             new OpcionMenu("Equipos", "/equipos", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Traslados", "/traslados", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Clientes", "/clientes", EnumSet.allOf(RolUsuario.class)),
@@ -50,6 +52,18 @@ public class MenuGlobal {
     @ModelAttribute("puedeEditarInventario")
     public boolean puedeEditarInventario(@AuthenticationPrincipal UsuarioAutenticado usuario) {
         return usuario != null && usuario.tieneRol(ADMINISTRADOR, ENCARGADO_BODEGA);
+    }
+
+    /** E006: registran ventas el administrador y el vendedor; la jefatura solo consulta. */
+    @ModelAttribute("puedeVender")
+    public boolean puedeVender(@AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return usuario != null && usuario.tieneRol(ADMINISTRADOR, VENDEDOR);
+    }
+
+    /** E006: el encargado de bodega no tiene acceso a las ventas. */
+    @ModelAttribute("puedeVerVentas")
+    public boolean puedeVerVentas(@AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return usuario != null && usuario.tieneRol(ADMINISTRADOR, VENDEDOR, JEFATURA);
     }
 
     @ModelAttribute("puedeArrendar")

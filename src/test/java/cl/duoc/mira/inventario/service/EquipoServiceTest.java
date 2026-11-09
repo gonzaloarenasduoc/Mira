@@ -154,6 +154,39 @@ class EquipoServiceTest {
         verify(movimientoRepository, never()).save(any());
     }
 
+    /** CF-09: el equipo vendido queda vendido, en su bodega de origen, con su movimiento ligado a la venta. */
+    @Test
+    void despacharEnVenta_equipoDisponible_quedaVendidoConSuMovimiento() {
+        Equipo equipo = equipoDisponible();
+        when(equipoRepository.buscarParaActualizar(EMPRESA_ID, 30L)).thenReturn(Optional.of(equipo));
+
+        service.despacharEnVenta(EMPRESA_ID, USUARIO_ID, 30L, 700L);
+
+        ArgumentCaptor<Movimiento> movimiento = ArgumentCaptor.forClass(Movimiento.class);
+        verify(movimientoRepository).save(movimiento.capture());
+        assertThat(equipo.getEstado()).isEqualTo(EstadoEquipo.VENDIDO);
+        assertThat(movimiento.getValue().getTipo()).isEqualTo(TipoMovimiento.SALIDA_VENTA);
+        assertThat(movimiento.getValue().getOperacionId()).isEqualTo(700L);
+        assertThat(movimiento.getValue().getBodegaOrigen()).isSameAs(bodega);
+    }
+
+    /** HU-18: un equipo vendido no vuelve a estar disponible por ninguna vía: ni se vende ni se arrienda. */
+    @Test
+    void equipoVendido_noSeVuelveAVenderNiSeArrienda() {
+        Equipo equipo = equipoDisponible();
+        Movimiento.registrar(equipo, TipoMovimiento.SALIDA_VENTA, LocalDateTime.now(RELOJ), bodega, null, 700L, USUARIO_ID, null);
+        when(equipoRepository.buscarParaActualizar(EMPRESA_ID, 30L)).thenReturn(Optional.of(equipo));
+
+        EquipoNoDisponibleException ex = assertThrows(EquipoNoDisponibleException.class,
+                () -> service.despacharEnVenta(EMPRESA_ID, USUARIO_ID, 30L, 701L));
+        assertThat(ex.getMessage()).isEqualTo("El equipo TS16-001 no está disponible porque se encuentra vendido.");
+        assertThrows(EquipoNoDisponibleException.class, () -> service.despacharEnArriendo(EMPRESA_ID, USUARIO_ID, 30L, 500L));
+        assertThrows(NegocioException.class,
+                () -> service.recibirDeArriendo(EMPRESA_ID, USUARIO_ID, 30L, 500L, 2L, null));
+        assertThat(equipo.getEstado()).isEqualTo(EstadoEquipo.VENDIDO);
+        verify(movimientoRepository, never()).save(any());
+    }
+
     /** CF-04: si se recibe en otra bodega, el equipo queda asignado a ella sin un traslado adicional. */
     @Test
     void recibirDeArriendo_enOtraBodega_quedaDisponibleEnLaBodegaReceptora() {
