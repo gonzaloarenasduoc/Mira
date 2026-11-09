@@ -8,8 +8,8 @@ asistente del otro integrante para saber qué está en curso y no pisar nada.
 ## Fase actual
 
 Fase 2, semana 13, rama `semana-13` (D11). **Sprint 5** en curso (HU-20 a HU-28 y HU-30, 31 PF):
-E008 y E009 terminadas; de E007 están HU-30 (técnicos), HU-20 (agendar capacitación) y HU-21 (técnico
-ocupado). Falta HU-22. El Sprint 4 está integrado en `main` (pull request #22).
+E008, E009 y E007 terminadas (E007 con HU-30, HU-20, HU-21 y HU-22). **El backlog completo (105 PF)
+está implementado**; falta integrarlo a `main` con el pull request de cierre de la semana 13. El Sprint 4 está integrado en `main` (pull request #22).
 
 ## Terminado
 
@@ -125,6 +125,10 @@ ocupado). Falta HU-22. El Sprint 4 está integrado en `main` (pull request #22).
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- HU-22 en `semana-13` (09-11, D27): calendario mensual de capacitaciones con cliente, lugar, técnico
+  y estado, y su ficha, donde se marcan realizadas (con fecha y hora, no futuras) o se cancelan;
+  ambos estados son finales. El menú "Técnicos" pasa a ser "Capacitaciones". 219 pruebas. **E007 queda
+  completa.**
 - HU-21 en `semana-13` (09-11, D26): al elegir técnico y fecha, el formulario advierte si el técnico
   ya tiene otra capacitación programada ese día, con su hora y lugar; se puede agendar igual marcando
   "Agendar de todas formas" (el servidor vuelve a revisar al enviar). 211 pruebas.
@@ -191,7 +195,7 @@ ocupado). Falta HU-22. El Sprint 4 está integrado en `main` (pull request #22).
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 5: HU-20 a HU-28 y HU-30 | Ambos | `semana-13` | E008 y E009 terminadas. De E007, HU-30, HU-20 y HU-21 listas; falta HU-22 (calendario y marcar realizada o cancelada) |
+| Sprint 5: HU-20 a HU-28 y HU-30 | Ambos | `semana-13` | Las 10 historias terminadas (31 PF). Falta el pull request `semana-13` → `main` y la revisión de Joaquín |
 
 ## Siguiente
 

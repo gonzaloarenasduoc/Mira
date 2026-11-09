@@ -145,3 +145,21 @@ sección y también recibe 403.
 El 13-11 no hay aviso, y tampoco para Camila Rojas el 12-11. Con dos capacitaciones ese día, el aviso
 detalla ambas. El campo de fecha se ve en formato mes/día porque el navegador de prueba usa la
 configuración regional en inglés; el valor enviado es el 12-11-2026.
+
+## Calendario de capacitaciones (HU-22, D27)
+
+| Captura | Qué muestra |
+|---|---|
+| [29-calendario.png](29-calendario.png) | Noviembre de 2026 con las capacitaciones de cada día (hora, cliente, técnico y lugar); hoy, destacado |
+| [30-capacitacion-realizada.png](30-capacitacion-realizada.png) | La capacitación de hoy marcada como realizada a las 08:45; ya no ofrece acciones |
+| [31-calendario-estados.png](31-calendario-estados.png) | El calendario con una realizada (verde), una cancelada (tachada) y las programadas |
+| [32-calendario-celular.png](32-calendario-celular.png) | En un celular, la grilla pasa a una lista por día, sin desplazamiento horizontal |
+
+Marcarla realizada a una hora futura se rechaza. La jefatura ve el calendario y las fichas sin los
+botones para marcar o cancelar; el encargado de bodega no tiene la opción en el menú y recibe 403.
+Un mes mal escrito en la dirección muestra el actual con un aviso.
+
+**Nota sobre los datos.** El 09-11 se reemplazó el contenedor de trabajo y la base de demo se perdió.
+Para estas capturas se restauró el respaldo del 02-11 (semana 11) y se volvieron a registrar desde la
+aplicación los usuarios de jefatura y bodega, los técnicos, una venta y las capacitaciones. Por eso
+los clientes y las operaciones de las capturas 29 a 32 no coinciden con los de las capturas 23 a 28.

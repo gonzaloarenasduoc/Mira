@@ -440,6 +440,29 @@ impida: un técnico puede dar una capacitación en la mañana y otra en la tarde
 **Descartado.** Bloquear: impediría un caso válido. Avisar solo al enviar: el criterio de HU-21 pide el
 aviso al elegir técnico y fecha.
 
+## D27 · Calendario de capacitaciones y sus estados (HU-22)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.**
+- El calendario es una grilla mensual de lunes a domingo; en pantallas angostas pasa a una lista
+  por día. Muestra todas las capacitaciones, cada una con el color de su estado.
+- Al marcar una capacitación como realizada se registran la fecha y la hora en que se dictó; se
+  proponen las programadas (o las actuales, si aún no llegan) y no se aceptan futuras.
+- Realizada y cancelada son estados finales: para hacerla otra vez, se agenda una nueva desde la
+  operación.
+- Marcan y cancelan el administrador y el vendedor; la jefatura consulta y el encargado de bodega no
+  accede (matriz de E007).
+- La opción de menú "Técnicos" (HU-30) pasa a llamarse "Capacitaciones" y abre el calendario, que
+  enlaza a los técnicos. Así el menú no suma una opción más (ver D23).
+
+**Motivo.** La grilla es la forma habitual de planificar la agenda de los técnicos. La fecha
+realizada editable permite registrarla después de dictada. Los estados finales mantienen la
+trazabilidad: lo cancelado no se reescribe.
+
+**Descartado.** Una lista en lugar de la grilla; registrar como realizada la fecha del clic; volver
+a programar una capacitación cancelada o realizada.
+
 ---
 
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
