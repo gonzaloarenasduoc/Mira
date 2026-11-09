@@ -77,14 +77,135 @@
             </div>
         </div>
     </section>
+
+    <!-- HU-27: utilización = días arrendado / días disponibles en el periodo (D24). -->
+    <section class="card mb-4" aria-labelledby="tituloUtilizacion" th:with="u=${utilizacion}">
+        <div class="card-header bg-white">
+            <h2 id="tituloUtilizacion" class="h6 mb-0">Utilización de los equipos</h2>
+        </div>
+        <div class="card-body">
+            <form class="row g-2 align-items-end mb-3" method="get" th:action="@{/indicadores}">
+                <div class="col-sm-4 col-lg-3">
+                    <label for="desde" class="form-label small mb-1">Desde</label>
+                    <input id="desde" name="desde" type="date" class="form-control" th:value="${u.desde()}">
+                </div>
+                <div class="col-sm-4 col-lg-3">
+                    <label for="hasta" class="form-label small mb-1">Hasta</label>
+                    <input id="hasta" name="hasta" type="date" class="form-control" th:value="${u.hasta()}">
+                </div>
+                <div class="col-sm-4 col-lg-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Consultar</button>
+                    <a class="btn btn-outline-secondary" th:href="@{/indicadores}">Últimos 30 días</a>
+                </div>
+            </form>
+            <div class="alert alert-danger" role="alert" th:if="${errorPeriodo}" th:text="${errorPeriodo} + ' Se muestran los últimos 30 días.'">Error</div>
+            <p class="text-secondary mb-0" th:if="${u.global().equipos() == 0}">No hay equipos en el inventario en este periodo.</p>
+            <th:block th:unless="${u.global().equipos() == 0}">
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-3 text-center">
+                        <div class="display-5 fw-semibold" th:text="${#numbers.formatDecimal(u.global().porcentaje(), 1, 'POINT', 1, 'COMMA')} + ' %'">0 %</div>
+                        <div class="small text-secondary" th:text="'de utilización entre el ' + ${#temporals.format(u.desde(), 'dd-MM-yyyy')} + ' y el ' + ${#temporals.format(u.hasta(), 'dd-MM-yyyy')} + ' (' + ${u.diasPeriodo()} + ' días)'">periodo</div>
+                        <div class="small text-secondary" th:text="${u.global().diasArrendado()} + ' de ' + ${u.global().diasDisponibles()} + ' días-equipo arrendados'">días</div>
+                    </div>
+                    <div class="col-lg-9">
+                        <div style="position: relative; height: 260px;">
+                            <canvas id="graficoUtilizacion" role="img" aria-label="Utilización por categoría de equipo"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive mt-4">
+                    <table class="table table-sm align-middle mb-0 tabla-mira">
+                        <thead><tr><th>Categoría</th><th class="text-end">Equipos</th><th class="text-end">Días arrendado</th><th class="text-end">Días disponibles</th><th class="text-end">Utilización</th></tr></thead>
+                        <tbody>
+                        <tr th:each="c : ${u.porCategoria()}">
+                            <td th:text="${c.nombre()}">Categoría</td>
+                            <td class="text-end" th:text="${c.equipos()}">0</td>
+                            <td class="text-end" th:text="${c.diasArrendado()}">0</td>
+                            <td class="text-end" th:text="${c.diasDisponibles()}">0</td>
+                            <td class="text-end fw-semibold" th:text="${#numbers.formatDecimal(c.porcentaje(), 1, 'POINT', 1, 'COMMA')} + ' %'">0 %</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row g-4 mt-1">
+                    <th:block th:each="lista : ${ {'Más usados', 'Menos usados'} }"
+                              th:with="filas=${lista == 'Más usados'} ? ${u.masUsados()} : ${u.menosUsados()}">
+                    <div class="col-lg-6" th:unless="${#lists.isEmpty(filas)}">
+                        <h3 class="h6 text-secondary" th:text="${lista}">Más usados</h3>
+                        <table class="table table-sm align-middle mb-0 tabla-mira">
+                            <thead><tr><th>Equipo</th><th class="text-end">Días</th><th class="text-end">Utilización</th></tr></thead>
+                            <tbody>
+                            <tr th:each="e : ${filas}">
+                                <td>
+                                    <a class="fw-semibold" th:href="@{/equipos/{id}(id=${e.id()})}" th:text="${e.numeroSerie()}">Serie</a>
+                                    <div class="small text-secondary" th:text="${e.categoria()} + ' ' + ${e.equipo()}">Equipo</div>
+                                </td>
+                                <td class="text-end" th:text="${e.diasArrendado()} + ' / ' + ${e.diasDisponibles()}">0 / 0</td>
+                                <td class="text-end fw-semibold" th:text="${#numbers.formatDecimal(e.porcentaje(), 1, 'POINT', 1, 'COMMA')} + ' %'">0 %</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    </th:block>
+                </div>
+            </th:block>
+        </div>
+    </section>
+
+    <!-- HU-27: arriendos vigentes con su fecha de retorno. -->
+    <section class="card mb-4" aria-labelledby="tituloVigentes">
+        <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h2 id="tituloVigentes" class="h6 mb-0">Arriendos vigentes</h2>
+            <span class="small text-secondary" th:unless="${#lists.isEmpty(vigentes)}"
+                  th:text="${#lists.size(vigentes)} + (${#lists.size(vigentes)} == 1 ? ' equipo arrendado' : ' equipos arrendados')">0</span>
+        </div>
+        <div class="card-body text-secondary" th:if="${#lists.isEmpty(vigentes)}">No hay equipos arrendados.</div>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(vigentes)}">
+            <table class="table table-sm align-middle mb-0 tabla-mira">
+                <thead><tr><th>Retorno comprometido</th><th>Plazo</th><th>Cliente</th><th>Equipo</th><th>Arriendo</th></tr></thead>
+                <tbody>
+                <tr th:each="a : ${vigentes}" th:classappend="${a.vencido()} ? 'fila-vencida'">
+                    <td class="text-nowrap" th:text="${#temporals.format(a.fechaRetornoComprometida(), 'dd-MM-yyyy')}">fecha</td>
+                    <td class="text-nowrap">
+                        <span th:if="${a.vencido()}" class="text-danger fw-semibold"
+                              th:text="'Vencido hace ' + ${a.diasAtraso()} + (${a.diasAtraso()} == 1 ? ' día' : ' días')">Vencido</span>
+                        <span th:if="${a.dias() == 0}">Vence hoy</span>
+                        <span th:if="${a.dias() > 0}" th:text="'Faltan ' + ${a.dias()} + (${a.dias()} == 1 ? ' día' : ' días')">Faltan</span>
+                    </td>
+                    <td th:text="${a.cliente()}">Cliente</td>
+                    <td><a class="fw-semibold" th:href="@{/equipos/{id}(id=${a.equipoId()})}" th:text="${a.numeroSerie()}">Serie</a></td>
+                    <td><a th:href="@{/arriendos/{id}(id=${a.arriendoId()})}" th:text="'N° ' + ${a.arriendoId()}">N°</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 </main>
 <footer th:replace="~{fragments/layout :: pie}"></footer>
 <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 <script th:src="@{/webjars/chart.js/dist/chart.umd.js}"></script>
 <script th:inline="javascript">
     (function () {
+        if (typeof Chart === 'undefined') {
+            return;
+        }
+        const utilizacion = /*[[${utilizacion}]]*/ null;
+        if (utilizacion && utilizacion.porCategoria.length > 0) {
+            new Chart(document.getElementById('graficoUtilizacion'), {
+                type: 'bar',
+                data: {
+                    labels: utilizacion.porCategoria.map(c => c.nombre),
+                    datasets: [{ label: 'Utilización (%)', data: utilizacion.porCategoria.map(c => c.porcentaje), backgroundColor: '#1F3864' }]
+                },
+                options: {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    plugins: { title: { display: true, text: 'Por categoría' }, legend: { display: false } },
+                    scales: { x: { beginAtZero: true, max: 100, ticks: { callback: v => v + ' %' } } }
+                }
+            });
+        }
         const inventario = /*[[${inventario}]]*/ null;
-        if (!inventario || inventario.total === 0 || typeof Chart === 'undefined') {
+        if (!inventario || inventario.total === 0) {
             return;
         }
         // Mismos tonos que las etiquetas de estado de mira.css, más intensos para los gráficos.

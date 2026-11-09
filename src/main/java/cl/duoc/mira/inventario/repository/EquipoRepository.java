@@ -73,4 +73,12 @@ public interface EquipoRepository extends JpaRepository<Equipo, Long> {
             order by b.nombre
             """)
     List<ConteoEquipos> contarPorBodegaYEstado(@Param("empresaId") Long empresaId);
+
+    /** Equipos activos que siguen en el inventario, es decir, no vendidos (HU-27). */
+    @Query("""
+            select e from Equipo e join fetch e.categoria
+            where e.empresa.id = :empresaId and e.activo = true
+              and e.estado <> cl.duoc.mira.inventario.entity.EstadoEquipo.VENDIDO
+            """)
+    List<Equipo> enInventario(@Param("empresaId") Long empresaId);
 }

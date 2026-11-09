@@ -13,6 +13,7 @@ import cl.duoc.mira.operaciones.dto.ArriendoResponse;
 import cl.duoc.mira.operaciones.dto.EstadoArriendo;
 import cl.duoc.mira.operaciones.dto.LineaArriendoRequest;
 import cl.duoc.mira.operaciones.dto.LineaArriendoResponse;
+import cl.duoc.mira.operaciones.dto.PeriodoArrendado;
 import cl.duoc.mira.operaciones.dto.RegistrarArriendoRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarRetornoRequest;
 import cl.duoc.mira.operaciones.dto.ResumenArriendoResponse;
@@ -140,7 +141,20 @@ public class ArriendoService {
      */
     public List<AlertaRetornoResponse> alertasDeRetorno(Long empresaId) {
         LocalDate hoy = LocalDate.now(clock);
-        List<LineaPorRetornar> lineas = arriendoRepository.porRetornarHasta(empresaId, hoy.plusDays(DIAS_DE_AVISO));
+        return aAlertas(empresaId, arriendoRepository.porRetornarHasta(empresaId, hoy.plusDays(DIAS_DE_AVISO)), hoy);
+    }
+
+    /** Todos los equipos arrendados sin retorno, con su fecha comprometida y los días que faltan (HU-27). */
+    public List<AlertaRetornoResponse> arriendosVigentes(Long empresaId) {
+        return aAlertas(empresaId, arriendoRepository.porRetornar(empresaId), LocalDate.now(clock));
+    }
+
+    /** Tramos en que los equipos estuvieron arrendados dentro del periodo; lo usa el panel (HU-27). */
+    public List<PeriodoArrendado> arrendadosEntre(Long empresaId, LocalDate desde, LocalDate hasta) {
+        return arriendoRepository.arrendadosEntre(empresaId, desde, hasta);
+    }
+
+    private List<AlertaRetornoResponse> aAlertas(Long empresaId, List<LineaPorRetornar> lineas, LocalDate hoy) {
         Map<Long, EquipoResponse> equipos = equipoService.resumenPorId(empresaId,
                 lineas.stream().map(LineaPorRetornar::equipoId).collect(Collectors.toSet()));
         return lineas.stream()

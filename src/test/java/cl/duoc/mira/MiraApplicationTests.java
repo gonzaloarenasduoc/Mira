@@ -311,6 +311,25 @@ class MiraApplicationTests {
                 new ConteoEquipos("Bodega de prueba", EstadoEquipo.VENDIDO, 1));
     }
 
+    /** HU-27 contra la base real: tramos arrendados del periodo, vigentes e inventario sin vendidos. */
+    @Test
+    void utilizacion_consultasDelPeriodo_traenLosTramosYLosVigentes() {
+        long empresa = crearEmpresa("17.171.717-1");
+        insertarEquipo(empresa, "SN-0060");
+        insertarEquipo(empresa, "SN-0061");
+        long arrendado = idEquipo(empresa, "SN-0060");
+        long vendido = idEquipo(empresa, "SN-0061");
+        jdbc.update("UPDATE equipo SET estado = 'VENDIDO' WHERE id = ?", vendido);
+        arriendoService.registrar(empresa, administrador(), arriendo(crearCliente(empresa), arrendado));
+        entityManager.flush();
+
+        assertThat(arriendoService.arrendadosEntre(empresa, LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31)))
+                .extracting(t -> t.equipoId()).containsExactly(arrendado);
+        assertThat(arriendoService.arrendadosEntre(empresa, LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 31))).isEmpty();
+        assertThat(arriendoService.arriendosVigentes(empresa)).extracting(a -> a.equipoId()).containsExactly(arrendado);
+        assertThat(equipoService.enInventario(empresa)).extracting(e -> e.id()).containsExactly(arrendado);
+    }
+
     /** CF-04 contra la base real: retorno en otra bodega, sin traslado adicional. */
     @Test
     void retorno_enOtraBodega_reasignaElEquipoYCierraLaLinea() {

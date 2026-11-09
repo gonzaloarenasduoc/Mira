@@ -22,8 +22,10 @@ import cl.duoc.mira.documentos.service.DocumentoService;
 import cl.duoc.mira.indicadores.controller.IndicadoresController;
 import cl.duoc.mira.indicadores.service.IndicadoresService;
 import cl.duoc.mira.indicadores.dto.PanelInventario;
+import cl.duoc.mira.indicadores.dto.UtilizacionResponse;
 import cl.duoc.mira.documentos.dto.DocumentoResponse;
 import cl.duoc.mira.documentos.dto.ArchivoDocumento;
+import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.common.exception.RecursoNoEncontradoException;
 import cl.duoc.mira.documentos.entity.TipoDocumento;
 import cl.duoc.mira.inventario.dto.EquipoResponse;
@@ -413,8 +415,16 @@ class SeguridadTest {
                         new PanelInventario.SerieEstado("ARRENDADO", "Arrendado", List.of(1L), 1)),
                 List.of(4L), 4, 2));
 
+        when(indicadoresService.utilizacion(any(), any(), any())).thenReturn(utilizacionDePrueba());
+        when(indicadoresService.arriendosVigentes(any())).thenReturn(List.of(new AlertaRetornoResponse(3L,
+                "Topografía Atacama Ltda.", 6L, "TS16-334512", "Estación total Leica TS16", LocalDate.of(2026, 11, 16), 7)));
+
         mvc.perform(get("/indicadores").with(user(con(RolUsuario.JEFATURA))))
                 .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Utilización de los equipos")))
+                .andExpect(content().string(containsString("37,5 %")))
+                .andExpect(content().string(containsString("Arriendos vigentes")))
+                .andExpect(content().string(containsString("Faltan 7 días")))
                 .andExpect(content().string(containsString("Retornos vencidos")))
                 .andExpect(content().string(containsString("Equipos por bodega y estado")))
                 .andExpect(content().string(containsString("4 equipos en inventario · 2 vendidos, no se cuentan")))
@@ -427,6 +437,7 @@ class SeguridadTest {
     @Test
     void panelDeIndicadores_sinVencidos_loIndica() throws Exception {
         when(indicadoresService.inventario(any())).thenReturn(new PanelInventario(List.of(), List.of(), List.of(), 0, 0));
+        when(indicadoresService.utilizacion(any(), any(), any())).thenReturn(utilizacionDePrueba());
         mvc.perform(get("/indicadores").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("No hay arriendos con retorno vencido.")))
@@ -468,6 +479,28 @@ class SeguridadTest {
         mvc.perform(post("/arriendos").param("clienteId", "1")
                         .with(csrf()).with(user(con(RolUsuario.JEFATURA))))
                 .andExpect(status().isForbidden());
+    }
+
+    /** HU-27: un periodo inválido se avisa y el panel muestra los últimos 30 días. */
+    @Test
+    void panelDeIndicadores_periodoInvalido_avisaYUsaElDeOmision() throws Exception {
+        when(indicadoresService.inventario(any())).thenReturn(new PanelInventario(List.of(), List.of(), List.of(), 0, 0));
+        when(indicadoresService.utilizacion(any(), eq(LocalDate.of(2026, 11, 9)), eq(LocalDate.of(2026, 11, 1))))
+                .thenThrow(new NegocioException("La fecha de inicio del periodo no puede ser posterior a la de término."));
+        when(indicadoresService.utilizacion(any(), eq(null), eq(null))).thenReturn(utilizacionDePrueba());
+
+        mvc.perform(get("/indicadores").param("desde", "2026-11-09").param("hasta", "2026-11-01")
+                        .with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("no puede ser posterior a la de término. Se muestran los últimos 30 días.")));
+    }
+
+    private static UtilizacionResponse utilizacionDePrueba() {
+        UtilizacionResponse.Fila global = new UtilizacionResponse.Fila("Todos los equipos", 2, 15, 40, 37.5);
+        return new UtilizacionResponse(LocalDate.of(2026, 10, 11), LocalDate.of(2026, 11, 9), 30, global,
+                List.of(new UtilizacionResponse.Fila("GPS RTK", 2, 15, 40, 37.5)),
+                List.of(new UtilizacionResponse.FilaEquipo(1L, "GS18-778201", "Leica GS18 T", "GPS RTK", 15, 30, 50.0)),
+                List.of());
     }
 
     private static ClienteResponse clienteDePrueba() {
