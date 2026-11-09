@@ -13,3 +13,22 @@ desarrolló el 09-11-2026.
 | [03-historial-encargado.png](03-historial-encargado.png) | El encargado de bodega ve solo los arriendos del cliente (matriz de permisos) |
 
 CF-09 se cumple completo: la venta registrada en la semana 12 queda en el historial del cliente.
+
+## Adjuntar documentos a una operación (HU-23, D22)
+
+Adelantada al 09-11-2026. Pruebas con el encargado de bodega sobre el arriendo N° 3 y con el vendedor
+sobre la venta N° 4.
+
+| Captura | Qué muestra |
+|---|---|
+| [04-ficha-arriendo-con-adjuntar.png](04-ficha-arriendo-con-adjuntar.png) | La ficha del arriendo ofrece Adjuntar documento |
+| [05-formulario-documento.png](05-formulario-documento.png) | Formulario con tipo, número o folio, fecha y archivo |
+| [06-archivo-renombrado-rechazado.png](06-archivo-renombrado-rechazado.png) | Un archivo que no es PDF, aunque se llame `.pdf`, se rechaza |
+| [07-guia-adjuntada.png](07-guia-adjuntada.png) | Guía de despacho N° 1045 adjuntada al arriendo |
+| [08-archivo-sobre-10mb.png](08-archivo-sobre-10mb.png) | Un archivo de 11 MB se rechaza con una página propia; no queda nada guardado |
+| [09-factura-adjuntada-a-venta.png](09-factura-adjuntada-a-venta.png) | Factura N° 2210 adjuntada a la venta por el vendedor |
+
+En la base quedaron los dos documentos con su tipo, folio, fecha, nombre original, ruta generada,
+tipo de contenido, tamaño y el usuario que los subió; en el disco, los dos archivos bajo
+`uploads/1/`. El encargado de bodega recibe 403 al intentar adjuntar a una venta. Los documentos se
+consultan con HU-24 y HU-25.

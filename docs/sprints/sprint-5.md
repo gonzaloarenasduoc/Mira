@@ -1,4 +1,4 @@
-# Sprint 5 · Semanas 14 y 15 (planificado)
+# Sprint 5 · Semanas 14 y 15 (en curso)
 
 **Objetivo:** las operaciones quedan con su capacitación y sus documentos, y la jefatura consulta el
 panel de indicadores.
@@ -11,7 +11,7 @@ panel (`docs/06-flujo-trabajo.md`).
 
 | Prioridad | Historia | Épica | PF | Responsable | Estado |
 |---|---|---|---|---|---|
-| 20 | HU-23 · Adjuntar documentos a una operación | E008 | 5 | Gonzalo (lidera) y Joaquín (servicios) | Pendiente |
+| 20 | HU-23 · Adjuntar documentos a una operación | E008 | 5 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, rama `semana-13` (D22) |
 | 21 | HU-25 · Consultar los documentos de un equipo | E008 | 5 | Gonzalo (lidera) y Joaquín (servicios) | Pendiente |
 | 22 | HU-24 · Consultar los documentos de una operación | E008 | 3 | Gonzalo (lidera) y Joaquín (servicios) | Pendiente |
 | 23 | HU-28 · Alertas de retorno vencido en el panel | E009 | 2 | Gonzalo (lidera) y Joaquín (servicios) | Pendiente |

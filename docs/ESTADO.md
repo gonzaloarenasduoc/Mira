@@ -126,6 +126,12 @@ D17.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- HU-23 en `semana-13` (adelantada el 09-11, D22): adjuntar orden de compra, guía de despacho o
+  factura a un arriendo o a una venta, con folio, fecha y archivo PDF, JPG o PNG de hasta 10 MB. Se
+  valida el contenido del archivo; se guarda en `APP_UPLOAD_DIR` con nombre generado. Página propia
+  para un envío sobre el límite (`error/413.html`). Verificado contra PostgreSQL y el disco; 164 pruebas.
+- Sprint 4 cerrado en desarrollo, con borrador de retrospectiva por validar con Joaquín, y Sprint 5
+  planificado en `docs/sprints/sprint-5.md`.
 - HU-19 en `semana-13` (adelantada el 09-11, D21): ficha del cliente con su historial de ventas y
   arriendos, del más reciente al más antiguo, con tipo, equipos, estado y total. El encargado de
   bodega ve solo los arriendos (matriz de permisos). Verificado contra PostgreSQL; 148 pruebas.
@@ -156,7 +162,7 @@ D17.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Cierre del Sprint 4 | Ambos | `semana-13` | Las 7 historias del sprint están terminadas. Falta integrar los PR #22 y de la semana 13, la retrospectiva y planificar el Sprint 5 |
+| Sprint 5: HU-20 a HU-28 | Ambos | `semana-13` | HU-23 terminada (adelantada). Siguen HU-25 y HU-24 (documentos de un equipo y de una operación) |
 
 ## Siguiente
 

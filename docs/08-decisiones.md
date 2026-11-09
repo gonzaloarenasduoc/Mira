@@ -342,5 +342,23 @@ arriendo; el equipo lo decidió al implementarla.
 
 ---
 
+## D22 · Archivos adjuntos: formatos, tamaño y permisos (HU-23)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** Una operación acepta como adjuntos archivos PDF, JPG y PNG de hasta 10 MB: cubren los
+documentos digitales y las fotos o escaneos de una guía firmada. Se valida el contenido del archivo y
+no solo su extensión: un archivo renombrado a `.pdf` se rechaza. El archivo se guarda en
+`APP_UPLOAD_DIR` (D06) con un nombre generado dentro de la carpeta de su empresa; el nombre original
+solo se guarda como dato. Si la transacción se revierte, el archivo recién escrito se borra. Cada
+documento exige tipo (orden de compra, guía de despacho o factura), número o folio y fecha, que no
+puede ser futura. Los permisos siguen la matriz de E008 y se apoyan en los de cada operación:
+adjuntan el administrador, el encargado de bodega y el vendedor, la jefatura solo consulta, y el
+encargado no adjunta a ventas porque no tiene acceso a ellas.
+
+**Motivo.** E008 no definía formatos ni tamaño. El equipo los fijó al implementar HU-23.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.
