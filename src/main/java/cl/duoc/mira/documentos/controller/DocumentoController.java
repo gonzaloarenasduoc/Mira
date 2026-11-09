@@ -2,6 +2,7 @@ package cl.duoc.mira.documentos.controller;
 
 import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.documentos.dto.AdjuntarDocumentoRequest;
+import cl.duoc.mira.documentos.dto.ArchivoDocumento;
 import cl.duoc.mira.documentos.dto.DocumentoResponse;
 import cl.duoc.mira.documentos.entity.TipoDocumento;
 import cl.duoc.mira.documentos.service.DocumentoService;
@@ -9,12 +10,20 @@ import cl.duoc.mira.operaciones.dto.ArriendoResponse;
 import cl.duoc.mira.operaciones.dto.VentaResponse;
 import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.service.VentaService;
+import cl.duoc.mira.usuarios.entity.RolUsuario;
 import cl.duoc.mira.usuarios.service.UsuarioAutenticado;
 import jakarta.validation.Valid;
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,7 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
- * Adjuntar documentos a un arriendo o a una venta (HU-23). Las rutas cuelgan de la operación, así que
+ * Adjuntar documentos a un arriendo o a una venta (HU-23) y descargarlos (HU-24). Las rutas cuelgan de la operación, así que
  * los permisos de E008 se apoyan en los de cada operación: el encargado de bodega adjunta a arriendos,
  * pero no a ventas, porque no tiene acceso a ellas.
  */
@@ -94,6 +103,22 @@ public class DocumentoController {
         }
         cargarVenta(actual, id, model);
         return "documentos/formulario";
+    }
+
+    /**
+     * Descarga el archivo de un documento (HU-24). Se entrega como adjunto, con el nombre original y el
+     * tipo de contenido validado al subirlo; el navegador no lo interpreta como página.
+     */
+    @GetMapping("/documentos/{id}/archivo")
+    public ResponseEntity<Resource> descargar(@AuthenticationPrincipal UsuarioAutenticado actual, @PathVariable Long id) {
+        ArchivoDocumento archivo = documentoService.descargar(actual.empresaId(), id,
+                actual.tieneRol(RolUsuario.ADMINISTRADOR, RolUsuario.VENDEDOR, RolUsuario.JEFATURA));
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(archivo.contentType()))
+                .contentLength(archivo.tamanoBytes())
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment().filename(archivo.nombre(), StandardCharsets.UTF_8).build().toString())
+                .body(new FileSystemResource(archivo.ruta()));
     }
 
     private AdjuntarDocumentoRequest nuevo() {

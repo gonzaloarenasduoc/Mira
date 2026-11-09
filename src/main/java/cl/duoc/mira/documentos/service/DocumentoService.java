@@ -4,6 +4,7 @@ import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.common.exception.RecursoNoEncontradoException;
 import cl.duoc.mira.common.repository.EmpresaRepository;
 import cl.duoc.mira.documentos.dto.AdjuntarDocumentoRequest;
+import cl.duoc.mira.documentos.dto.ArchivoDocumento;
 import cl.duoc.mira.documentos.dto.DocumentoResponse;
 import cl.duoc.mira.documentos.entity.Documento;
 import cl.duoc.mira.documentos.repository.DocumentoRepository;
@@ -11,6 +12,8 @@ import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.service.VentaService;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -69,6 +72,34 @@ public class DocumentoService {
             throw new RecursoNoEncontradoException("La venta");
         }
         return adjuntar(empresaId, ventaId, true, request, archivo);
+    }
+
+    /** HU-24: documentos de un arriendo, del más reciente al más antiguo. */
+    public List<DocumentoResponse> deArriendo(Long empresaId, Long arriendoId) {
+        return documentoRepository.findByEmpresaIdAndOperacionIdOrderByFechaEmisionDescIdDesc(empresaId, arriendoId)
+                .stream().map(d -> aResponse(d, false)).toList();
+    }
+
+    /** HU-24: documentos de una venta, del más reciente al más antiguo. */
+    public List<DocumentoResponse> deVenta(Long empresaId, Long ventaId) {
+        return documentoRepository.findByEmpresaIdAndOperacionIdOrderByFechaEmisionDescIdDesc(empresaId, ventaId)
+                .stream().map(d -> aResponse(d, true)).toList();
+    }
+
+    /**
+     * Archivo de un documento para descargarlo (HU-24). Solo lo obtienen usuarios de la misma empresa:
+     * un documento de otra empresa se responde como inexistente (PNF-06). Sin acceso a E006, como el
+     * encargado de bodega, tampoco se descargan los documentos de ventas (D21).
+     */
+    public ArchivoDocumento descargar(Long empresaId, Long id, boolean incluirVentas) {
+        Documento d = documentoRepository.findByIdAndEmpresaId(id, empresaId)
+                .filter(doc -> incluirVentas || !ventaService.existe(empresaId, doc.getOperacionId()))
+                .orElseThrow(() -> new RecursoNoEncontradoException("El documento"));
+        Path ruta = almacen.resolver(d.getRutaArchivo());
+        if (!Files.isRegularFile(ruta)) {
+            throw new RecursoNoEncontradoException("El archivo del documento");
+        }
+        return new ArchivoDocumento(d.getNombreArchivo(), d.getContentType(), d.getTamanoBytes(), ruta);
     }
 
     /**

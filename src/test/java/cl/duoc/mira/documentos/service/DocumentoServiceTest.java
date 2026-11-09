@@ -16,21 +16,26 @@ import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.common.exception.RecursoNoEncontradoException;
 import cl.duoc.mira.common.repository.EmpresaRepository;
 import cl.duoc.mira.documentos.dto.AdjuntarDocumentoRequest;
+import cl.duoc.mira.documentos.dto.ArchivoDocumento;
 import cl.duoc.mira.documentos.dto.DocumentoResponse;
 import cl.duoc.mira.documentos.entity.Documento;
 import cl.duoc.mira.documentos.entity.TipoDocumento;
 import cl.duoc.mira.documentos.repository.DocumentoRepository;
 import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.service.VentaService;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -195,6 +200,49 @@ class DocumentoServiceTest {
     void deEquipo_equipoSinOperaciones_quedaVacioSinConsultarDocumentos() {
         assertThat(service.deEquipo(EMPRESA_ID, 30L, true)).isEmpty();
         verify(documentoRepository, never()).findByEmpresaIdAndOperacionIdInOrderByFechaEmisionDescIdDesc(any(), any());
+    }
+
+    /** HU-24: los documentos de una operación, con su tipo, folio y fecha. */
+    @Test
+    void deArriendo_listaSusDocumentos() {
+        when(documentoRepository.findByEmpresaIdAndOperacionIdOrderByFechaEmisionDescIdDesc(EMPRESA_ID, 4L))
+                .thenReturn(List.of(documento(1L, 4L, TipoDocumento.GUIA_DESPACHO)));
+
+        assertThat(service.deArriendo(EMPRESA_ID, 4L)).singleElement().satisfies(d -> {
+            assertThat(d.tipo()).isEqualTo(TipoDocumento.GUIA_DESPACHO);
+            assertThat(d.numeroFolio()).isEqualTo("100");
+            assertThat(d.venta()).isFalse();
+        });
+    }
+
+    @Test
+    void descargar_documentoDeLaEmpresa_entregaSuArchivo(@TempDir Path carpeta) throws Exception {
+        Path archivo = Files.write(carpeta.resolve("x.pdf"), PDF);
+        when(documentoRepository.findByIdAndEmpresaId(1L, EMPRESA_ID)).thenReturn(Optional.of(documento(1L, 4L, TipoDocumento.GUIA_DESPACHO)));
+        when(almacen.resolver("1/x.pdf")).thenReturn(archivo);
+
+        ArchivoDocumento descarga = service.descargar(EMPRESA_ID, 1L, false);
+
+        assertThat(descarga.nombre()).isEqualTo("doc.pdf");
+        assertThat(descarga.contentType()).isEqualTo("application/pdf");
+        assertThat(descarga.ruta()).isEqualTo(archivo);
+    }
+
+    /** HU-24 y PNF-06: solo usuarios de la misma empresa descargan el archivo. */
+    @Test
+    void descargar_documentoDeOtraEmpresa_lanzaNoEncontrado() {
+        when(documentoRepository.findByIdAndEmpresaId(1L, EMPRESA_ID)).thenReturn(Optional.empty());
+
+        assertThrows(RecursoNoEncontradoException.class, () -> service.descargar(EMPRESA_ID, 1L, true));
+        verify(almacen, never()).resolver(anyString());
+    }
+
+    /** D21: sin acceso a E006 no se descarga el documento de una venta. */
+    @Test
+    void descargar_documentoDeVentaSinAccesoAVentas_lanzaNoEncontrado() {
+        when(documentoRepository.findByIdAndEmpresaId(2L, EMPRESA_ID)).thenReturn(Optional.of(documento(2L, 9L, TipoDocumento.FACTURA)));
+
+        assertThrows(RecursoNoEncontradoException.class, () -> service.descargar(EMPRESA_ID, 2L, false));
     }
 
     private static Documento documento(Long id, Long operacionId, TipoDocumento tipo) {

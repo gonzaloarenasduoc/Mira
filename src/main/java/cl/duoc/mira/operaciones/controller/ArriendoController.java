@@ -1,6 +1,7 @@
 package cl.duoc.mira.operaciones.controller;
 
 import cl.duoc.mira.common.exception.NegocioException;
+import cl.duoc.mira.documentos.service.DocumentoService;
 import cl.duoc.mira.inventario.dto.BodegaResponse;
 import cl.duoc.mira.inventario.dto.EquipoResponse;
 import cl.duoc.mira.inventario.service.BodegaService;
@@ -40,6 +41,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class ArriendoController {
 
+    private final DocumentoService documentoService;
     private final ArriendoService arriendoService;
     private final ClienteService clienteService;
     private final BodegaService bodegaService;
@@ -95,6 +97,7 @@ public class ArriendoController {
     @GetMapping("/{id}")
     public String ficha(@AuthenticationPrincipal UsuarioAutenticado actual, @PathVariable Long id, Model model) {
         model.addAttribute("arriendo", arriendoService.ficha(actual.empresaId(), id));
+        model.addAttribute("documentos", documentoService.deArriendo(actual.empresaId(), id));
         return "arriendos/ficha";
     }
 

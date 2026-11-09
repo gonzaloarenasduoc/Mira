@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,6 +20,8 @@ import cl.duoc.mira.common.controller.InicioController;
 import cl.duoc.mira.documentos.controller.DocumentoController;
 import cl.duoc.mira.documentos.service.DocumentoService;
 import cl.duoc.mira.documentos.dto.DocumentoResponse;
+import cl.duoc.mira.documentos.dto.ArchivoDocumento;
+import cl.duoc.mira.common.exception.RecursoNoEncontradoException;
 import cl.duoc.mira.documentos.entity.TipoDocumento;
 import cl.duoc.mira.inventario.dto.EquipoResponse;
 import cl.duoc.mira.inventario.dto.FichaEquipoResponse;
@@ -48,6 +51,8 @@ import cl.duoc.mira.operaciones.service.DisponibilidadService;
 import cl.duoc.mira.operaciones.service.VentaService;
 import cl.duoc.mira.operaciones.service.HistorialClienteService;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 import cl.duoc.mira.usuarios.controller.UsuarioController;
@@ -55,6 +60,7 @@ import cl.duoc.mira.usuarios.entity.RolUsuario;
 import cl.duoc.mira.usuarios.service.UsuarioAutenticado;
 import cl.duoc.mira.usuarios.service.UsuarioService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +112,8 @@ class SeguridadTest {
     @ParameterizedTest
     @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios",
             "/traslados", "/traslados/nuevo?equipoId=1", "/disponibilidad",
-            "/arriendos", "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo", "/ventas/nueva", "/ventas/1", "/clientes/1", "/arriendos/1/documentos/nuevo", "/ventas/1/documentos/nuevo"})
+            "/arriendos", "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo", "/ventas/nueva", "/ventas/1", "/clientes/1", "/arriendos/1/documentos/nuevo", "/ventas/1/documentos/nuevo",
+            "/documentos/1/archivo"})
     void rutaProtegida_sinSesion_redirigeAlLogin(String ruta) throws Exception {
         mvc.perform(get(ruta))
                 .andExpect(status().is3xxRedirection())
@@ -349,6 +356,45 @@ class SeguridadTest {
         mvc.perform(get("/equipos/30").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
                 .andExpect(status().isOk());
         verify(documentoService).deEquipo(any(), eq(30L), eq(false));
+    }
+
+    /** HU-24: la ficha del arriendo lista sus documentos con un enlace para descargarlos. */
+    @Test
+    void fichaArriendo_conDocumentos_losListaConSuDescarga() throws Exception {
+        when(arriendoService.ficha(any(), eq(3L))).thenReturn(new ArriendoResponse(3L, "Topografía Atacama Ltda.",
+                "76.555.444-6", LocalDate.of(2026, 11, 2), LocalDate.of(2026, 11, 2), LocalDate.of(2026, 11, 16),
+                null, null, List.of(), BigDecimal.ZERO));
+        when(documentoService.deArriendo(any(), eq(3L))).thenReturn(List.of(new DocumentoResponse(1L, 3L, false,
+                TipoDocumento.GUIA_DESPACHO, "1045", LocalDate.of(2026, 11, 2), "guia-1045.png", 3196)));
+
+        mvc.perform(get("/arriendos/3").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Guía de despacho")))
+                .andExpect(content().string(containsString("/documentos/1/archivo")));
+    }
+
+    /** HU-24: el archivo se entrega como adjunto, con su nombre y tipo de contenido. */
+    @Test
+    void descargarDocumento_comoVendedor_entregaElArchivoAdjunto(@TempDir Path carpeta) throws Exception {
+        Path archivo = Files.write(carpeta.resolve("guia.pdf"), "%PDF-1.4".getBytes());
+        when(documentoService.descargar(any(), eq(1L), eq(true)))
+                .thenReturn(new ArchivoDocumento("guía 1045.pdf", "application/pdf", 8, archivo));
+
+        mvc.perform(get("/documentos/1/archivo").with(user(con(RolUsuario.VENDEDOR))))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "application/pdf"))
+                .andExpect(header().string("Content-Disposition", containsString("attachment")))
+                .andExpect(header().string("Content-Disposition", containsString("gu%C3%ADa%201045.pdf")))
+                .andExpect(content().string("%PDF-1.4"));
+    }
+
+    /** D21: el encargado de bodega descarga sin acceso a los documentos de ventas. */
+    @Test
+    void descargarDocumento_comoEncargado_noIncluyeVentas() throws Exception {
+        when(documentoService.descargar(any(), eq(2L), eq(false))).thenThrow(new RecursoNoEncontradoException("El documento"));
+
+        mvc.perform(get("/documentos/2/archivo").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isNotFound());
     }
 
     /** D17: la jefatura consulta los clientes, pero no los registra ni los modifica. */

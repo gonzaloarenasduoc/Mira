@@ -87,31 +87,7 @@
             </div>
         </div>
         <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="h6 text-uppercase text-secondary mb-3">Documentos</h2>
-                    <p class="text-secondary mb-0" th:if="${#lists.isEmpty(documentos)}">
-                        Ninguna operación de este equipo tiene documentos adjuntos.
-                    </p>
-                    <div class="table-responsive" th:unless="${#lists.isEmpty(documentos)}">
-                        <table class="table align-middle mb-0 tabla-mira">
-                            <thead><tr><th>Fecha</th><th>Tipo</th><th>Número o folio</th><th>Operación</th><th>Archivo</th></tr></thead>
-                            <tbody>
-                            <tr th:each="d : ${documentos}">
-                                <td class="text-nowrap" th:text="${#temporals.format(d.fechaEmision(), 'dd-MM-yyyy')}">fecha</td>
-                                <td th:text="${d.tipo().etiqueta}">Tipo</td>
-                                <td th:text="${d.numeroFolio()}">folio</td>
-                                <td class="text-nowrap">
-                                    <a th:if="${d.venta()}" th:href="@{/ventas/{id}(id=${d.operacionId()})}" th:text="'Venta N° ' + ${d.operacionId()}">Venta</a>
-                                    <a th:unless="${d.venta()}" th:href="@{/arriendos/{id}(id=${d.operacionId()})}" th:text="'Arriendo N° ' + ${d.operacionId()}">Arriendo</a>
-                                </td>
-                                <td class="small text-secondary" th:text="${d.nombreArchivo()}">archivo</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            <div th:replace="~{documentos/fragmentos :: tarjeta(${documentos}, true)}"></div>
         </div>
     </div>
 </main>
