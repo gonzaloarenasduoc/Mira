@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import cl.duoc.mira.capacitaciones.controller.CapacitacionController;
@@ -480,6 +481,27 @@ class SeguridadTest {
                 .andExpect(status().isForbidden());
         mvc.perform(get("/ventas/4/capacitaciones/nueva").with(user(con(RolUsuario.JEFATURA))))
                 .andExpect(status().isForbidden());
+    }
+
+    /** HU-21: el formulario consulta el aviso de técnico ocupado; solo quienes agendan. */
+    @Test
+    void conflictosDeTecnico_respondenElAvisoSoloAQuienesAgendan() throws Exception {
+        when(capacitacionService.avisoConflicto(any(), eq(7L), eq(LocalDate.of(2026, 11, 12))))
+                .thenReturn("Andrés Pérez ya tiene una capacitación programada el 12-11-2026: a las 10:00 en Faena.");
+
+        mvc.perform(get("/capacitaciones/conflictos").param("tecnicoId", "7").param("fecha", "2026-11-12")
+                        .with(user(con(RolUsuario.VENDEDOR))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.aviso").value(containsString("Andrés Pérez ya tiene")));
+        mvc.perform(get("/capacitaciones/conflictos").param("tecnicoId", "8").param("fecha", "2026-11-12")
+                        .with(user(con(RolUsuario.VENDEDOR))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.aviso").doesNotExist());
+        for (RolUsuario rol : new RolUsuario[] {RolUsuario.JEFATURA, RolUsuario.ENCARGADO_BODEGA}) {
+            mvc.perform(get("/capacitaciones/conflictos").param("tecnicoId", "7").param("fecha", "2026-11-12")
+                            .with(user(con(rol))))
+                    .andExpect(status().isForbidden());
+        }
     }
 
     /** HU-20: la ficha sugiere agendar cuando la categoría lo requiere; el encargado no ve la sección. */

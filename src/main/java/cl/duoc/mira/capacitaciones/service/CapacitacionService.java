@@ -14,8 +14,10 @@ import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.service.VentaService;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CapacitacionService {
+
+    private static final DateTimeFormatter DIA = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
 
     private final CapacitacionRepository capacitacionRepository;
     private final TecnicoService tecnicoService;
@@ -69,6 +74,24 @@ public class CapacitacionService {
         return !tieneCapacitacion && equipoService.requierenCapacitacion(empresaId, equipos);
     }
 
+    /**
+     * HU-21 (CF-12): advierte si el técnico ya tiene otra capacitación programada ese día. Devuelve
+     * nulo si no la tiene; las realizadas y las canceladas no cuentan.
+     */
+    public String avisoConflicto(Long empresaId, Long tecnicoId, LocalDate fecha) {
+        List<Capacitacion> programadas = capacitacionRepository.delTecnicoEntre(empresaId, tecnicoId,
+                EstadoCapacitacion.PROGRAMADA, fecha.atStartOfDay(), fecha.plusDays(1).atStartOfDay());
+        if (programadas.isEmpty()) {
+            return null;
+        }
+        String detalle = programadas.stream()
+                .map(c -> "a las " + HORA.format(c.getFechaProgramada()) + " en " + c.getLugar())
+                .collect(Collectors.joining("; "));
+        return programadas.getFirst().getTecnico().getNombreCompleto() + " ya tiene "
+                + (programadas.size() == 1 ? "una capacitación programada" : programadas.size() + " capacitaciones programadas")
+                + " el " + DIA.format(fecha) + ": " + detalle + ".";
+    }
+
     private CapacitacionResponse agendar(Long empresaId, Long operacionId, AgendarCapacitacionRequest request) {
         if (request.getFecha().isBefore(LocalDate.now(clock))) {
             throw new NegocioException("La capacitación se agenda para hoy o una fecha posterior.");
@@ -76,6 +99,12 @@ public class CapacitacionService {
         Tecnico tecnico = tecnicoService.obtener(empresaId, request.getTecnicoId());
         if (!tecnico.isActivo()) {
             throw new NegocioException("El técnico " + tecnico.getNombreCompleto() + " está inactivo.");
+        }
+        if (!request.isConfirmarConflicto()) {
+            String aviso = avisoConflicto(empresaId, tecnico.getId(), request.getFecha());
+            if (aviso != null) {
+                throw new ConflictoTecnicoException(aviso);
+            }
         }
         Capacitacion capacitacion = new Capacitacion(empresaRepository.getReferenceById(empresaId), operacionId, tecnico,
                 request.getFecha().atTime(request.getHora()), request.getLugar().trim(), vacioANulo(request.getObservaciones()));

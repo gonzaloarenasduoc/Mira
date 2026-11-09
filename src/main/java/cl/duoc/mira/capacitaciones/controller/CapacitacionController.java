@@ -1,8 +1,10 @@
 package cl.duoc.mira.capacitaciones.controller;
 
 import cl.duoc.mira.capacitaciones.dto.AgendarCapacitacionRequest;
+import cl.duoc.mira.capacitaciones.dto.AvisoConflicto;
 import cl.duoc.mira.capacitaciones.dto.CapacitacionResponse;
 import cl.duoc.mira.capacitaciones.service.CapacitacionService;
+import cl.duoc.mira.capacitaciones.service.ConflictoTecnicoException;
 import cl.duoc.mira.capacitaciones.service.TecnicoService;
 import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.operaciones.dto.ArriendoResponse;
@@ -23,11 +25,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
- * Agendar la capacitación de un arriendo o de una venta (HU-20). Solo el administrador y el vendedor
+ * Agendar la capacitación de un arriendo o de una venta (HU-20), con aviso de técnico ocupado (HU-21). Solo el administrador y el vendedor
  * (matriz de E007): las rutas tienen reglas propias en SeguridadConfig, porque el encargado de bodega
  * sí entra a la ficha del arriendo.
  */
@@ -59,6 +64,8 @@ public class CapacitacionController {
                 CapacitacionResponse c = capacitacionService.agendarParaArriendo(actual.empresaId(), id, capacitacion);
                 redirect.addFlashAttribute("exito", mensaje(c));
                 return "redirect:/arriendos/" + id;
+            } catch (ConflictoTecnicoException ex) {
+                model.addAttribute("conflicto", ex.getMessage());
             } catch (NegocioException ex) {
                 errores.reject("negocio", ex.getMessage());
             }
@@ -83,12 +90,22 @@ public class CapacitacionController {
                 CapacitacionResponse c = capacitacionService.agendarParaVenta(actual.empresaId(), id, capacitacion);
                 redirect.addFlashAttribute("exito", mensaje(c));
                 return "redirect:/ventas/" + id;
+            } catch (ConflictoTecnicoException ex) {
+                model.addAttribute("conflicto", ex.getMessage());
             } catch (NegocioException ex) {
                 errores.reject("negocio", ex.getMessage());
             }
         }
         cargarVenta(actual, id, model);
         return "capacitaciones/formulario";
+    }
+
+    /** HU-21: el formulario lo consulta al elegir técnico y fecha, antes de enviar. */
+    @GetMapping("/capacitaciones/conflictos")
+    @ResponseBody
+    public AvisoConflicto conflictos(@AuthenticationPrincipal UsuarioAutenticado actual, @RequestParam Long tecnicoId,
+                                     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        return new AvisoConflicto(capacitacionService.avisoConflicto(actual.empresaId(), tecnicoId, fecha));
     }
 
     /** Propone mañana a las 10:00; el vendedor lo ajusta. */

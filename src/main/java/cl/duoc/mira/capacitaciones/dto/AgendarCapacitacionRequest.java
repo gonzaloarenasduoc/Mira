@@ -29,4 +29,7 @@ public class AgendarCapacitacionRequest {
 
     @Size(max = 2000, message = "Las observaciones admiten hasta 2000 caracteres.")
     private String observaciones;
+
+    /** HU-21: el vendedor vio el aviso de técnico ocupado y agenda de todas formas. */
+    private boolean confirmarConflicto;
 }

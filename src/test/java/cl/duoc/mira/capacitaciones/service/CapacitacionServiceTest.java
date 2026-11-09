@@ -122,6 +122,45 @@ class CapacitacionServiceTest {
         assertThat(service.sugerirAgendar(EMPRESA_ID, 3L, List.of(5L))).as("ya está agendada").isFalse();
     }
 
+    /** HU-21 (CF-12): si el técnico ya tiene una programada ese día, se advierte antes de confirmar. */
+    @Test
+    void agendar_tecnicoOcupadoEseDia_advierteSinGuardar() {
+        when(capacitacionRepository.delTecnicoEntre(EMPRESA_ID, null, EstadoCapacitacion.PROGRAMADA,
+                LocalDateTime.of(2026, 11, 12, 0, 0), LocalDateTime.of(2026, 11, 13, 0, 0)))
+                .thenReturn(List.of(capacitacion(EstadoCapacitacion.PROGRAMADA)));
+
+        ConflictoTecnicoException ex = assertThrows(ConflictoTecnicoException.class,
+                () -> service.agendarParaArriendo(EMPRESA_ID, 3L, solicitud(LocalDate.of(2026, 11, 12))));
+        assertThat(ex.getMessage())
+                .isEqualTo("Andrés Pérez ya tiene una capacitación programada el 12-11-2026: a las 10:00 en Faena.");
+        verify(capacitacionRepository, never()).save(any());
+    }
+
+    /** HU-21: es una advertencia; si el vendedor confirma, se agenda igual. */
+    @Test
+    void agendar_tecnicoOcupadoYConfirmado_seAgenda() {
+        when(capacitacionRepository.delTecnicoEntre(any(), any(), any(), any(), any()))
+                .thenReturn(List.of(capacitacion(EstadoCapacitacion.PROGRAMADA)));
+        AgendarCapacitacionRequest r = solicitud(LocalDate.of(2026, 11, 12));
+        r.setConfirmarConflicto(true);
+
+        assertThat(service.agendarParaArriendo(EMPRESA_ID, 3L, r).estado()).isEqualTo(EstadoCapacitacion.PROGRAMADA);
+        verify(capacitacionRepository).save(any(Capacitacion.class));
+    }
+
+    @Test
+    void avisoConflicto_sinOtrasEseDia_esNulo_yConVariasLasDetalla() {
+        LocalDate dia = LocalDate.of(2026, 11, 12);
+        assertThat(service.avisoConflicto(EMPRESA_ID, 7L, dia)).isNull();
+
+        Capacitacion tarde = new Capacitacion(mock(Empresa.class), 4L, tecnico, LocalDateTime.of(2026, 11, 12, 15, 30), "Bodega Central", null);
+        when(capacitacionRepository.delTecnicoEntre(EMPRESA_ID, 7L, EstadoCapacitacion.PROGRAMADA,
+                dia.atStartOfDay(), dia.plusDays(1).atStartOfDay()))
+                .thenReturn(List.of(capacitacion(EstadoCapacitacion.PROGRAMADA), tarde));
+        assertThat(service.avisoConflicto(EMPRESA_ID, 7L, dia)).isEqualTo("Andrés Pérez ya tiene 2 capacitaciones "
+                + "programadas el 12-11-2026: a las 10:00 en Faena; a las 15:30 en Bodega Central.");
+    }
+
     private Capacitacion capacitacion(EstadoCapacitacion estado) {
         Capacitacion c = new Capacitacion(mock(Empresa.class), 3L, tecnico, LocalDateTime.of(2026, 11, 12, 10, 0), "Faena", null);
         ReflectionTestUtils.setField(c, "estado", estado);

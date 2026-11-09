@@ -361,6 +361,10 @@ class MiraApplicationTests {
                 .satisfies(r -> assertThat(r.estado()).isEqualTo(EstadoCapacitacion.PROGRAMADA));
         assertThat(jdbc.queryForObject("SELECT estado FROM capacitacion WHERE operacion_id = ?", String.class, arriendoId))
                 .isEqualTo("PROGRAMADA");
+
+        // HU-21 contra la base real: el mismo técnico ese día genera el aviso; el día siguiente, no.
+        assertThat(capacitacionService.avisoConflicto(empresa, tecnico, c.getFecha())).contains("Andrés Pérez ya tiene");
+        assertThat(capacitacionService.avisoConflicto(empresa, tecnico, c.getFecha().plusDays(1))).isNull();
     }
 
     /** CF-04 contra la base real: retorno en otra bodega, sin traslado adicional. */
