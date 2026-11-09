@@ -356,6 +356,10 @@ puede ser futura. Los permisos siguen la matriz de E008 y se apoyan en los de ca
 adjuntan el administrador, el encargado de bodega y el vendedor, la jefatura solo consulta, y el
 encargado no adjunta a ventas porque no tiene acceso a ellas.
 
+La descarga (HU-24) entrega el archivo como adjunto, con su nombre original y el tipo de contenido
+validado al subirlo. Solo lo descargan usuarios de la misma empresa; el encargado de bodega no
+descarga documentos de ventas (D21).
+
 **Motivo.** E008 no definía formatos ni tamaño. El equipo los fijó al implementar HU-23.
 
 ---

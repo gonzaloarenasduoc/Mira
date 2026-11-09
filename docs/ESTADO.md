@@ -126,6 +126,10 @@ D17.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- HU-24 en `semana-13` (adelantada el 09-11): las fichas de arriendo, venta y equipo listan los
+  documentos con su tipo, folio y fecha, y el nombre del archivo lo descarga. Solo usuarios de la
+  misma empresa; el encargado no descarga documentos de ventas (D21, D22). Verificado byte a byte
+  contra el disco; 178 pruebas. **E008 queda completa.**
 - HU-25 en `semana-13` (adelantada el 09-11, CF-13): la ficha del equipo muestra los documentos de
   todas las operaciones en que participó; el documento de un arriendo con varios equipos aparece en
   cada ficha. Siguiendo D21, el encargado de bodega no ve los documentos de ventas. 170 pruebas.
@@ -166,7 +170,7 @@ D17.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 5: HU-20 a HU-28 | Ambos | `semana-13` | HU-23 y HU-25 terminadas (adelantadas). Sigue HU-24 (listar y descargar los documentos de una operación) |
+| Sprint 5: HU-20 a HU-28 | Ambos | `semana-13` | E008 terminada (HU-23 a HU-25, adelantadas). Siguen E009 (HU-28, HU-26, HU-27) y E007 (HU-20 a HU-22) |
 
 ## Siguiente
 

@@ -43,3 +43,15 @@ consultan con HU-24 y HU-25.
 
 Un equipo sin operaciones con documentos, como el R12I-90311, muestra "Ninguna operación de este
 equipo tiene documentos adjuntos".
+
+## Documentos de una operación y su descarga (HU-24)
+
+| Captura | Qué muestra |
+|---|---|
+| [13-documentos-en-ficha-arriendo.png](13-documentos-en-ficha-arriendo.png) | La ficha del arriendo N° 3 lista su guía de despacho; el nombre del archivo la descarga |
+| [14-documentos-en-ficha-venta.png](14-documentos-en-ficha-venta.png) | La ficha de la venta N° 4 lista su factura |
+
+Los archivos descargados son idénticos byte a byte a los subidos. Se entregan como adjunto
+(`Content-Disposition: attachment`), con su nombre original, el tipo de contenido validado al subirlos
+y `X-Content-Type-Options: nosniff`. El encargado de bodega descarga la guía del arriendo, pero recibe
+404 con la factura de la venta (D21); un documento inexistente o de otra empresa también responde 404.
