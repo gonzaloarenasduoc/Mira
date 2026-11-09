@@ -439,6 +439,8 @@ la Eve podría confirmarlos, porque trabaja ahí.
 La primera migración `V1__esquema_inicial.sql` crea todo este esquema. La segunda,
 `V2__datos_iniciales.sql`, carga la empresa, el usuario administrador y las categorías
 básicas.
+La tercera, `V3__categorias_catalogo.sql`, agrega siete categorías tomadas del catálogo de
+una empresa del rubro (D19).
 
 **Una vez aplicadas, no se editan.** Cualquier ajuste posterior, incluso corregir un tipo
 de dato, va en una migración nueva.

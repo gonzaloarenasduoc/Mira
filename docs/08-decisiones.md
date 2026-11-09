@@ -262,5 +262,70 @@ ya estaba terminada e integrada, y los clientes también los usan las ventas y l
 
 ---
 
+## D18 · Cálculo del total de un arriendo (HU-17)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** El total de un arriendo es la suma, por cada línea, de la tarifa diaria por los días
+de arriendo. Los días son la diferencia entre la fecha de inicio y la fecha de fin, con mínimo uno:
+del 20 al 30 son 10 días, y un equipo que vuelve el mismo día se cobra un día. La fecha de fin es la
+de retorno real; si el equipo no ha vuelto, la fecha comprometida, o la de hoy si ya venció. El total
+es **estimado** mientras algún equipo no retorna y **definitivo** cuando todos retornaron. El estado
+del arriendo (vigente, vencido o cerrado) y el total no se almacenan: se calculan al consultar.
+
+**Motivo.** HU-17 pide el total y si es estimado o definitivo, pero no definía cómo contar los días;
+el equipo lo decidió al implementarla.
+Contar hasta hoy un arriendo vencido hace que el total estimado refleje el atraso, que es lo que el
+vendedor necesita saber. Calcularlo evita guardar un dato que cambia cada día (03, 1.6).
+
+**Descartado.** Contar los días de forma inclusiva (11 días del 20 al 30). Estimar siempre hasta la
+fecha comprometida: ocultaría el atraso de un arriendo vencido.
+
+---
+
+## D19 · Categorías del catálogo de una empresa del rubro (migración V3)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** La migración `V3__categorias_catalogo.sql` agrega siete categorías a las cuatro de V2
+(estación total, GPS RTK, dron y nivel), tomadas del catálogo de productos en
+`docs/referencias/catalogo-productos.xlsx`: Accesorios, Cursos, Escáneres láser, Georradares,
+Cámaras, Servicios y Registros facturas. Las de V2 no se renombran ni se desactivan: "GPS RTK" y
+"Nivel" equivalen a los receptores y niveles del catálogo. Requieren capacitación los escáneres
+láser, los georradares y las cámaras (supuesto declarado, como en V2).
+
+**Motivo.** El catálogo muestra los tipos de producto que vende una empresa real del rubro. El
+equipo decidió reflejarlos en las categorías para que las demostraciones usen la misma
+clasificación.
+
+**Riesgo declarado.** Mira registra cada equipo como una unidad con número de serie, estado y
+bodega (03, 1.1). Cursos, Servicios y Registros facturas no son unidades físicas: con esas
+categorías se puede registrar un "equipo" que no se guarda en una bodega ni se arrienda. Se
+agregaron por decisión del equipo; los cursos tienen su propio flujo en E007 (capacitaciones), y
+las ventas de servicios no están en el alcance (`docs/05-epicas.md`). Conviene validarlo con el
+docente.
+
+**Descartado.** Editar V2: la regla 1 prohíbe modificar una migración aplicada.
+
+---
+
+## D20 · Reglas del registro de una venta (HU-18)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** La venta lleva una fecha que el formulario propone con el día de hoy y que se puede
+cambiar a una fecha pasada, nunca futura. El valor de venta de cada equipo se escribe siempre: es
+obligatorio y mayor que cero, porque el sistema no guarda precios de venta. Solo se venden equipos
+disponibles y sin arriendo vigente; el equipo vendido queda en estado `VENDIDO` con su movimiento
+`SALIDA_VENTA`, y ningún otro movimiento lo acepta de vuelta. Los permisos siguen la matriz de
+`01-contexto-negocio.md`: registran el administrador y el vendedor, la jefatura consulta la ficha
+de una venta y el encargado de bodega no accede. La opción Ventas del menú lleva a registrar una
+venta; el listado de ventas de un cliente llega con HU-19.
+
+**Motivo.** CF-09 pide registrar la venta "con fecha y valor", pero no definía de dónde sale cada
+dato; el equipo lo decidió al implementarla.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.

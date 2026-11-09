@@ -21,9 +21,11 @@ import cl.duoc.mira.inventario.entity.EstadoEquipo;
 import cl.duoc.mira.inventario.service.EquipoNoDisponibleException;
 import cl.duoc.mira.inventario.service.EquipoService;
 import cl.duoc.mira.operaciones.dto.AlertaRetornoResponse;
+import cl.duoc.mira.operaciones.dto.EstadoArriendo;
 import cl.duoc.mira.operaciones.dto.LineaArriendoRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarArriendoRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarRetornoRequest;
+import cl.duoc.mira.operaciones.dto.ResumenArriendoResponse;
 import cl.duoc.mira.operaciones.entity.Arriendo;
 import cl.duoc.mira.operaciones.entity.Cliente;
 import cl.duoc.mira.operaciones.repository.ArriendoRepository;
@@ -41,9 +43,15 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
-/** HU-14: registro de un arriendo validando disponibilidad (CF-01, CF-02 y CF-03). */
+/**
+ * HU-14: registro de un arriendo validando disponibilidad (CF-01, CF-02 y CF-03). HU-15: retorno.
+ * HU-16: alertas. HU-17: listado con estado y total (D18).
+ */
 class ArriendoServiceTest {
 
     private static final Long EMPRESA_ID = 1L;
@@ -246,6 +254,73 @@ class ArriendoServiceTest {
     @Test
     void alertasDeRetorno_sinLineasPorRetornar_quedaVacio() {
         assertThat(service.alertasDeRetorno(EMPRESA_ID)).isEmpty();
+    }
+
+    /** HU-17: con los equipos fuera y antes del vencimiento, el total se estima hasta la fecha comprometida. */
+    @Test
+    void listar_arriendoVigente_estimaElTotalHastaLaFechaComprometida() {
+        Arriendo arriendo = arriendoConDosEquipos();
+        when(arriendoRepository.listar(EMPRESA_ID, PageRequest.of(0, ArriendoService.TAMANO_PAGINA)))
+                .thenReturn(new PageImpl<>(List.of(arriendo)));
+
+        var pagina = service.listar(EMPRESA_ID, 0);
+
+        verify(arriendoRepository).conDetalles(List.of(500L));
+        ResumenArriendoResponse r = pagina.getContent().get(0);
+        assertThat(r.cliente()).isEqualTo("Constructora Andes SpA");
+        assertThat(r.equipos()).containsExactly("SN-1", "SN-2");
+        assertThat(r.estado()).isEqualTo(EstadoArriendo.VIGENTE);
+        assertThat(r.total()).isEqualByComparingTo("1800000");   // 15 días × (50.000 + 70.000)
+        assertThat(r.totalEstimado()).isTrue();
+    }
+
+    @Test
+    void listar_sinArriendos_noConsultaLasLineas() {
+        when(arriendoRepository.listar(EMPRESA_ID, PageRequest.of(0, ArriendoService.TAMANO_PAGINA)))
+                .thenReturn(Page.empty());
+
+        assertThat(service.listar(EMPRESA_ID, 0)).isEmpty();
+        verify(arriendoRepository, never()).conDetalles(anyCollection());
+    }
+
+    /** D18: una línea retornada cuenta hasta su retorno real; la otra, hasta la fecha comprometida. */
+    @Test
+    void total_retornoParcial_sumaCadaLineaConSuFechaDeFin() {
+        Arriendo arriendo = arriendoConDosEquipos();
+        arriendo.registrarRetorno(arriendo.getDetalles().get(0), LocalDate.of(2026, 3, 12), null);
+
+        assertThat(ArriendoService.total(arriendo, LocalDate.of(2026, 3, 12)))
+                .isEqualByComparingTo("1150000");   // 2 × 50.000 + 15 × 70.000
+        assertThat(ArriendoService.estado(arriendo, LocalDate.of(2026, 3, 12))).isEqualTo(EstadoArriendo.VIGENTE);
+    }
+
+    /** D18: si venció y los equipos no vuelven, el total estimado cuenta hasta hoy. */
+    @Test
+    void total_vencido_cuentaHastaHoy() {
+        Arriendo arriendo = arriendoConDosEquipos();
+        LocalDate hoy = LocalDate.of(2026, 3, 30);
+
+        assertThat(ArriendoService.estado(arriendo, hoy)).isEqualTo(EstadoArriendo.VENCIDO);
+        assertThat(ArriendoService.total(arriendo, hoy)).isEqualByComparingTo("2400000");   // 20 × 120.000
+    }
+
+    @Test
+    void total_todosRetornados_quedaCerradoConElTotalDefinitivo() {
+        Arriendo arriendo = arriendoConDosEquipos();
+        arriendo.getDetalles().forEach(d -> arriendo.registrarRetorno(d, LocalDate.of(2026, 3, 20), null));
+        LocalDate hoy = LocalDate.of(2026, 4, 15);
+
+        assertThat(ArriendoService.estado(arriendo, hoy)).isEqualTo(EstadoArriendo.CERRADO);
+        assertThat(ArriendoService.total(arriendo, hoy)).isEqualByComparingTo("1200000");   // 10 × 120.000
+    }
+
+    /** D18: un equipo que vuelve el mismo día del inicio se cobra un día. */
+    @Test
+    void total_retornoElMismoDia_cobraUnDia() {
+        Arriendo arriendo = arriendoConDosEquipos();
+        arriendo.getDetalles().forEach(d -> arriendo.registrarRetorno(d, LocalDate.of(2026, 3, 10), null));
+
+        assertThat(ArriendoService.total(arriendo, LocalDate.of(2026, 3, 10))).isEqualByComparingTo("120000");
     }
 
     private Arriendo arriendoConDosEquipos() {

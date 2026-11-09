@@ -10,10 +10,13 @@ import cl.duoc.mira.inventario.service.EquipoService;
 import cl.duoc.mira.inventario.service.TrasladoService;
 import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.operaciones.dto.LineaArriendoRequest;
+import cl.duoc.mira.operaciones.dto.LineaVentaRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarArriendoRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarRetornoRequest;
+import cl.duoc.mira.operaciones.dto.RegistrarVentaRequest;
 import cl.duoc.mira.operaciones.repository.ArriendoRepository;
 import cl.duoc.mira.operaciones.service.ArriendoService;
+import cl.duoc.mira.operaciones.service.VentaService;
 import cl.duoc.mira.operaciones.repository.ArriendoVigente;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -58,16 +61,28 @@ class MiraApplicationTests {
     private EntityManager entityManager;
     @Autowired
     private ArriendoService arriendoService;
+    @Autowired
+    private VentaService ventaService;
     /** El reloj de la aplicación (America/Santiago): "hoy" en UTC puede ser otro día. */
     @Autowired
     private Clock reloj;
 
     @Test
-    void arranque_conBaseVacia_aplicaLasDosMigraciones() {
+    void arranque_conBaseVacia_aplicaLasTresMigraciones() {
         Integer aplicadas = jdbc.queryForObject(
                 "SELECT count(*) FROM flyway_schema_history WHERE success", Integer.class);
 
-        assertThat(aplicadas).isEqualTo(2);
+        assertThat(aplicadas).isEqualTo(3);
+    }
+
+    /** D19: V3 agrega las categorías del catálogo sin tocar las cuatro de V2. */
+    @Test
+    void datosIniciales_categorias_incluyenLasDeV2YLasDelCatalogo() {
+        List<String> nombres = jdbc.queryForList(
+                "SELECT nombre FROM categoria WHERE activa ORDER BY nombre", String.class);
+
+        assertThat(nombres).contains("Estación total", "GPS RTK", "Dron", "Nivel",
+                "Accesorios", "Cursos", "Escáneres láser", "Georradares", "Cámaras", "Servicios", "Registros facturas");
     }
 
     @Test
@@ -195,6 +210,32 @@ class MiraApplicationTests {
         assertThat(estadoYBodega(primero)).isEqualTo("DISPONIBLE/Bodega de prueba");
         assertThat(jdbc.queryForObject("SELECT count(*) FROM movimiento WHERE equipo_id IN (?, ?)", Integer.class,
                 primero, segundo)).isZero();
+    }
+
+    /**
+     * CF-09 contra la base real: el equipo vendido queda vendido con su movimiento, deja de ofrecerse
+     * como disponible y la venta queda asociada al cliente.
+     */
+    @Test
+    void venta_equipoDisponible_quedaVendidoYDejaDeEstarDisponible() {
+        long empresa = crearEmpresa("13.131.313-1");
+        insertarEquipo(empresa, "SN-0020");
+        long equipo = idEquipo(empresa, "SN-0020");
+        long cliente = crearCliente(empresa);
+        RegistrarVentaRequest venta = new RegistrarVentaRequest();
+        venta.setClienteId(cliente);
+        venta.setFecha(LocalDate.now(reloj));
+        venta.setLineas(List.of(new LineaVentaRequest(equipo, true, new BigDecimal("14200000"))));
+
+        long ventaId = ventaService.registrar(empresa, administrador(), venta).id();
+        entityManager.flush();
+
+        assertThat(estadoYBodega(equipo)).isEqualTo("VENDIDO/Bodega de prueba");
+        assertThat(jdbc.queryForList("SELECT tipo FROM movimiento WHERE equipo_id = ? AND operacion_id = ?",
+                String.class, equipo, ventaId)).containsExactly("SALIDA_VENTA");
+        assertThat(jdbc.queryForObject("SELECT o.cliente_id FROM operacion o JOIN venta v ON v.id = o.id WHERE v.id = ?",
+                Long.class, ventaId)).isEqualTo(cliente);
+        assertThat(arriendoService.equiposDisponibles(empresa)).extracting(e -> e.id()).doesNotContain(equipo);
     }
 
     /** CF-04 contra la base real: retorno en otra bodega, sin traslado adicional. */

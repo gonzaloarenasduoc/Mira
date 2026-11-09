@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Venta')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" th:with="v=${venta}">
+    <div class="encabezado-pagina mb-4">
+        <h1 th:text="'Venta N° ' + ${v.id()}">Venta</h1>
+        <p th:text="${v.cliente()} + ' · ' + ${v.rutCliente()}">Cliente</p>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-secondary mb-3">Datos de la venta</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-6">Fecha</dt><dd class="col-sm-6" th:text="${#temporals.format(v.fecha(), 'dd-MM-yyyy')}">fecha</dd>
+                        <dt class="col-sm-6">Orden de compra</dt><dd class="col-sm-6" th:text="${v.numeroOrdenCompra() ?: '—'}">OC</dd>
+                        <dt class="col-sm-6">Total</dt>
+                        <dd class="col-sm-6 fw-semibold" th:text="'$ ' + ${#numbers.formatDecimal(v.total(), 1, 'POINT', 0, 'COMMA')}">total</dd>
+                        <dt class="col-sm-12" th:if="${v.observaciones() != null}">Observaciones</dt>
+                        <dd class="col-sm-12 mb-0" th:if="${v.observaciones() != null}" th:text="${v.observaciones()}">obs</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-secondary mb-3">Equipos vendidos</h2>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0 tabla-mira">
+                            <thead><tr><th>Número de serie</th><th>Equipo</th><th class="text-end">Valor</th></tr></thead>
+                            <tbody>
+                            <tr th:each="l : ${v.lineas()}">
+                                <td><a class="fw-semibold" th:href="@{/equipos/{id}(id=${l.equipoId()})}" th:text="${l.numeroSerie()}">Serie</a></td>
+                                <td th:text="${l.equipo()}">Equipo</td>
+                                <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(l.valor(), 1, 'POINT', 0, 'COMMA')}">valor</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

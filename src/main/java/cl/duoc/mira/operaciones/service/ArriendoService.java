@@ -10,10 +10,12 @@ import cl.duoc.mira.inventario.service.EquipoNoDisponibleException;
 import cl.duoc.mira.inventario.service.EquipoService;
 import cl.duoc.mira.operaciones.dto.AlertaRetornoResponse;
 import cl.duoc.mira.operaciones.dto.ArriendoResponse;
+import cl.duoc.mira.operaciones.dto.EstadoArriendo;
 import cl.duoc.mira.operaciones.dto.LineaArriendoRequest;
 import cl.duoc.mira.operaciones.dto.LineaArriendoResponse;
 import cl.duoc.mira.operaciones.dto.RegistrarArriendoRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarRetornoRequest;
+import cl.duoc.mira.operaciones.dto.ResumenArriendoResponse;
 import cl.duoc.mira.operaciones.entity.Arriendo;
 import cl.duoc.mira.operaciones.entity.Cliente;
 import cl.duoc.mira.operaciones.entity.OperacionDetalle;
@@ -32,6 +34,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +51,9 @@ public class ArriendoService {
 
     /** Días de anticipación con que se avisa un retorno próximo (HU-16). */
     static final int DIAS_DE_AVISO = 3;
+
+    /** Arriendos por página en el listado (HU-17). */
+    static final int TAMANO_PAGINA = 20;
 
     private static final DateTimeFormatter FECHA_LARGA =
             DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-CL"));
@@ -194,6 +201,52 @@ public class ArriendoService {
                     throw new NegocioException("El equipo " + serie + " no está disponible porque se encuentra arrendado hasta el "
                             + FECHA_LARGA.format(fecha) + ".");
                 });
+    }
+
+    /**
+     * Listado de arriendos con su estado y su total (HU-17), del inicio más reciente al más antiguo.
+     * Tres consultas por página: los arriendos con su cliente, sus líneas y los equipos de esas líneas.
+     */
+    public Page<ResumenArriendoResponse> listar(Long empresaId, int pagina) {
+        Page<Arriendo> arriendos = arriendoRepository.listar(empresaId, PageRequest.of(Math.max(pagina, 0), TAMANO_PAGINA));
+        if (arriendos.isEmpty()) {
+            return Page.empty(arriendos.getPageable());
+        }
+        arriendoRepository.conDetalles(arriendos.map(Arriendo::getId).toList());
+        Set<Long> ids = arriendos.stream().flatMap(a -> a.getDetalles().stream())
+                .map(OperacionDetalle::getEquipoId).collect(Collectors.toSet());
+        Map<Long, EquipoResponse> equipos = equipoService.resumenPorId(empresaId, ids);
+        LocalDate hoy = LocalDate.now(clock);
+        return arriendos.map(a -> new ResumenArriendoResponse(a.getId(), a.getCliente().getRazonSocial(),
+                a.getFechaInicio(), a.getFechaRetornoComprometida(),
+                a.getDetalles().stream().map(d -> equipos.containsKey(d.getEquipoId())
+                        ? equipos.get(d.getEquipoId()).numeroSerie() : "—").toList(),
+                estado(a, hoy), total(a, hoy), a.getDetalles().stream().anyMatch(OperacionDetalle::estaPendienteDeRetorno)));
+    }
+
+    /** Cerrado si todos sus equipos retornaron; vencido si alguno sigue fuera después de la fecha comprometida. */
+    static EstadoArriendo estado(Arriendo a, LocalDate hoy) {
+        if (a.getDetalles().stream().noneMatch(OperacionDetalle::estaPendienteDeRetorno)) {
+            return EstadoArriendo.CERRADO;
+        }
+        return hoy.isAfter(a.getFechaRetornoComprometida()) ? EstadoArriendo.VENCIDO : EstadoArriendo.VIGENTE;
+    }
+
+    /**
+     * Suma de tarifa diaria por días de cada línea (D18). Los días son la diferencia entre el inicio y el
+     * fin, con mínimo uno. El fin es la fecha de retorno real; si el equipo no ha vuelto, la fecha
+     * comprometida, o hoy si ya venció, para que el total estimado refleje el atraso.
+     */
+    static BigDecimal total(Arriendo a, LocalDate hoy) {
+        return a.getDetalles().stream()
+                .map(d -> d.getValorUnitario().multiply(BigDecimal.valueOf(dias(a, d, hoy))))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private static long dias(Arriendo a, OperacionDetalle d, LocalDate hoy) {
+        LocalDate fin = d.getFechaRetornoReal() != null ? d.getFechaRetornoReal()
+                : hoy.isAfter(a.getFechaRetornoComprometida()) ? hoy : a.getFechaRetornoComprometida();
+        return Math.max(1, ChronoUnit.DAYS.between(a.getFechaInicio(), fin));
     }
 
     /** PNF-10: "El equipo GPS-123 no está disponible porque se encuentra arrendado hasta el 25 de marzo". */

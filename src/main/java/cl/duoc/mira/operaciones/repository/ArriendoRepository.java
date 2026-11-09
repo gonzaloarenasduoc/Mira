@@ -2,8 +2,12 @@ package cl.duoc.mira.operaciones.repository;
 
 import cl.duoc.mira.operaciones.entity.Arriendo;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -51,4 +55,17 @@ public interface ArriendoRepository extends JpaRepository<Arriendo, Long> {
             where a.id = :id and a.empresa.id = :empresaId
             """)
     Optional<Arriendo> buscarFicha(@Param("empresaId") Long empresaId, @Param("id") Long id);
+
+    /**
+     * Página del listado de arriendos (HU-17), del inicio más reciente al más antiguo, con su cliente.
+     * Las líneas se cargan aparte con {@link #conDetalles}: un fetch de colección no se pagina en SQL.
+     */
+    @EntityGraph(attributePaths = "cliente")
+    @Query(value = "select a from Arriendo a where a.empresa.id = :empresaId order by a.fechaInicio desc, a.id desc",
+            countQuery = "select count(a) from Arriendo a where a.empresa.id = :empresaId")
+    Page<Arriendo> listar(@Param("empresaId") Long empresaId, Pageable pagina);
+
+    /** Líneas de los arriendos de una página, en una sola consulta (sin N+1). */
+    @Query("select distinct a from Arriendo a left join fetch a.detalles where a.id in :ids")
+    List<Arriendo> conDetalles(@Param("ids") Collection<Long> ids);
 }

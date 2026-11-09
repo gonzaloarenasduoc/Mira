@@ -2,6 +2,7 @@ package cl.duoc.mira.config;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -24,11 +25,17 @@ import cl.duoc.mira.inventario.service.TrasladoService;
 import cl.duoc.mira.operaciones.controller.ArriendoController;
 import cl.duoc.mira.operaciones.controller.ClienteController;
 import cl.duoc.mira.operaciones.controller.DisponibilidadController;
+import cl.duoc.mira.operaciones.controller.VentaController;
 import cl.duoc.mira.operaciones.dto.AlertaRetornoResponse;
 import cl.duoc.mira.operaciones.dto.DisponibilidadResponse;
+import cl.duoc.mira.operaciones.dto.EstadoArriendo;
+import cl.duoc.mira.operaciones.dto.ResumenArriendoResponse;
+import cl.duoc.mira.operaciones.dto.VentaResponse;
 import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.service.ClienteService;
 import cl.duoc.mira.operaciones.service.DisponibilidadService;
+import cl.duoc.mira.operaciones.service.VentaService;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import cl.duoc.mira.usuarios.controller.UsuarioController;
@@ -42,6 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -51,7 +59,7 @@ import org.springframework.test.web.servlet.MockMvc;
  */
 @WebMvcTest(controllers = {InicioController.class, UsuarioController.class,
         BodegaController.class, EquipoController.class, TrasladoController.class,
-        DisponibilidadController.class, ArriendoController.class, ClienteController.class})
+        DisponibilidadController.class, ArriendoController.class, ClienteController.class, VentaController.class})
 @Import({SeguridadConfig.class, MenuGlobal.class, RelojConfig.class})
 class SeguridadTest {
 
@@ -74,12 +82,14 @@ class SeguridadTest {
     private ArriendoService arriendoService;
     @MockitoBean
     private ClienteService clienteService;
+    @MockitoBean
+    private VentaService ventaService;
 
     /** PNF-05: toda URL protegida, accedida sin sesión, redirige al inicio de sesión. */
     @ParameterizedTest
     @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios",
             "/traslados", "/traslados/nuevo?equipoId=1", "/disponibilidad",
-            "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo"})
+            "/arriendos", "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo", "/ventas/nueva", "/ventas/1"})
     void rutaProtegida_sinSesion_redirigeAlLogin(String ruta) throws Exception {
         mvc.perform(get(ruta))
                 .andExpect(status().is3xxRedirection())
@@ -177,6 +187,68 @@ class SeguridadTest {
                 .andExpect(content().string(containsString("Constructora Andes SpA")))
                 .andExpect(content().string(containsString("M300-1A2B3C")))
                 .andExpect(content().string(not(containsString("Registrar retorno"))));
+    }
+
+    /** HU-17: la jefatura consulta el listado con el estado y el total, sin el botón para registrar. */
+    @Test
+    void listadoDeArriendos_comoJefatura_muestraEstadoYTotalSinRegistrar() throws Exception {
+        when(arriendoService.listar(any(), eq(0))).thenReturn(new PageImpl<>(List.of(new ResumenArriendoResponse(4L,
+                "Constructora Andes SpA", LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 15), List.of("M300-1A2B3C"),
+                EstadoArriendo.VENCIDO, new BigDecimal("2400000"), true))));
+
+        mvc.perform(get("/arriendos").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Constructora Andes SpA")))
+                .andExpect(content().string(containsString("Vencido")))
+                .andExpect(content().string(containsString("$ 2.400.000")))
+                .andExpect(content().string(containsString("Estimado")))
+                .andExpect(content().string(not(containsString("Registrar arriendo"))));
+    }
+
+    @Test
+    void listadoDeArriendos_comoVendedor_ofreceRegistrar() throws Exception {
+        when(arriendoService.listar(any(), eq(0))).thenReturn(Page.empty());
+
+        mvc.perform(get("/arriendos").with(user(con(RolUsuario.VENDEDOR))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Registrar arriendo")));
+    }
+
+    /** E006: registran ventas el administrador y el vendedor (matriz de permisos). */
+    @ParameterizedTest
+    @ValueSource(strings = {"ADMINISTRADOR", "VENDEDOR"})
+    void registrarVenta_rolesQueVenden_permiteElAcceso(String rol) throws Exception {
+        mvc.perform(get("/ventas/nueva").with(user(con(RolUsuario.valueOf(rol)))))
+                .andExpect(status().isOk());
+    }
+
+    /** E006: la jefatura consulta una venta, pero no la registra. */
+    @Test
+    void venta_comoJefatura_consultaPeroNoRegistra() throws Exception {
+        when(ventaService.ficha(any(), eq(7L))).thenReturn(new VentaResponse(7L, "Constructora Andes SpA",
+                "76.123.456-0", LocalDate.of(2026, 11, 9), null, null, List.of(), new BigDecimal("14200000")));
+
+        mvc.perform(get("/ventas/7").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Venta N° 7")))
+                .andExpect(content().string(containsString("$ 14.200.000")));
+        mvc.perform(get("/ventas/nueva").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/ventas").param("clienteId", "1")
+                        .with(csrf()).with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
+    }
+
+    /** E006: el encargado de bodega no tiene acceso a las ventas, ni para consultarlas. */
+    @Test
+    void ventas_comoEncargadoDeBodega_accesoDenegado() throws Exception {
+        mvc.perform(get("/ventas/nueva").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/ventas/7").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/ventas").param("clienteId", "1")
+                        .with(csrf()).with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isForbidden());
     }
 
     /** D17: la jefatura consulta los clientes, pero no los registra ni los modifica. */

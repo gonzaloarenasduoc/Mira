@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/** Registro de arriendos, su ficha y el retorno de sus equipos (HU-14 y HU-15). */
+/** Listado de arriendos, su registro, su ficha y el retorno de sus equipos (HU-14, HU-15 y HU-17). */
 @Controller
 @RequestMapping("/arriendos")
 @RequiredArgsConstructor
@@ -49,6 +49,14 @@ public class ArriendoController {
     @ModelAttribute("seccion")
     public String seccion() {
         return "Arriendos";
+    }
+
+    /** Listado con el estado y el total de cada arriendo (HU-17). Lo consultan todos los roles. */
+    @GetMapping
+    public String listar(@AuthenticationPrincipal UsuarioAutenticado actual,
+                         @RequestParam(defaultValue = "0") int pagina, Model model) {
+        model.addAttribute("arriendos", arriendoService.listar(actual.empresaId(), pagina));
+        return "arriendos/lista";
     }
 
     /** Ofrece todos los equipos disponibles; si viene desde la ficha de un equipo, lo deja marcado. */
