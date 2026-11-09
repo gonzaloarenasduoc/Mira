@@ -364,5 +364,24 @@ descarga documentos de ventas (D21).
 
 ---
 
+## D23 · Gráficos del panel con Chart.js y equipos vendidos fuera del inventario (HU-26)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** Los gráficos del panel usan Chart.js 4.4.7, que ya figuraba en el stack del proyecto,
+como webjar (`org.webjars.npm:chart.js`), igual que Bootstrap (D10): se sirve desde la aplicación,
+sin depender de un CDN. El panel muestra los equipos por bodega (barras apiladas por estado) y por
+estado (dona), con la misma información en una tabla para quien no puede ver los gráficos. Los
+equipos vendidos no se cuentan en el inventario, porque ya no están en ninguna bodega (igual que en
+la disponibilidad); su cantidad se informa aparte. Los datos salen de una sola consulta agregada por
+bodega y estado. Con las diez opciones de menú del administrador, la barra de navegación pasa a menú
+desplegable bajo 1200 px y oculta el nombre del usuario entre 1200 y 1399 px.
+
+**Motivo.** HU-26 pide gráficos y que el panel cargue en menos de 3 segundos con un año de datos
+(PNF-02). Medido con una base de un año de operación: 0,052 s en el percentil 95 en el servidor y
+0,141 s como máximo en el navegador con los gráficos dibujados.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.

@@ -126,6 +126,10 @@ D17.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- HU-26 en `semana-13` (adelantada el 09-11, D23): gráficos del panel con Chart.js (webjar nuevo en el
+  `pom.xml`): equipos por bodega y por estado, más una tabla con los mismos datos; los vendidos no se
+  cuentan como inventario. PNF-02 medido con un año de datos: 0,052 s en el percentil 95. La barra de
+  navegación pasa a menú desplegable bajo 1200 px. 185 pruebas.
 - HU-28 en `semana-13` (adelantada el 09-11, CF-10): nuevo panel de indicadores (`/indicadores`, opción
   Indicadores del menú para todos los roles) que empieza con los retornos vencidos, destacados y con sus
   días de atraso. Reutiliza las alertas de HU-16, sin consultas nuevas. 182 pruebas.
@@ -173,7 +177,7 @@ D17.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 5: HU-20 a HU-28 | Ambos | `semana-13` | E008 y HU-28 terminadas (adelantadas). Siguen HU-26 y HU-27 (gráficos del panel) y E007 (HU-20 a HU-22) |
+| Sprint 5: HU-20 a HU-28 | Ambos | `semana-13` | E008, HU-28 y HU-26 terminadas (adelantadas). Siguen HU-27 (utilización) y E007 (HU-20 a HU-22) |
 
 ## Siguiente
 

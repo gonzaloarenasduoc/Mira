@@ -15,7 +15,7 @@ panel (`docs/06-flujo-trabajo.md`).
 | 21 | HU-25 · Consultar los documentos de un equipo | #28 | E008 | 5 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, rama `semana-13` (CF-13) |
 | 22 | HU-24 · Consultar los documentos de una operación | #27 | E008 | 3 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, rama `semana-13` |
 | 23 | HU-28 · Alertas de retorno vencido en el panel | #31 | E009 | 2 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, rama `semana-13` (CF-10) |
-| 24 | HU-26 · Panel de equipos por bodega y estado | #29 | E009 | 3 | Gonzalo (lidera) y Joaquín (servicios) | Pendiente |
+| 24 | HU-26 · Panel de equipos por bodega y estado | #29 | E009 | 3 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, rama `semana-13` (D23, PNF-02) |
 | 25 | HU-27 · Utilización de equipos y arriendos vigentes | #30 | E009 | 3 | Gonzalo (lidera) y Joaquín (servicios) | Pendiente |
 | 26 | HU-20 · Agendar la capacitación de una operación | #23 | E007 | 3 | Joaquín (servicios) y Gonzalo (vistas) | Pendiente |
 | 27 | HU-21 · Advertir la doble asignación de un técnico | #24 | E007 | 2 | Joaquín (servicios) y Gonzalo (vistas) | Pendiente |
