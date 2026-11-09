@@ -20,6 +20,7 @@
     <properties>
         <java.version>21</java.version>
         <bootstrap.version>5.3.8</bootstrap.version>
+        <chartjs.version>4.4.7</chartjs.version>
         <!-- El parent de Spring Boot no gestiona JaCoCo: la version se fija aca -->
         <jacoco.version>0.8.15</jacoco.version>
     </properties>
@@ -55,6 +56,12 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>webjars-locator-lite</artifactId>
+        </dependency>
+        <!-- D23: Chart.js como webjar para los gráficos del panel de indicadores (E009) -->
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>chart.js</artifactId>
+            <version>${chartjs.version}</version>
         </dependency>
 
         <!-- En Spring Boot 4 la autoconfiguracion de Flyway vive en su propio starter (D12) -->

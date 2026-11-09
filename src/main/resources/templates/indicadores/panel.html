@@ -40,8 +40,77 @@
             </table>
         </div>
     </section>
+
+    <!-- HU-26: equipos por bodega y por estado. Los vendidos no son inventario (D23). -->
+    <section class="card mb-4" aria-labelledby="tituloInventario" th:with="inv=${inventario}">
+        <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h2 id="tituloInventario" class="h6 mb-0">Equipos por bodega y estado</h2>
+            <span class="small text-secondary"
+                  th:text="${inv.total()} + ' equipos en inventario' + (${inv.vendidos()} > 0 ? ' · ' + ${inv.vendidos()} + (${inv.vendidos()} == 1 ? ' vendido, no se cuenta' : ' vendidos, no se cuentan') : '')">total</span>
+        </div>
+        <div class="card-body text-secondary" th:if="${inv.total() == 0}">Aún no hay equipos registrados.</div>
+        <div class="card-body" th:unless="${inv.total() == 0}">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-8">
+                    <canvas id="graficoBodegas" height="260" role="img" aria-label="Equipos de cada bodega según su estado"></canvas>
+                </div>
+                <div class="col-lg-4">
+                    <canvas id="graficoEstados" height="260" role="img" aria-label="Total de equipos según su estado"></canvas>
+                </div>
+            </div>
+            <div class="table-responsive mt-4">
+                <table class="table table-sm align-middle mb-0 tabla-mira">
+                    <thead>
+                    <tr><th>Bodega</th><th class="text-end" th:each="serie : ${inv.series()}" th:text="${serie.etiqueta()}">Estado</th><th class="text-end">Total</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="bodega, i : ${inv.bodegas()}">
+                        <td th:text="${bodega}">Bodega</td>
+                        <td class="text-end" th:each="serie : ${inv.series()}" th:text="${serie.porBodega()[i.index]}">0</td>
+                        <td class="text-end fw-semibold" th:text="${inv.totalPorBodega()[i.index]}">0</td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr class="fw-semibold"><td>Total</td><td class="text-end" th:each="serie : ${inv.series()}" th:text="${serie.total()}">0</td><td class="text-end" th:text="${inv.total()}">0</td></tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </section>
 </main>
 <footer th:replace="~{fragments/layout :: pie}"></footer>
 <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script th:src="@{/webjars/chart.js/dist/chart.umd.js}"></script>
+<script th:inline="javascript">
+    (function () {
+        const inventario = /*[[${inventario}]]*/ null;
+        if (!inventario || inventario.total === 0 || typeof Chart === 'undefined') {
+            return;
+        }
+        // Mismos tonos que las etiquetas de estado de mira.css, más intensos para los gráficos.
+        const colores = { DISPONIBLE: '#2E9E5B', ARRENDADO: '#D99A00', EN_TRANSITO: '#3B6FD8', EN_MANTENCION: '#8E4BB0' };
+        new Chart(document.getElementById('graficoBodegas'), {
+            type: 'bar',
+            data: {
+                labels: inventario.bodegas,
+                datasets: inventario.series.map(s => ({ label: s.etiqueta, data: s.porBodega, backgroundColor: colores[s.estado] }))
+            },
+            options: {
+                responsive: true,
+                plugins: { title: { display: true, text: 'Por bodega' }, legend: { position: 'bottom' } },
+                scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } }
+            }
+        });
+        const conEquipos = inventario.series.filter(s => s.total > 0);
+        new Chart(document.getElementById('graficoEstados'), {
+            type: 'doughnut',
+            data: {
+                labels: conEquipos.map(s => s.etiqueta),
+                datasets: [{ data: conEquipos.map(s => s.total), backgroundColor: conEquipos.map(s => colores[s.estado]) }]
+            },
+            options: { responsive: true, plugins: { title: { display: true, text: 'Por estado' }, legend: { position: 'bottom' } } }
+        });
+    })();
+</script>
 </body>
 </html>

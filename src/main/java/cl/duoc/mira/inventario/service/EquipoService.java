@@ -4,6 +4,7 @@ import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.common.exception.RecursoNoEncontradoException;
 import cl.duoc.mira.common.repository.EmpresaRepository;
 import cl.duoc.mira.common.util.Busqueda;
+import cl.duoc.mira.inventario.dto.ConteoEquipos;
 import cl.duoc.mira.inventario.dto.EquipoResponse;
 import cl.duoc.mira.inventario.dto.FichaEquipoResponse;
 import cl.duoc.mira.inventario.dto.FiltroEquipos;
@@ -81,6 +82,11 @@ public class EquipoService {
                         filtro.getEstado(), Busqueda.contiene(filtro.getTexto())).stream()
                 .map(EquipoService::aResponse)
                 .toList();
+    }
+
+    /** Equipos activos por bodega y estado; lo usa el panel de indicadores (HU-26). */
+    public List<ConteoEquipos> conteoPorBodegaYEstado(Long empresaId) {
+        return equipoRepository.contarPorBodegaYEstado(empresaId);
     }
 
     /** Datos de varios equipos por identificador, para las vistas de otros módulos. */

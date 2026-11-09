@@ -21,6 +21,7 @@ import cl.duoc.mira.documentos.controller.DocumentoController;
 import cl.duoc.mira.documentos.service.DocumentoService;
 import cl.duoc.mira.indicadores.controller.IndicadoresController;
 import cl.duoc.mira.indicadores.service.IndicadoresService;
+import cl.duoc.mira.indicadores.dto.PanelInventario;
 import cl.duoc.mira.documentos.dto.DocumentoResponse;
 import cl.duoc.mira.documentos.dto.ArchivoDocumento;
 import cl.duoc.mira.common.exception.RecursoNoEncontradoException;
@@ -407,9 +408,17 @@ class SeguridadTest {
         when(indicadoresService.retornosVencidos(any())).thenReturn(List.of(new AlertaRetornoResponse(2L,
                 "Minera Pampa Norte S.A.", 2L, "M300-1A2B3C", "Dron DJI Matrice 300 RTK", LocalDate.of(2026, 11, 4), -5)));
 
+        when(indicadoresService.inventario(any())).thenReturn(new PanelInventario(List.of("Bodega Central"),
+                List.of(new PanelInventario.SerieEstado("DISPONIBLE", "Disponible", List.of(3L), 3),
+                        new PanelInventario.SerieEstado("ARRENDADO", "Arrendado", List.of(1L), 1)),
+                List.of(4L), 4, 2));
+
         mvc.perform(get("/indicadores").with(user(con(RolUsuario.JEFATURA))))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Retornos vencidos")))
+                .andExpect(content().string(containsString("Equipos por bodega y estado")))
+                .andExpect(content().string(containsString("4 equipos en inventario · 2 vendidos, no se cuentan")))
+                .andExpect(content().string(containsString("chart.umd.js")))
                 .andExpect(content().string(containsString("5 días")))
                 .andExpect(content().string(containsString("Minera Pampa Norte S.A.")))
                 .andExpect(content().string(containsString("M300-1A2B3C")));
@@ -417,9 +426,11 @@ class SeguridadTest {
 
     @Test
     void panelDeIndicadores_sinVencidos_loIndica() throws Exception {
+        when(indicadoresService.inventario(any())).thenReturn(new PanelInventario(List.of(), List.of(), List.of(), 0, 0));
         mvc.perform(get("/indicadores").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("No hay arriendos con retorno vencido.")));
+                .andExpect(content().string(containsString("No hay arriendos con retorno vencido.")))
+                .andExpect(content().string(containsString("Aún no hay equipos registrados.")));
     }
 
     /** D17: la jefatura consulta los clientes, pero no los registra ni los modifica. */

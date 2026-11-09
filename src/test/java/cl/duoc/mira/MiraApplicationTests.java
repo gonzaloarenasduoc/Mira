@@ -10,6 +10,8 @@ import cl.duoc.mira.inventario.service.EquipoService;
 import cl.duoc.mira.inventario.service.TrasladoService;
 import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.documentos.dto.AdjuntarDocumentoRequest;
+import cl.duoc.mira.inventario.dto.ConteoEquipos;
+import cl.duoc.mira.inventario.entity.EstadoEquipo;
 import cl.duoc.mira.documentos.entity.TipoDocumento;
 import cl.duoc.mira.documentos.service.DocumentoService;
 import cl.duoc.mira.operaciones.dto.LineaArriendoRequest;
@@ -293,6 +295,20 @@ class MiraApplicationTests {
 
         assertThat(documentoService.deEquipo(empresa, primero, false)).extracting(d -> d.numeroFolio()).containsExactly("1045");
         assertThat(documentoService.deEquipo(empresa, segundo, false)).extracting(d -> d.numeroFolio()).containsExactly("1045");
+    }
+
+    /** HU-26 contra la base real: la consulta agregada cuenta los equipos por bodega y estado. */
+    @Test
+    void conteoPorBodegaYEstado_agrupaEnUnaConsulta() {
+        long empresa = crearEmpresa("16.161.616-1");
+        insertarEquipo(empresa, "SN-0050");
+        insertarEquipo(empresa, "SN-0051");
+        insertarEquipo(empresa, "SN-0052");
+        jdbc.update("UPDATE equipo SET estado = 'VENDIDO' WHERE id = ?", idEquipo(empresa, "SN-0052"));
+
+        assertThat(equipoService.conteoPorBodegaYEstado(empresa)).containsExactlyInAnyOrder(
+                new ConteoEquipos("Bodega de prueba", EstadoEquipo.DISPONIBLE, 2),
+                new ConteoEquipos("Bodega de prueba", EstadoEquipo.VENDIDO, 1));
     }
 
     /** CF-04 contra la base real: retorno en otra bodega, sin traslado adicional. */

@@ -26,6 +26,7 @@ public class IndicadoresController {
     @GetMapping
     public String panel(@AuthenticationPrincipal UsuarioAutenticado actual, Model model) {
         model.addAttribute("vencidos", indicadoresService.retornosVencidos(actual.empresaId()));
+        model.addAttribute("inventario", indicadoresService.inventario(actual.empresaId()));
         return "indicadores/panel";
     }
 }
