@@ -27,6 +27,12 @@ public class SeguridadConfig {
     /** Roles que consultan las ventas (E006). */
     static final String[] CONSULTAN_VENTAS = {"ADMINISTRADOR", "VENDEDOR", "JEFATURA"};
 
+    /** Roles que agendan capacitaciones y administran técnicos (E007, D25). La jefatura consulta. */
+    static final String[] AGENDAN_CAPACITACIONES = {"ADMINISTRADOR", "VENDEDOR"};
+
+    /** Roles que consultan capacitaciones y técnicos (E007). El encargado de bodega no accede. */
+    static final String[] CONSULTAN_CAPACITACIONES = {"ADMINISTRADOR", "VENDEDOR", "JEFATURA"};
+
     @Bean
     SecurityFilterChain cadenaDeSeguridad(HttpSecurity http) throws Exception {
         http
@@ -37,6 +43,9 @@ public class SeguridadConfig {
                     .hasAnyRole(EDITAN_INVENTARIO)
                 .requestMatchers(HttpMethod.POST, "/bodegas/**", "/equipos/**", "/traslados/**")
                     .hasAnyRole(EDITAN_INVENTARIO)
+                .requestMatchers("/tecnicos/nuevo", "/tecnicos/*/editar").hasAnyRole(AGENDAN_CAPACITACIONES)
+                .requestMatchers(HttpMethod.POST, "/tecnicos/**").hasAnyRole(AGENDAN_CAPACITACIONES)
+                .requestMatchers("/tecnicos/**").hasAnyRole(CONSULTAN_CAPACITACIONES)
                 .requestMatchers("/arriendos/nuevo", "/arriendos/*/retorno", "/arriendos/*/documentos/nuevo",
                         "/clientes/nuevo", "/clientes/*/editar")
                     .hasAnyRole(REGISTRAN_ARRIENDOS)

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${id == null} ? 'Nuevo técnico' : 'Editar técnico')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" style="max-width: 760px;">
+    <div class="encabezado-pagina mb-4">
+        <h1 th:text="${id == null} ? 'Nuevo técnico' : 'Editar técnico'">Técnico</h1>
+        <p>El técnico se asigna a las capacitaciones; no inicia sesión en el sistema.</p>
+    </div>
+    <div class="card">
+        <div class="card-body p-4">
+            <form th:object="${tecnico}" method="post" novalidate
+                  th:action="${id == null} ? @{/tecnicos} : @{/tecnicos/{id}(id=${id})}">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input id="nombre" type="text" class="form-control" th:field="*{nombre}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{nombre}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="apellido" class="form-label">Apellido</label>
+                        <input id="apellido" type="text" class="form-control" th:field="*{apellido}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{apellido}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Correo <span class="text-secondary">(opcional)</span></label>
+                        <input id="email" type="email" class="form-control" th:field="*{email}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{email}">Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="telefono" class="form-label">Teléfono <span class="text-secondary">(opcional)</span></label>
+                        <input id="telefono" type="text" class="form-control" th:field="*{telefono}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{telefono}">Error</div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-end mt-4">
+                    <a class="btn btn-outline-secondary" th:href="@{/tecnicos}">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

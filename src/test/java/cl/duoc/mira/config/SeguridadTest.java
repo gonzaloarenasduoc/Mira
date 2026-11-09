@@ -16,6 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import cl.duoc.mira.capacitaciones.controller.TecnicoController;
+import cl.duoc.mira.capacitaciones.service.TecnicoService;
 import cl.duoc.mira.common.controller.InicioController;
 import cl.duoc.mira.documentos.controller.DocumentoController;
 import cl.duoc.mira.documentos.service.DocumentoService;
@@ -83,7 +85,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = {InicioController.class, UsuarioController.class,
         BodegaController.class, EquipoController.class, TrasladoController.class,
         DisponibilidadController.class, ArriendoController.class, ClienteController.class, VentaController.class,
-        DocumentoController.class, IndicadoresController.class})
+        DocumentoController.class, IndicadoresController.class, TecnicoController.class})
 @Import({SeguridadConfig.class, MenuGlobal.class, RelojConfig.class})
 class SeguridadTest {
 
@@ -114,13 +116,15 @@ class SeguridadTest {
     private DocumentoService documentoService;
     @MockitoBean
     private IndicadoresService indicadoresService;
+    @MockitoBean
+    private TecnicoService tecnicoService;
 
     /** PNF-05: toda URL protegida, accedida sin sesión, redirige al inicio de sesión. */
     @ParameterizedTest
     @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios",
             "/traslados", "/traslados/nuevo?equipoId=1", "/disponibilidad",
             "/arriendos", "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo", "/ventas/nueva", "/ventas/1", "/clientes/1", "/arriendos/1/documentos/nuevo", "/ventas/1/documentos/nuevo",
-            "/documentos/1/archivo", "/indicadores"})
+            "/documentos/1/archivo", "/indicadores", "/tecnicos", "/tecnicos/nuevo"})
     void rutaProtegida_sinSesion_redirigeAlLogin(String ruta) throws Exception {
         mvc.perform(get(ruta))
                 .andExpect(status().is3xxRedirection())
@@ -442,6 +446,17 @@ class SeguridadTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("No hay arriendos con retorno vencido.")))
                 .andExpect(content().string(containsString("Aún no hay equipos registrados.")));
+    }
+
+    /** HU-30 y matriz de E007: administrador y vendedor administran técnicos; la jefatura consulta. */
+    @Test
+    void tecnicos_segunElRol_respetanLaMatrizDeE007() throws Exception {
+        mvc.perform(get("/tecnicos/nuevo").with(user(con(RolUsuario.VENDEDOR)))).andExpect(status().isOk());
+        mvc.perform(get("/tecnicos").with(user(con(RolUsuario.JEFATURA)))).andExpect(status().isOk());
+        mvc.perform(get("/tecnicos/nuevo").with(user(con(RolUsuario.JEFATURA)))).andExpect(status().isForbidden());
+        mvc.perform(post("/tecnicos").param("nombre", "A").param("apellido", "B")
+                .with(csrf()).with(user(con(RolUsuario.JEFATURA)))).andExpect(status().isForbidden());
+        mvc.perform(get("/tecnicos").with(user(con(RolUsuario.ENCARGADO_BODEGA)))).andExpect(status().isForbidden());
     }
 
     /** D17: la jefatura consulta los clientes, pero no los registra ni los modifica. */
