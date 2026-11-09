@@ -1,5 +1,6 @@
 package cl.duoc.mira.operaciones.controller;
 
+import cl.duoc.mira.capacitaciones.service.CapacitacionService;
 import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.documentos.service.DocumentoService;
 import cl.duoc.mira.inventario.dto.EquipoResponse;
@@ -9,6 +10,7 @@ import cl.duoc.mira.operaciones.dto.VentaResponse;
 import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.service.ClienteService;
 import cl.duoc.mira.operaciones.service.VentaService;
+import cl.duoc.mira.usuarios.entity.RolUsuario;
 import cl.duoc.mira.usuarios.service.UsuarioAutenticado;
 import jakarta.validation.Valid;
 import java.time.Clock;
@@ -37,6 +39,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class VentaController {
 
     private final DocumentoService documentoService;
+    private final CapacitacionService capacitacionService;
     private final VentaService ventaService;
     private final ArriendoService arriendoService;
     private final ClienteService clienteService;
@@ -82,8 +85,15 @@ public class VentaController {
 
     @GetMapping("/{id}")
     public String ficha(@AuthenticationPrincipal UsuarioAutenticado actual, @PathVariable Long id, Model model) {
-        model.addAttribute("venta", ventaService.ficha(actual.empresaId(), id));
+        VentaResponse ficha = ventaService.ficha(actual.empresaId(), id);
+        model.addAttribute("venta", ficha);
         model.addAttribute("documentos", documentoService.deVenta(actual.empresaId(), id));
+        // E007: el encargado de bodega no accede a las capacitaciones.
+        if (actual.tieneRol(RolUsuario.ADMINISTRADOR, RolUsuario.VENDEDOR, RolUsuario.JEFATURA)) {
+            model.addAttribute("capacitaciones", capacitacionService.deOperacion(actual.empresaId(), id));
+            model.addAttribute("sugerirCapacitacion", capacitacionService.sugerirAgendar(actual.empresaId(), id,
+                    ficha.lineas().stream().map(l -> l.equipoId()).toList()));
+        }
         return "ventas/ficha";
     }
 

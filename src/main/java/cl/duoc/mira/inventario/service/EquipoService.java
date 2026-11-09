@@ -98,6 +98,12 @@ public class EquipoService {
                 .toList();
     }
 
+    /** Si algún equipo es de una categoría que requiere capacitación; lo usa capacitaciones (HU-20). */
+    public boolean requierenCapacitacion(Long empresaId, Collection<Long> ids) {
+        return !ids.isEmpty() && equipoRepository.buscarPorIds(empresaId, ids).stream()
+                .anyMatch(e -> e.getCategoria().isRequiereCapacitacion());
+    }
+
     /** Datos de varios equipos por identificador, para las vistas de otros módulos. */
     public Map<Long, EquipoResponse> resumenPorId(Long empresaId, Collection<Long> ids) {
         if (ids.isEmpty()) {

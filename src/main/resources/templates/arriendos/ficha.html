@@ -63,6 +63,9 @@
         <div class="col-12">
             <div th:replace="~{documentos/fragmentos :: tarjeta(${documentos}, false)}"></div>
         </div>
+        <div class="col-12" th:if="${capacitaciones != null}">
+            <div th:replace="~{capacitaciones/fragmentos :: tarjeta(${capacitaciones}, ${sugerirCapacitacion}, '/arriendos/' + ${a.id()} + '/capacitaciones/nueva')}"></div>
+        </div>
     </div>
 </main>
 <footer th:replace="~{fragments/layout :: pie}"></footer>

@@ -16,7 +16,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import cl.duoc.mira.capacitaciones.controller.CapacitacionController;
 import cl.duoc.mira.capacitaciones.controller.TecnicoController;
+import cl.duoc.mira.capacitaciones.service.CapacitacionService;
 import cl.duoc.mira.capacitaciones.service.TecnicoService;
 import cl.duoc.mira.common.controller.InicioController;
 import cl.duoc.mira.documentos.controller.DocumentoController;
@@ -34,6 +36,7 @@ import cl.duoc.mira.inventario.dto.EquipoResponse;
 import cl.duoc.mira.inventario.dto.FichaEquipoResponse;
 import cl.duoc.mira.inventario.entity.EstadoEquipo;
 import cl.duoc.mira.operaciones.dto.ArriendoResponse;
+import cl.duoc.mira.operaciones.dto.LineaArriendoResponse;
 import cl.duoc.mira.inventario.controller.BodegaController;
 import cl.duoc.mira.inventario.controller.EquipoController;
 import cl.duoc.mira.inventario.controller.TrasladoController;
@@ -85,7 +88,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = {InicioController.class, UsuarioController.class,
         BodegaController.class, EquipoController.class, TrasladoController.class,
         DisponibilidadController.class, ArriendoController.class, ClienteController.class, VentaController.class,
-        DocumentoController.class, IndicadoresController.class, TecnicoController.class})
+        DocumentoController.class, IndicadoresController.class, TecnicoController.class,
+        CapacitacionController.class})
 @Import({SeguridadConfig.class, MenuGlobal.class, RelojConfig.class})
 class SeguridadTest {
 
@@ -118,13 +122,16 @@ class SeguridadTest {
     private IndicadoresService indicadoresService;
     @MockitoBean
     private TecnicoService tecnicoService;
+    @MockitoBean
+    private CapacitacionService capacitacionService;
 
     /** PNF-05: toda URL protegida, accedida sin sesión, redirige al inicio de sesión. */
     @ParameterizedTest
     @ValueSource(strings = {"/", "/equipos", "/equipos/nuevo", "/bodegas", "/bodegas/nueva", "/usuarios",
             "/traslados", "/traslados/nuevo?equipoId=1", "/disponibilidad",
             "/arriendos", "/arriendos/nuevo", "/arriendos/1/retorno?equipoId=1", "/clientes", "/clientes/nuevo", "/ventas/nueva", "/ventas/1", "/clientes/1", "/arriendos/1/documentos/nuevo", "/ventas/1/documentos/nuevo",
-            "/documentos/1/archivo", "/indicadores", "/tecnicos", "/tecnicos/nuevo"})
+            "/documentos/1/archivo", "/indicadores", "/tecnicos", "/tecnicos/nuevo",
+            "/arriendos/1/capacitaciones/nueva"})
     void rutaProtegida_sinSesion_redirigeAlLogin(String ruta) throws Exception {
         mvc.perform(get(ruta))
                 .andExpect(status().is3xxRedirection())
@@ -459,6 +466,37 @@ class SeguridadTest {
         mvc.perform(get("/tecnicos").with(user(con(RolUsuario.ENCARGADO_BODEGA)))).andExpect(status().isForbidden());
     }
 
+    /** HU-20 y matriz de E007: agendan administrador y vendedor; ni la jefatura ni el encargado. */
+    @Test
+    void agendarCapacitacion_segunElRol_respetaLaMatrizDeE007() throws Exception {
+        when(arriendoService.ficha(any(), eq(3L))).thenReturn(arriendoDePrueba());
+
+        mvc.perform(get("/arriendos/3/capacitaciones/nueva").with(user(con(RolUsuario.VENDEDOR))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Agendar capacitación")));
+        mvc.perform(get("/arriendos/3/capacitaciones/nueva").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/arriendos/3/capacitaciones").with(csrf()).with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/ventas/4/capacitaciones/nueva").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
+    }
+
+    /** HU-20: la ficha sugiere agendar cuando la categoría lo requiere; el encargado no ve la sección. */
+    @Test
+    void fichaArriendo_conEquipoQueRequiereCapacitacion_sugiereAgendarla() throws Exception {
+        when(arriendoService.ficha(any(), eq(3L))).thenReturn(arriendoDePrueba());
+        when(capacitacionService.sugerirAgendar(any(), eq(3L), any())).thenReturn(true);
+
+        mvc.perform(get("/arriendos/3").with(user(con(RolUsuario.VENDEDOR))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("requiere capacitación")))
+                .andExpect(content().string(containsString("/arriendos/3/capacitaciones/nueva")));
+        mvc.perform(get("/arriendos/3").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("Capacitaciones"))));
+    }
+
     /** D17: la jefatura consulta los clientes, pero no los registra ni los modifica. */
     @Test
     void clientes_comoJefatura_consultaPeroNoRegistra() throws Exception {
@@ -516,6 +554,13 @@ class SeguridadTest {
                 List.of(new UtilizacionResponse.Fila("GPS RTK", 2, 15, 40, 37.5)),
                 List.of(new UtilizacionResponse.FilaEquipo(1L, "GS18-778201", "Leica GS18 T", "GPS RTK", 15, 30, 50.0)),
                 List.of());
+    }
+
+    private static ArriendoResponse arriendoDePrueba() {
+        return new ArriendoResponse(3L, "Topografía Atacama Ltda.", "76.555.444-6", LocalDate.of(2026, 11, 2),
+                LocalDate.of(2026, 11, 2), LocalDate.of(2026, 11, 16), null, null,
+                List.of(new LineaArriendoResponse(6L, "TS16-334512", "Estación total Leica TS16", new BigDecimal("95000"), null)),
+                new BigDecimal("95000"));
     }
 
     private static ClienteResponse clienteDePrueba() {

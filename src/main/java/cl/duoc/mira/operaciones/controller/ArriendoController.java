@@ -1,5 +1,6 @@
 package cl.duoc.mira.operaciones.controller;
 
+import cl.duoc.mira.capacitaciones.service.CapacitacionService;
 import cl.duoc.mira.common.exception.NegocioException;
 import cl.duoc.mira.documentos.service.DocumentoService;
 import cl.duoc.mira.inventario.dto.BodegaResponse;
@@ -13,6 +14,7 @@ import cl.duoc.mira.operaciones.dto.RegistrarArriendoRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarRetornoRequest;
 import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.service.ClienteService;
+import cl.duoc.mira.usuarios.entity.RolUsuario;
 import cl.duoc.mira.usuarios.service.UsuarioAutenticado;
 import jakarta.validation.Valid;
 import java.time.Clock;
@@ -42,6 +44,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ArriendoController {
 
     private final DocumentoService documentoService;
+    private final CapacitacionService capacitacionService;
     private final ArriendoService arriendoService;
     private final ClienteService clienteService;
     private final BodegaService bodegaService;
@@ -96,8 +99,15 @@ public class ArriendoController {
 
     @GetMapping("/{id}")
     public String ficha(@AuthenticationPrincipal UsuarioAutenticado actual, @PathVariable Long id, Model model) {
-        model.addAttribute("arriendo", arriendoService.ficha(actual.empresaId(), id));
+        ArriendoResponse ficha = arriendoService.ficha(actual.empresaId(), id);
+        model.addAttribute("arriendo", ficha);
         model.addAttribute("documentos", documentoService.deArriendo(actual.empresaId(), id));
+        // E007: el encargado de bodega no accede a las capacitaciones.
+        if (actual.tieneRol(RolUsuario.ADMINISTRADOR, RolUsuario.VENDEDOR, RolUsuario.JEFATURA)) {
+            model.addAttribute("capacitaciones", capacitacionService.deOperacion(actual.empresaId(), id));
+            model.addAttribute("sugerirCapacitacion", capacitacionService.sugerirAgendar(actual.empresaId(), id,
+                    ficha.lineas().stream().map(l -> l.equipoId()).toList()));
+        }
         return "arriendos/ficha";
     }
 

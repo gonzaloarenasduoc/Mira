@@ -9,6 +9,11 @@ import cl.duoc.mira.inventario.dto.RegistrarTrasladoRequest;
 import cl.duoc.mira.inventario.service.EquipoService;
 import cl.duoc.mira.inventario.service.TrasladoService;
 import cl.duoc.mira.common.exception.NegocioException;
+import cl.duoc.mira.capacitaciones.dto.AgendarCapacitacionRequest;
+import cl.duoc.mira.capacitaciones.dto.GuardarTecnicoRequest;
+import cl.duoc.mira.capacitaciones.entity.EstadoCapacitacion;
+import cl.duoc.mira.capacitaciones.service.CapacitacionService;
+import cl.duoc.mira.capacitaciones.service.TecnicoService;
 import cl.duoc.mira.documentos.dto.AdjuntarDocumentoRequest;
 import cl.duoc.mira.inventario.dto.ConteoEquipos;
 import cl.duoc.mira.inventario.entity.EstadoEquipo;
@@ -28,6 +33,7 @@ import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +80,10 @@ class MiraApplicationTests {
     private HistorialClienteService historialClienteService;
     @Autowired
     private DocumentoService documentoService;
+    @Autowired
+    private TecnicoService tecnicoService;
+    @Autowired
+    private CapacitacionService capacitacionService;
     /** El reloj de la aplicación (America/Santiago): "hoy" en UTC puede ser otro día. */
     @Autowired
     private Clock reloj;
@@ -328,6 +338,29 @@ class MiraApplicationTests {
         assertThat(arriendoService.arrendadosEntre(empresa, LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 31))).isEmpty();
         assertThat(arriendoService.arriendosVigentes(empresa)).extracting(a -> a.equipoId()).containsExactly(arrendado);
         assertThat(equipoService.enInventario(empresa)).extracting(e -> e.id()).containsExactly(arrendado);
+    }
+
+    /** HU-20 contra la base real: la capacitación queda programada y vinculada al arriendo. */
+    @Test
+    void capacitacion_agendada_quedaVinculadaALaOperacion() {
+        long empresa = crearEmpresa("18.181.818-1");
+        insertarEquipo(empresa, "SN-0070");
+        long arriendoId = arriendoService.registrar(empresa, administrador(),
+                arriendo(crearCliente(empresa), idEquipo(empresa, "SN-0070"))).id();
+        long tecnico = tecnicoService.crear(empresa, new GuardarTecnicoRequest("Andrés", "Pérez", null, null)).id();
+        AgendarCapacitacionRequest c = new AgendarCapacitacionRequest();
+        c.setTecnicoId(tecnico);
+        c.setFecha(LocalDate.now(reloj).plusDays(2));
+        c.setHora(LocalTime.of(10, 0));
+        c.setLugar("Faena del cliente");
+        capacitacionService.agendarParaArriendo(empresa, arriendoId, c);
+        entityManager.flush();
+        entityManager.clear();
+
+        assertThat(capacitacionService.deOperacion(empresa, arriendoId)).singleElement()
+                .satisfies(r -> assertThat(r.estado()).isEqualTo(EstadoCapacitacion.PROGRAMADA));
+        assertThat(jdbc.queryForObject("SELECT estado FROM capacitacion WHERE operacion_id = ?", String.class, arriendoId))
+                .isEqualTo("PROGRAMADA");
     }
 
     /** CF-04 contra la base real: retorno en otra bodega, sin traslado adicional. */
