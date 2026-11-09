@@ -55,3 +55,13 @@ Los archivos descargados son idénticos byte a byte a los subidos. Se entregan c
 (`Content-Disposition: attachment`), con su nombre original, el tipo de contenido validado al subirlos
 y `X-Content-Type-Options: nosniff`. El encargado de bodega descarga la guía del arriendo, pero recibe
 404 con la factura de la venta (D21); un documento inexistente o de otra empresa también responde 404.
+
+## Panel de indicadores: retornos vencidos (HU-28, CF-10)
+
+| Captura | Qué muestra |
+|---|---|
+| [15-panel-retornos-vencidos.png](15-panel-retornos-vencidos.png) | CF-10: la jefatura entra al panel y el arriendo N° 2 aparece primero, destacado, con el cliente, el equipo y 5 días de atraso |
+
+La opción Indicadores aparece en el menú de todos los roles (E009 es de lectura para todos). Los
+arriendos que vencen hoy o más adelante no se muestran en esta sección: siguen en las alertas del
+inicio (HU-16).

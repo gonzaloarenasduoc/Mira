@@ -126,6 +126,9 @@ D17.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- HU-28 en `semana-13` (adelantada el 09-11, CF-10): nuevo panel de indicadores (`/indicadores`, opción
+  Indicadores del menú para todos los roles) que empieza con los retornos vencidos, destacados y con sus
+  días de atraso. Reutiliza las alertas de HU-16, sin consultas nuevas. 182 pruebas.
 - HU-24 en `semana-13` (adelantada el 09-11): las fichas de arriendo, venta y equipo listan los
   documentos con su tipo, folio y fecha, y el nombre del archivo lo descarga. Solo usuarios de la
   misma empresa; el encargado no descarga documentos de ventas (D21, D22). Verificado byte a byte
@@ -170,7 +173,7 @@ D17.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 5: HU-20 a HU-28 | Ambos | `semana-13` | E008 terminada (HU-23 a HU-25, adelantadas). Siguen E009 (HU-28, HU-26, HU-27) y E007 (HU-20 a HU-22) |
+| Sprint 5: HU-20 a HU-28 | Ambos | `semana-13` | E008 y HU-28 terminadas (adelantadas). Siguen HU-26 y HU-27 (gráficos del panel) y E007 (HU-20 a HU-22) |
 
 ## Siguiente
 
