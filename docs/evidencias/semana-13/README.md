@@ -32,3 +32,14 @@ En la base quedaron los dos documentos con su tipo, folio, fecha, nombre origina
 tipo de contenido, tamaño y el usuario que los subió; en el disco, los dos archivos bajo
 `uploads/1/`. El encargado de bodega recibe 403 al intentar adjuntar a una venta. Los documentos se
 consultan con HU-24 y HU-25.
+
+## Documentos de un equipo (HU-25, CF-13)
+
+| Captura | Qué muestra |
+|---|---|
+| [10-documentos-en-ficha-GS18.png](10-documentos-en-ficha-GS18.png) | CF-13: la guía de despacho del arriendo N° 3 aparece en la ficha del GS18-778201; también aparece en la del TS16-334512, el otro equipo del arriendo |
+| [11-documentos-ficha-equipo-vendido.png](11-documentos-ficha-equipo-vendido.png) | La factura de la venta N° 4 aparece en la ficha del equipo vendido |
+| [12-encargado-sin-documentos-de-venta.png](12-encargado-sin-documentos-de-venta.png) | El encargado de bodega no ve los documentos de ventas (D21); sí los de arriendos |
+
+Un equipo sin operaciones con documentos, como el R12I-90311, muestra "Ninguna operación de este
+equipo tiene documentos adjuntos".

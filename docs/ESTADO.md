@@ -126,6 +126,10 @@ D17.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- HU-25 en `semana-13` (adelantada el 09-11, CF-13): la ficha del equipo muestra los documentos de
+  todas las operaciones en que participó; el documento de un arriendo con varios equipos aparece en
+  cada ficha. Siguiendo D21, el encargado de bodega no ve los documentos de ventas. 170 pruebas.
+- Issues del Sprint 5 creados como sub-issues de sus épicas: #23 a #31 (HU-20 a HU-28).
 - HU-23 en `semana-13` (adelantada el 09-11, D22): adjuntar orden de compra, guía de despacho o
   factura a un arriendo o a una venta, con folio, fecha y archivo PDF, JPG o PNG de hasta 10 MB. Se
   valida el contenido del archivo; se guarda en `APP_UPLOAD_DIR` con nombre generado. Página propia
@@ -162,7 +166,7 @@ D17.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 5: HU-20 a HU-28 | Ambos | `semana-13` | HU-23 terminada (adelantada). Siguen HU-25 y HU-24 (documentos de un equipo y de una operación) |
+| Sprint 5: HU-20 a HU-28 | Ambos | `semana-13` | HU-23 y HU-25 terminadas (adelantadas). Sigue HU-24 (listar y descargar los documentos de una operación) |
 
 ## Siguiente
 
