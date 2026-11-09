@@ -19,6 +19,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import cl.duoc.mira.capacitaciones.controller.CapacitacionController;
 import cl.duoc.mira.capacitaciones.controller.TecnicoController;
+import cl.duoc.mira.capacitaciones.dto.CalendarioMes;
+import cl.duoc.mira.capacitaciones.dto.DetalleCapacitacionResponse;
+import cl.duoc.mira.capacitaciones.entity.EstadoCapacitacion;
 import cl.duoc.mira.capacitaciones.service.CapacitacionService;
 import cl.duoc.mira.capacitaciones.service.TecnicoService;
 import cl.duoc.mira.common.controller.InicioController;
@@ -65,6 +68,8 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.LocalDateTime;
 import java.util.List;
 import cl.duoc.mira.usuarios.controller.UsuarioController;
 import cl.duoc.mira.usuarios.entity.RolUsuario;
@@ -481,6 +486,39 @@ class SeguridadTest {
                 .andExpect(status().isForbidden());
         mvc.perform(get("/ventas/4/capacitaciones/nueva").with(user(con(RolUsuario.JEFATURA))))
                 .andExpect(status().isForbidden());
+    }
+
+    /** HU-22 y matriz de E007: la jefatura consulta el calendario, pero no marca ni cancela; el encargado no accede. */
+    @Test
+    void calendarioDeCapacitaciones_segunElRol_respetaLaMatrizDeE007() throws Exception {
+        when(capacitacionService.calendario(any(), any())).thenReturn(new CalendarioMes(YearMonth.of(2026, 11), List.of(), 0));
+
+        mvc.perform(get("/capacitaciones").param("mes", "2026-11").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Noviembre de 2026")));
+        mvc.perform(get("/capacitaciones/5/realizada").with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/capacitaciones/5/cancelar").with(csrf()).with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/capacitaciones/5/realizada").with(csrf()).with(user(con(RolUsuario.JEFATURA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/capacitaciones").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/capacitaciones/5").with(user(con(RolUsuario.ENCARGADO_BODEGA))))
+                .andExpect(status().isForbidden());
+    }
+
+    /** HU-22: el vendedor cancela una capacitación programada y vuelve a su ficha. */
+    @Test
+    void cancelarCapacitacion_comoVendedor_vuelveALaFicha() throws Exception {
+        when(capacitacionService.cancelar(any(), eq(5L))).thenReturn(new DetalleCapacitacionResponse(5L, 3L, "Arriendo",
+                "Topografía Atacama Ltda.", "Andrés Pérez", LocalDateTime.of(2026, 11, 12, 9, 30), null, "Faena",
+                EstadoCapacitacion.CANCELADA, null));
+
+        mvc.perform(post("/capacitaciones/5/cancelar").with(csrf()).with(user(con(RolUsuario.VENDEDOR))))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/capacitaciones/5"));
+        verify(capacitacionService).cancelar(any(), eq(5L));
     }
 
     /** HU-21: el formulario consulta el aviso de técnico ocupado; solo quienes agendan. */

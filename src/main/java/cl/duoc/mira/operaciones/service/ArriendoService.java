@@ -34,6 +34,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import cl.duoc.mira.operaciones.dto.ClienteDeOperacion;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -183,6 +185,15 @@ public class ArriendoService {
     /** Identificadores de los arriendos en que participó un equipo; lo usa documentos (HU-25). */
     public List<Long> idsConEquipo(Long empresaId, Long equipoId) {
         return arriendoRepository.idsConEquipo(empresaId, equipoId);
+    }
+
+    /** Cliente de cada arriendo del conjunto; lo usa capacitaciones (HU-22). Ignora los de otra empresa. */
+    public Map<Long, String> clientesPorId(Long empresaId, Collection<Long> ids) {
+        if (ids.isEmpty()) {
+            return Map.of();
+        }
+        return arriendoRepository.clientes(empresaId, ids).stream()
+                .collect(Collectors.toMap(ClienteDeOperacion::operacionId, ClienteDeOperacion::cliente));
     }
 
     /** Si el arriendo existe y es de la empresa; lo usan otros módulos, como documentos (HU-23). */

@@ -20,7 +20,7 @@ public class AgendarCapacitacionRequest {
     private LocalDate fecha;
 
     @NotNull(message = "Indique la hora.")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime hora;
 
     @NotBlank(message = "Indique el lugar.")

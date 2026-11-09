@@ -9,6 +9,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cl.duoc.mira.capacitaciones.dto.AgendarCapacitacionRequest;
+import cl.duoc.mira.capacitaciones.dto.CalendarioMes;
+import cl.duoc.mira.capacitaciones.dto.MarcarRealizadaRequest;
 import cl.duoc.mira.capacitaciones.dto.CapacitacionResponse;
 import cl.duoc.mira.capacitaciones.entity.Capacitacion;
 import cl.duoc.mira.capacitaciones.entity.EstadoCapacitacion;
@@ -26,8 +28,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -42,6 +47,7 @@ class CapacitacionServiceTest {
     private TecnicoService tecnicoService;
     private ArriendoService arriendoService;
     private EquipoService equipoService;
+    private VentaService ventaService;
     private CapacitacionService service;
     private Tecnico tecnico;
 
@@ -52,8 +58,9 @@ class CapacitacionServiceTest {
         arriendoService = mock(ArriendoService.class);
         equipoService = mock(EquipoService.class);
         EmpresaRepository empresaRepository = mock(EmpresaRepository.class);
+        ventaService = mock(VentaService.class);
         service = new CapacitacionService(capacitacionRepository, tecnicoService, empresaRepository, arriendoService,
-                mock(VentaService.class), equipoService, RELOJ);
+                ventaService, equipoService, RELOJ);
         when(empresaRepository.getReferenceById(EMPRESA_ID)).thenReturn(mock(Empresa.class));
         when(arriendoService.existe(EMPRESA_ID, 3L)).thenReturn(true);
         tecnico = new Tecnico(mock(Empresa.class));
@@ -159,6 +166,94 @@ class CapacitacionServiceTest {
                 .thenReturn(List.of(capacitacion(EstadoCapacitacion.PROGRAMADA), tarde));
         assertThat(service.avisoConflicto(EMPRESA_ID, 7L, dia)).isEqualTo("Andrés Pérez ya tiene 2 capacitaciones "
                 + "programadas el 12-11-2026: a las 10:00 en Faena; a las 15:30 en Bodega Central.");
+    }
+
+    /** HU-22: el calendario arma semanas de lunes a domingo y ubica cada capacitación en su día. */
+    @Test
+    void calendario_noviembre2026_semanasDeLunesADomingoConClienteYTecnico() {
+        Capacitacion delArriendo = capacitacion(EstadoCapacitacion.PROGRAMADA);
+        Capacitacion deLaVenta = new Capacitacion(mock(Empresa.class), 4L, tecnico, LocalDateTime.of(2026, 11, 12, 16, 0), "Copiapó", null);
+        when(capacitacionRepository.entre(EMPRESA_ID, LocalDateTime.of(2026, 10, 26, 0, 0), LocalDateTime.of(2026, 12, 7, 0, 0)))
+                .thenReturn(List.of(delArriendo, deLaVenta));
+        when(arriendoService.clientesPorId(any(), any())).thenReturn(Map.of(3L, "Topografía Atacama Ltda."));
+        when(ventaService.clientesPorId(any(), any())).thenReturn(Map.of(4L, "Constructora Los Andes SpA"));
+
+        CalendarioMes cal = service.calendario(EMPRESA_ID, YearMonth.of(2026, 11));
+
+        assertThat(cal.etiqueta()).isEqualTo("Noviembre de 2026");
+        assertThat(cal.semanas()).hasSize(6).allSatisfy(semana -> assertThat(semana).hasSize(7));
+        assertThat(cal.semanas().getFirst().getFirst().fecha()).isEqualTo(LocalDate.of(2026, 10, 26));
+        assertThat(cal.semanas().getFirst().getFirst().delMes()).isFalse();
+        assertThat(cal.total()).isEqualTo(2);
+        CalendarioMes.Dia jueves12 = cal.semanas().get(2).get(3);
+        assertThat(jueves12.fecha()).isEqualTo(LocalDate.of(2026, 11, 12));
+        assertThat(jueves12.capacitaciones()).extracting(c -> c.cliente() + " · " + c.tipoOperacion() + " · " + c.tecnico())
+                .containsExactly("Topografía Atacama Ltda. · Arriendo · Andrés Pérez",
+                        "Constructora Los Andes SpA · Venta · Andrés Pérez");
+        assertThat(cal.semanas().get(2).get(0).hoy()).as("lunes 9, hoy según el reloj").isTrue();
+        assertThat(cal.diasConCapacitaciones()).singleElement().isEqualTo(jueves12);
+    }
+
+    /** HU-22: se marca realizada en la fecha y hora indicadas. */
+    @Test
+    void marcarRealizada_programada_quedaRealizadaConSuFecha() {
+        Capacitacion c = capacitacion(EstadoCapacitacion.PROGRAMADA);
+        when(capacitacionRepository.findByIdAndEmpresaId(20L, EMPRESA_ID)).thenReturn(Optional.of(c));
+
+        service.marcarRealizada(EMPRESA_ID, 20L, realizada(LocalDate.of(2026, 11, 9), LocalTime.of(11, 0)));
+
+        assertThat(c.getEstado()).isEqualTo(EstadoCapacitacion.REALIZADA);
+        assertThat(c.getFechaRealizada()).isEqualTo(LocalDateTime.of(2026, 11, 9, 11, 0));
+    }
+
+    @Test
+    void marcarRealizada_fechaFutura_seRechaza() {
+        Capacitacion c = capacitacion(EstadoCapacitacion.PROGRAMADA);
+        when(capacitacionRepository.findByIdAndEmpresaId(20L, EMPRESA_ID)).thenReturn(Optional.of(c));
+
+        NegocioException ex = assertThrows(NegocioException.class,
+                () -> service.marcarRealizada(EMPRESA_ID, 20L, realizada(LocalDate.of(2026, 11, 9), LocalTime.of(13, 0))));
+        assertThat(ex.getMessage()).isEqualTo("La fecha y hora en que se realizó no pueden ser futuras.");
+        assertThat(c.getEstado()).isEqualTo(EstadoCapacitacion.PROGRAMADA);
+    }
+
+    /** HU-22: realizada y cancelada son estados finales. */
+    @Test
+    void cancelarYMarcar_sobreUnEstadoFinal_seRechazan() {
+        when(capacitacionRepository.findByIdAndEmpresaId(21L, EMPRESA_ID)).thenReturn(Optional.of(capacitacion(EstadoCapacitacion.CANCELADA)));
+        when(capacitacionRepository.findByIdAndEmpresaId(22L, EMPRESA_ID)).thenReturn(Optional.of(capacitacion(EstadoCapacitacion.REALIZADA)));
+
+        assertThat(assertThrows(NegocioException.class, () -> service.cancelar(EMPRESA_ID, 21L)).getMessage())
+                .isEqualTo("La capacitación ya está cancelada: no admite cambios.");
+        assertThat(assertThrows(NegocioException.class,
+                () -> service.marcarRealizada(EMPRESA_ID, 21L, realizada(LocalDate.of(2026, 11, 9), LocalTime.of(9, 0)))).getMessage())
+                .isEqualTo("La capacitación ya está cancelada: no admite cambios.");
+        assertThat(assertThrows(NegocioException.class, () -> service.cancelar(EMPRESA_ID, 22L)).getMessage())
+                .isEqualTo("La capacitación ya está realizada: no admite cambios.");
+    }
+
+    @Test
+    void cancelar_programada_quedaCancelada() {
+        Capacitacion c = capacitacion(EstadoCapacitacion.PROGRAMADA);
+        when(capacitacionRepository.findByIdAndEmpresaId(20L, EMPRESA_ID)).thenReturn(Optional.of(c));
+
+        service.cancelar(EMPRESA_ID, 20L);
+
+        assertThat(c.getEstado()).isEqualTo(EstadoCapacitacion.CANCELADA);
+    }
+
+    /** PNF-06: una capacitación de otra empresa no existe para esta. */
+    @Test
+    void detalle_deOtraEmpresa_lanzaNoEncontrado() {
+        assertThrows(RecursoNoEncontradoException.class, () -> service.detalle(EMPRESA_ID, 99L));
+        assertThrows(RecursoNoEncontradoException.class, () -> service.cancelar(EMPRESA_ID, 99L));
+    }
+
+    private static MarcarRealizadaRequest realizada(LocalDate fecha, LocalTime hora) {
+        MarcarRealizadaRequest r = new MarcarRealizadaRequest();
+        r.setFecha(fecha);
+        r.setHora(hora);
+        return r;
     }
 
     private Capacitacion capacitacion(EstadoCapacitacion estado) {

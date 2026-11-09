@@ -1,6 +1,7 @@
 package cl.duoc.mira.operaciones.repository;
 
-import cl.duoc.mira.operaciones.entity.Venta;
+import cl.duoc.mira.operaciones.dto.ClienteDeOperacion;import cl.duoc.mira.operaciones.entity.Venta;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface VentaRepository extends JpaRepository<Venta, Long> {
+
+    /** Cliente de cada venta del conjunto, en una sola consulta (HU-22). */
+    @Query("""
+            select new cl.duoc.mira.operaciones.dto.ClienteDeOperacion(v.id, c.razonSocial)
+            from Venta v join v.cliente c
+            where v.empresa.id = :empresaId and v.id in :ids
+            """)
+    List<ClienteDeOperacion> clientes(@Param("empresaId") Long empresaId, @Param("ids") Collection<Long> ids);
 
     @Query("""
             select distinct v from Venta v

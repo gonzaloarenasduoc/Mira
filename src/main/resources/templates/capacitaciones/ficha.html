@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Capacitación')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" style="max-width: 860px;" th:with="c=${capacitacion}">
+    <div class="encabezado-pagina d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <h1>Capacitación</h1>
+            <p th:text="${c.cliente()} + ' · ' + ${#temporals.format(c.fechaProgramada(), 'dd-MM-yyyy HH:mm')}">Cliente · fecha</p>
+        </div>
+        <a class="btn btn-outline-secondary"
+           th:href="@{/capacitaciones(mes=${#temporals.format(c.fechaProgramada(), 'yyyy-MM')})}">Volver al calendario</a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Estado</dt>
+                <dd class="col-sm-8">
+                    <span class="estado estado-EN_TRANSITO" th:if="${c.estado().name() == 'PROGRAMADA'}">Programada</span>
+                    <span class="estado estado-DISPONIBLE" th:if="${c.estado().name() == 'REALIZADA'}">Realizada</span>
+                    <span class="estado estado-VENDIDO" th:if="${c.estado().name() == 'CANCELADA'}">Cancelada</span>
+                </dd>
+                <dt class="col-sm-4">Operación</dt>
+                <dd class="col-sm-8">
+                    <a th:href="@{${c.rutaOperacion()}}" th:text="${c.tipoOperacion()} + ' N° ' + ${c.operacionId()}">Arriendo N° 3</a>
+                </dd>
+                <dt class="col-sm-4">Cliente</dt>
+                <dd class="col-sm-8" th:text="${c.cliente()}">Cliente</dd>
+                <dt class="col-sm-4">Técnico</dt>
+                <dd class="col-sm-8" th:text="${c.tecnico()}">Técnico</dd>
+                <dt class="col-sm-4">Fecha programada</dt>
+                <dd class="col-sm-8" th:text="${#temporals.format(c.fechaProgramada(), 'dd-MM-yyyy HH:mm')}">fecha</dd>
+                <th:block th:if="${c.fechaRealizada() != null}">
+                    <dt class="col-sm-4">Realizada el</dt>
+                    <dd class="col-sm-8" th:text="${#temporals.format(c.fechaRealizada(), 'dd-MM-yyyy HH:mm')}">fecha</dd>
+                </th:block>
+                <dt class="col-sm-4">Lugar</dt>
+                <dd class="col-sm-8" th:text="${c.lugar()}">Lugar</dd>
+                <dt class="col-sm-4">Observaciones</dt>
+                <dd class="col-sm-8 mb-0" style="white-space: pre-line;" th:text="${c.observaciones()} ?: '—'">—</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 justify-content-end" th:if="${puedeAgendar and c.programada()}">
+        <form method="post" th:action="@{/capacitaciones/{id}/cancelar(id=${c.id()})}"
+              onsubmit="return confirm('¿Cancelar esta capacitación? Para hacerla después habrá que agendar una nueva.');">
+            <button type="submit" class="btn btn-outline-danger">Cancelar capacitación</button>
+        </form>
+        <a class="btn btn-primary" th:href="@{/capacitaciones/{id}/realizada(id=${c.id()})}">Marcar como realizada</a>
+    </div>
+    <p class="text-secondary small text-end mb-0" th:unless="${c.programada()}">
+        Realizada y cancelada son estados finales. Para hacerla otra vez, agende una nueva desde la operación.
+    </p>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

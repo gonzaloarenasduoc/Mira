@@ -25,9 +25,10 @@ public class TecnicoController {
 
     private final TecnicoService tecnicoService;
 
+    /** Los técnicos se administran desde Capacitaciones (HU-22). */
     @ModelAttribute("seccion")
     public String seccion() {
-        return "Técnicos";
+        return "Capacitaciones";
     }
 
     @GetMapping

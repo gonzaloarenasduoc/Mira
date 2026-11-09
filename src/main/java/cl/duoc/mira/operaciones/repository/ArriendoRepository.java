@@ -1,6 +1,6 @@
 package cl.duoc.mira.operaciones.repository;
 
-import cl.duoc.mira.operaciones.dto.PeriodoArrendado;
+import cl.duoc.mira.operaciones.dto.ClienteDeOperacion;import cl.duoc.mira.operaciones.dto.PeriodoArrendado;
 import cl.duoc.mira.operaciones.entity.Arriendo;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -14,6 +14,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ArriendoRepository extends JpaRepository<Arriendo, Long> {
+
+    /** Cliente de cada arriendo del conjunto, en una sola consulta (HU-22). */
+    @Query("""
+            select new cl.duoc.mira.operaciones.dto.ClienteDeOperacion(a.id, c.razonSocial)
+            from Arriendo a join a.cliente c
+            where a.empresa.id = :empresaId and a.id in :ids
+            """)
+    List<ClienteDeOperacion> clientes(@Param("empresaId") Long empresaId, @Param("ids") Collection<Long> ids);
 
     /**
      * Líneas de arriendo sin retorno registrado, con su fecha comprometida, en una sola consulta

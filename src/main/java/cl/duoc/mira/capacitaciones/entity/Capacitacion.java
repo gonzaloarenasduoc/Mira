@@ -62,4 +62,15 @@ public class Capacitacion extends EntidadAuditable {
         this.observaciones = observaciones;
         this.estado = EstadoCapacitacion.PROGRAMADA;
     }
+
+    /** HU-22: queda realizada en la fecha y hora indicadas. CapacitacionService exige que esté programada. */
+    public void marcarRealizada(LocalDateTime fechaRealizada) {
+        this.fechaRealizada = fechaRealizada;
+        this.estado = EstadoCapacitacion.REALIZADA;
+    }
+
+    /** HU-22: queda cancelada. CapacitacionService exige que esté programada. */
+    public void cancelar() {
+        this.estado = EstadoCapacitacion.CANCELADA;
+    }
 }

@@ -33,7 +33,7 @@ public class MenuGlobal {
             new OpcionMenu("Traslados", "/traslados", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Clientes", "/clientes", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Bodegas", "/bodegas", EnumSet.allOf(RolUsuario.class)),
-            new OpcionMenu("Técnicos", "/tecnicos", EnumSet.of(ADMINISTRADOR, VENDEDOR, JEFATURA)),
+            new OpcionMenu("Capacitaciones", "/capacitaciones", EnumSet.of(ADMINISTRADOR, VENDEDOR, JEFATURA)),
             new OpcionMenu("Indicadores", "/indicadores", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Usuarios", "/usuarios", EnumSet.of(ADMINISTRADOR)));
 

@@ -34,6 +34,7 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -365,6 +366,17 @@ class MiraApplicationTests {
         // HU-21 contra la base real: el mismo técnico ese día genera el aviso; el día siguiente, no.
         assertThat(capacitacionService.avisoConflicto(empresa, tecnico, c.getFecha())).contains("Andrés Pérez ya tiene");
         assertThat(capacitacionService.avisoConflicto(empresa, tecnico, c.getFecha().plusDays(1))).isNull();
+
+        // HU-22 contra la base real: aparece en el calendario con su cliente y se cancela.
+        long id = capacitacionService.deOperacion(empresa, arriendoId).getFirst().id();
+        assertThat(capacitacionService.calendario(empresa, YearMonth.from(c.getFecha())).semanas().stream()
+                .flatMap(List::stream).flatMap(d -> d.capacitaciones().stream()))
+                .singleElement().satisfies(d -> assertThat(d.tipoOperacion()).isEqualTo("Arriendo"));
+        capacitacionService.cancelar(empresa, id);
+        entityManager.flush();
+        assertThat(jdbc.queryForObject("SELECT estado FROM capacitacion WHERE id = ?", String.class, id))
+                .isEqualTo("CANCELADA");
+        assertThat(capacitacionService.avisoConflicto(empresa, tecnico, c.getFecha())).as("una cancelada no ocupa al técnico").isNull();
     }
 
     /** CF-04 contra la base real: retorno en otra bodega, sin traslado adicional. */

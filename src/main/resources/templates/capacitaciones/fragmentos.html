@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body>
 <!--
-  Capacitaciones de una operación (HU-20). Si algún equipo es de una categoría que requiere
+  Capacitaciones de una operación (HU-20); cada fecha lleva a su ficha (HU-22). Si algún equipo es de una categoría que requiere
   capacitación y no hay una programada, se sugiere agendarla.
 -->
 <div th:fragment="tarjeta(capacitaciones, sugerir, urlAgendar)" class="card">
@@ -21,7 +21,7 @@
                 <thead><tr><th>Fecha</th><th>Técnico</th><th>Lugar</th><th>Estado</th></tr></thead>
                 <tbody>
                 <tr th:each="c : ${capacitaciones}">
-                    <td class="text-nowrap" th:text="${#temporals.format(c.fechaProgramada(), 'dd-MM-yyyy HH:mm')}">fecha</td>
+                    <td class="text-nowrap"><a th:href="@{/capacitaciones/{id}(id=${c.id()})}" th:text="${#temporals.format(c.fechaProgramada(), 'dd-MM-yyyy HH:mm')}">fecha</a></td>
                     <td th:text="${c.tecnico()}">Técnico</td>
                     <td th:text="${c.lugar()}">Lugar</td>
                     <td>
