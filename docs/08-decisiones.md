@@ -262,5 +262,26 @@ ya estaba terminada e integrada, y los clientes también los usan las ventas y l
 
 ---
 
+## D18 · Cálculo del total de un arriendo (HU-17)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** El total de un arriendo es la suma, por cada línea, de la tarifa diaria por los días
+de arriendo. Los días son la diferencia entre la fecha de inicio y la fecha de fin, con mínimo uno:
+del 20 al 30 son 10 días, y un equipo que vuelve el mismo día se cobra un día. La fecha de fin es la
+de retorno real; si el equipo no ha vuelto, la fecha comprometida, o la de hoy si ya venció. El total
+es **estimado** mientras algún equipo no retorna y **definitivo** cuando todos retornaron. El estado
+del arriendo (vigente, vencido o cerrado) y el total no se almacenan: se calculan al consultar.
+
+**Motivo.** HU-17 pide el total y si es estimado o definitivo, pero no definía cómo contar los días;
+el equipo lo decidió al implementarla.
+Contar hasta hoy un arriendo vencido hace que el total estimado refleje el atraso, que es lo que el
+vendedor necesita saber. Calcularlo evita guardar un dato que cambia cada día (03, 1.6).
+
+**Descartado.** Contar los días de forma inclusiva (11 días del 20 al 30). Estimar siempre hasta la
+fecha comprometida: ocultaría el atraso de un arriendo vencido.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.

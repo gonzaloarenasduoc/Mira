@@ -124,8 +124,12 @@ D17.
 - Sprint Backlog y retrospectiva de los sprints 1 a 3, y el backlog del Sprint 4, en `docs/sprints/`.
   Actas de control de avance de las semanas 9, 10 y 11 en `docs/actas/`. El acta de la semana 11
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
-- Pull request #21 (`semana-11` → `main`) abierto el 02-11 con HU-15, HU-16 y HU-29, con la revisión
-  pedida a Joaquín.
+- Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
+  HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- HU-17 en `semana-12` (09-11): listado de arriendos con su estado (vigente, vencido o cerrado) y su
+  total, estimado o definitivo, calculados al consultar con la regla de D18. La opción Arriendos del
+  menú lleva al listado y la ve también la jefatura, que solo consulta. Verificado contra PostgreSQL
+  con los arriendos de la demo; 119 pruebas. Capturas en `docs/evidencias/semana-12/`.
 - Tercer informe de avance (02-11): `Fase 2/Evidencias Grupales/Informe_Avance_3_Semana11.docx`
   (copia de la guía 2.6 actualizada a la semana 11; el informe 2.6 entregado no se modificó), el acta
   del 02-11 y el video `Demo/Demo_v4.mp4` (7 min 21 s, sin audio): repositorio y código, Flyway aplicando
@@ -136,13 +140,12 @@ D17.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 4: HU-17 a HU-19 | Ambos | `semana-12` | HU-14, HU-15, HU-16 y HU-29 terminadas. Siguen el listado de arriendos (HU-17) y las ventas (HU-18, HU-19) |
+| Sprint 4: HU-18 y HU-19 | Ambos | `semana-12` | HU-14, HU-15, HU-16, HU-17 y HU-29 terminadas. Siguen las ventas (HU-18) y el historial de un cliente (HU-19) |
 
 ## Siguiente
 
-1. Joaquín revisa e integra el pull request #21. Al integrarse, las tarjetas #14, #15 y #20 pasan a
-   Terminado en el tablero.
-2. Semana 12: HU-17 (listado de arriendos con su total, Gonzalo) y HU-18 (ventas, Joaquín).
+1. Semana 12: HU-18 (registrar una venta, Joaquín).
+2. Cierre de la semana 12: pull request de `semana-12` y acta.
 3. Semana 13: HU-19 (historial de operaciones de un cliente) y retrospectiva del Sprint 4.
 
 ## Bloqueado
