@@ -130,6 +130,10 @@ D17.
   total, estimado o definitivo, calculados al consultar con la regla de D18. La opción Arriendos del
   menú lleva al listado y la ve también la jefatura, que solo consulta. Verificado contra PostgreSQL
   con los arriendos de la demo; 119 pruebas. Capturas en `docs/evidencias/semana-12/`.
+- Migración V3 en `semana-12` (09-11, D19): siete categorías nuevas tomadas del catálogo de
+  `docs/referencias/` (Accesorios, Cursos, Escáneres láser, Georradares, Cámaras, Servicios y
+  Registros facturas). Verificada contra PostgreSQL 16 sobre una base en V2 con datos y sobre una
+  base vacía. **Al traer esta rama, Flyway la aplica sola al levantar la app.**
 - Tercer informe de avance (02-11): `Fase 2/Evidencias Grupales/Informe_Avance_3_Semana11.docx`
   (copia de la guía 2.6 actualizada a la semana 11; el informe 2.6 entregado no se modificó), el acta
   del 02-11 y el video `Demo/Demo_v4.mp4` (7 min 21 s, sin audio): repositorio y código, Flyway aplicando

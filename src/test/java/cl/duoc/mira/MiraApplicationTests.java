@@ -63,11 +63,21 @@ class MiraApplicationTests {
     private Clock reloj;
 
     @Test
-    void arranque_conBaseVacia_aplicaLasDosMigraciones() {
+    void arranque_conBaseVacia_aplicaLasTresMigraciones() {
         Integer aplicadas = jdbc.queryForObject(
                 "SELECT count(*) FROM flyway_schema_history WHERE success", Integer.class);
 
-        assertThat(aplicadas).isEqualTo(2);
+        assertThat(aplicadas).isEqualTo(3);
+    }
+
+    /** D19: V3 agrega las categorías del catálogo sin tocar las cuatro de V2. */
+    @Test
+    void datosIniciales_categorias_incluyenLasDeV2YLasDelCatalogo() {
+        List<String> nombres = jdbc.queryForList(
+                "SELECT nombre FROM categoria WHERE activa ORDER BY nombre", String.class);
+
+        assertThat(nombres).contains("Estación total", "GPS RTK", "Dron", "Nivel",
+                "Accesorios", "Cursos", "Escáneres láser", "Georradares", "Cámaras", "Servicios", "Registros facturas");
     }
 
     @Test

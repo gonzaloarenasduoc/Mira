@@ -283,5 +283,31 @@ fecha comprometida: ocultaría el atraso de un arriendo vencido.
 
 ---
 
+## D19 · Categorías del catálogo de una empresa del rubro (migración V3)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** La migración `V3__categorias_catalogo.sql` agrega siete categorías a las cuatro de V2
+(estación total, GPS RTK, dron y nivel), tomadas del catálogo de productos en
+`docs/referencias/catalogo-productos.xlsx`: Accesorios, Cursos, Escáneres láser, Georradares,
+Cámaras, Servicios y Registros facturas. Las de V2 no se renombran ni se desactivan: "GPS RTK" y
+"Nivel" equivalen a los receptores y niveles del catálogo. Requieren capacitación los escáneres
+láser, los georradares y las cámaras (supuesto declarado, como en V2).
+
+**Motivo.** El catálogo muestra los tipos de producto que vende una empresa real del rubro. El
+equipo decidió reflejarlos en las categorías para que las demostraciones usen la misma
+clasificación.
+
+**Riesgo declarado.** Mira registra cada equipo como una unidad con número de serie, estado y
+bodega (03, 1.1). Cursos, Servicios y Registros facturas no son unidades físicas: con esas
+categorías se puede registrar un "equipo" que no se guarda en una bodega ni se arrienda. Se
+agregaron por decisión del equipo; los cursos tienen su propio flujo en E007 (capacitaciones), y
+las ventas de servicios no están en el alcance (`docs/05-epicas.md`). Conviene validarlo con el
+docente.
+
+**Descartado.** Editar V2: la regla 1 prohíbe modificar una migración aplicada.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.
