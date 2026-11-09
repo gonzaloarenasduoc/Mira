@@ -126,6 +126,10 @@ D17.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- HU-27 en `semana-13` (adelantada el 09-11, D24): utilización de los equipos en un periodo elegible
+  (por omisión, 30 días), global, por categoría y con los diez más y menos usados, y la lista de
+  arriendos vigentes. Verificada contra un cálculo independiente en SQL con un año de datos; el panel
+  completo responde en 0,095 s en el percentil 95. 191 pruebas. **E009 queda completa.**
 - HU-26 en `semana-13` (adelantada el 09-11, D23): gráficos del panel con Chart.js (webjar nuevo en el
   `pom.xml`): equipos por bodega y por estado, más una tabla con los mismos datos; los vendidos no se
   cuentan como inventario. PNF-02 medido con un año de datos: 0,052 s en el percentil 95. La barra de
@@ -177,7 +181,7 @@ D17.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 5: HU-20 a HU-28 | Ambos | `semana-13` | E008, HU-28 y HU-26 terminadas (adelantadas). Siguen HU-27 (utilización) y E007 (HU-20 a HU-22) |
+| Sprint 5: HU-20 a HU-28 | Ambos | `semana-13` | E008 y E009 terminadas (adelantadas). Falta E007: HU-20, HU-21 y HU-22 (capacitaciones) |
 
 ## Siguiente
 

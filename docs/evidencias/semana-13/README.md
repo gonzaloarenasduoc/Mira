@@ -88,3 +88,27 @@ y 10 cargas completas en el navegador hasta que ambos gráficos quedaron dibujad
 La tabla del panel cuadra con la base: 375 disponibles, 60 arrendados y 15 en mantención, 450 en
 total. El caso de prueba pide medirlo con el registro de tiempos de la aplicación; la medición con
 `curl` y con el navegador es equivalente para un solo usuario.
+
+## Panel: utilización y arriendos vigentes (HU-27, D24)
+
+Con la base de un año de datos (`mira_carga`).
+
+| Captura | Qué muestra |
+|---|---|
+| [19-utilizacion-12-meses.png](19-utilizacion-12-meses.png) | Utilización de los últimos 12 meses: 10,8 % global, por categoría y los diez equipos más y menos usados |
+| [20-arriendos-vigentes.png](20-arriendos-vigentes.png) | Arriendos vigentes con su fecha comprometida; los vencidos, destacados |
+
+**Verificación del cálculo.** Los días-equipo del panel coinciden con un cálculo independiente en SQL
+sobre la misma base: 1.463 de 13.500 en los últimos 30 días y 17.687 de 164.250 en los últimos 12 meses.
+Un periodo invertido o que termina en el futuro se avisa y se muestran los últimos 30 días.
+
+**PNF-02 con el panel completo** (retornos vencidos, inventario, utilización y vigentes), 30 solicitudes
+después de una de calentamiento:
+
+| Periodo de utilización | Mediana | Percentil 95 | Máximo | Criterio |
+|---|---|---|---|---|
+| Últimos 30 días ([pnf02-hu27-30d.txt](pnf02-hu27-30d.txt)) | 0,072 s | 0,094 s | 0,117 s | < 3 s |
+| Últimos 12 meses ([pnf02-hu27-12m.txt](pnf02-hu27-12m.txt)) | 0,066 s | 0,095 s | 0,100 s | < 3 s |
+
+En el navegador, el panel de 12 meses con sus tres gráficos dibujados cargó en 0,26 s, sin errores de
+JavaScript.

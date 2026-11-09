@@ -383,5 +383,25 @@ desplegable bajo 1200 px y oculta el nombre del usuario entre 1200 y 1399 px.
 
 ---
 
+## D24 · Cálculo de la utilización de los equipos (HU-27)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** La utilización es días arrendado sobre días disponibles en un periodo que se elige con
+dos fechas, ambas incluidas; sin fechas, los últimos 30 días, hasta hoy. El periodo no puede terminar
+en una fecha futura. Cuenta como arrendado cada día desde el inicio del arriendo hasta el anterior al
+retorno, como el cobro (D18): un equipo que vuelve el mismo día cuenta un día, y uno que sigue fuera
+cuenta hasta hoy. Los días disponibles de un equipo empiezan en su ingreso si este cae dentro del
+periodo, para que un equipo nuevo no aparezca como subutilizado. Solo cuentan los equipos del
+inventario; los vendidos no (D23). Se muestra un porcentaje global, uno por categoría con su gráfico y
+dos tablas con los diez equipos más usados y los diez menos usados, sin repetir equipos. Los arriendos
+vigentes se listan completos, con su fecha comprometida y los días que faltan o de atraso.
+
+**Motivo.** HU-27 define la fórmula, pero no el periodo ni el nivel de detalle; el equipo los decidió
+al implementarla. El porcentaje por categoría y los extremos por equipo son los datos que sirven para
+decidir compras.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.
