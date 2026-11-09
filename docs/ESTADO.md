@@ -126,6 +126,9 @@ D17.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- HU-30 en `semana-13` (09-11, D25): administrar técnicos (nueva, 2 PF, como HU-29 con los clientes).
+  El backlog pasa de 103 a 105 PF; informarlo en el acta de la semana 13. Menú Técnicos para
+  administrador, vendedor y jefatura (que solo consulta); el encargado de bodega no accede. 197 pruebas.
 - HU-27 en `semana-13` (adelantada el 09-11, D24): utilización de los equipos en un periodo elegible
   (por omisión, 30 días), global, por categoría y con los diez más y menos usados, y la lista de
   arriendos vigentes. Verificada contra un cálculo independiente en SQL con un año de datos; el panel

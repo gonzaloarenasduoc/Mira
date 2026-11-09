@@ -403,5 +403,28 @@ decidir compras.
 
 ---
 
+## D25 · Los técnicos se administran desde la aplicación (HU-30)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** Se agrega al backlog la historia HU-30, "Administrar técnicos", dentro de E007, con
+2 PF, en el Sprint 5. Permite registrar, editar, activar y desactivar los técnicos que dictan las
+capacitaciones, con nombre, apellido, correo y teléfono. Los técnicos no se eliminan: se desactivan,
+y un técnico inactivo no se ofrece al agendar. Según la matriz de E007, los administran el
+administrador y el vendedor, la jefatura solo los consulta y el encargado de bodega no accede. El
+técnico no es usuario del sistema (supuesto 6 de `03-modelo-datos.md`).
+
+**Motivo.** HU-20 exige elegir un técnico al agendar una capacitación, pero ninguna historia permitía
+registrarlos; se detectó al implementar HU-20. Es el mismo caso de los clientes (D17): cargarlos en la
+base de datos haría depender a cada empresa de un desarrollador. La tabla `tecnico` existe desde V1.
+
+**Efecto en el alcance.** El backlog pasa de 103 a 105 PF y el Sprint 5, de 29 a 31 PF. El ajuste se
+informa en el acta de control de avance de la semana 13.
+
+**Descartado.** Cargar los técnicos con una migración. Registrar un técnico dentro del formulario de
+agendar: mezcla dos responsabilidades en una historia.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.

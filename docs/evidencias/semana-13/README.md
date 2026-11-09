@@ -112,3 +112,12 @@ después de una de calentamiento:
 
 En el navegador, el panel de 12 meses con sus tres gráficos dibujados cargó en 0,26 s, sin errores de
 JavaScript.
+
+## Técnicos (HU-30, D25)
+
+| Captura | Qué muestra |
+|---|---|
+| [21-tecnico-sin-datos.png](21-tecnico-sin-datos.png) | Nombre y apellido son obligatorios |
+| [22-tecnicos.png](22-tecnicos.png) | Tres técnicos registrados por el vendedor, uno de ellos desactivado |
+
+La jefatura ve la lista sin el botón para registrar; el encargado de bodega recibe 403 (matriz de E007).
