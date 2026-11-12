@@ -199,9 +199,9 @@ está implementado**; falta integrarlo a `main` con el pull request de cierre de
 
 ## Siguiente
 
-1. Joaquín corre `./mvnw clean verify` (las pruebas de integración de HU-20 a HU-22 no se han
-   ejecutado sin Docker), revisa e integra el pull request `semana-13` → `main`. Al integrarse se
-   cierran #18, #23 a #32 y las épicas E006 a E009 (#9 a #12).
+1. Joaquín revisa e integra el pull request #33 (`semana-13` → `main`). `./mvnw clean verify` ya
+   pasó el 12-11 con Docker: 219 pruebas, 0 fallas, 0 omitidas, incluidas las 18 de integración
+   contra PostgreSQL 16. Al integrarse se cierran #18, #23 a #32 y las épicas E006 a E009 (#9 a #12).
 2. Validar con Joaquín el borrador de la retrospectiva del Sprint 4 y escribir la del Sprint 5.
 3. Acta de control de avance de la semana 13: informar el ajuste del backlog a 105 PF (D25), el
    Sprint 5 completo y las decisiones D26 y D27.
