@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import cl.duoc.mira.operaciones.dto.ClienteDeOperacion;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,6 +76,25 @@ public class VentaService {
 
         lineas.forEach(l -> equipoService.despacharEnVenta(empresaId, usuarioId, l.getEquipoId(), venta.getId()));
         return aResponse(empresaId, venta);
+    }
+
+    /** Identificadores de los ventas en que participó un equipo; lo usa documentos (HU-25). */
+    public List<Long> idsConEquipo(Long empresaId, Long equipoId) {
+        return ventaRepository.idsConEquipo(empresaId, equipoId);
+    }
+
+    /** Cliente de cada venta del conjunto; lo usa capacitaciones (HU-22). Ignora los de otra empresa. */
+    public Map<Long, String> clientesPorId(Long empresaId, Collection<Long> ids) {
+        if (ids.isEmpty()) {
+            return Map.of();
+        }
+        return ventaRepository.clientes(empresaId, ids).stream()
+                .collect(Collectors.toMap(ClienteDeOperacion::operacionId, ClienteDeOperacion::cliente));
+    }
+
+    /** Si el venta existe y es de la empresa; lo usan otros módulos, como documentos (HU-23). */
+    public boolean existe(Long empresaId, Long id) {
+        return ventaRepository.existsByIdAndEmpresaId(id, empresaId);
     }
 
     /** Una venta de otra empresa se responde como inexistente (PNF-06). */

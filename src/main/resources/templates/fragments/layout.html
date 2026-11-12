@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark mira-navbar">
+<nav th:fragment="navbar" class="navbar navbar-expand-xl navbar-dark mira-navbar">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-2 fw-semibold" th:href="@{/}">
             <img th:src="@{/img/mira.svg}" width="30" height="30" alt="">
@@ -28,12 +28,13 @@
                 </li>
             </ul>
             <div class="d-flex align-items-center gap-3" th:if="${usuarioActual != null}">
-                <div class="text-end lh-sm small">
+                <!-- Con las 10 opciones del administrador, el nombre no cabe entre 1200 y 1399 px. -->
+                <div class="text-end lh-sm small text-nowrap d-block d-xl-none d-xxl-block">
                     <div class="text-white" th:text="${usuarioActual.nombreCompleto()}">Usuario</div>
                     <div class="text-white-50" th:text="${usuarioActual.rol().etiqueta}">Rol</div>
                 </div>
                 <form th:action="@{/logout}" method="post" class="m-0">
-                    <button type="submit" class="btn btn-sm btn-outline-light">Cerrar sesión</button>
+                    <button type="submit" class="btn btn-sm btn-outline-light text-nowrap">Cerrar sesión</button>
                 </form>
             </div>
         </div>

@@ -95,3 +95,18 @@ main { flex: 1; }
 /* Alertas de retorno (HU-16) */
 .estado-vencido { background: #F8D7DA; color: #842029; }
 .alertas-retorno { border-left: 4px solid var(--mira-amarillo); }
+
+/* Calendario de capacitaciones (HU-22) */
+.calendario { width: 100%; table-layout: fixed; border-collapse: collapse; }
+.calendario th { font-size: .78rem; text-transform: uppercase; color: #6c757d; font-weight: 600; padding: .4rem; text-align: left; }
+.calendario td { border: 1px solid #E3E7EE; vertical-align: top; height: 7.5rem; padding: .35rem; }
+.calendario td.fuera-mes { background: #F7F8FA; }
+.calendario td.fuera-mes .numero-dia { color: #ADB5BD; }
+.calendario td.hoy { box-shadow: inset 0 0 0 2px #F2B705; }
+.numero-dia { font-size: .8rem; font-weight: 600; margin-bottom: .25rem; }
+.evento { display: block; font-size: .75rem; line-height: 1.25; padding: .3rem .4rem; margin-bottom: .3rem;
+    border-radius: .35rem; border-left: 3px solid; color: inherit; text-decoration: none; }
+.evento:hover { filter: brightness(.96); }
+.evento-PROGRAMADA { background: #EAF1FF; border-color: #1F3864; }
+.evento-REALIZADA { background: #E8F7EE; border-color: #198754; }
+.evento-CANCELADA { background: #F1F2F4; border-color: #ADB5BD; text-decoration: line-through; }

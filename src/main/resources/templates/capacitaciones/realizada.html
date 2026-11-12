@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Marcar como realizada')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" style="max-width: 640px;" th:with="c=${capacitacion}">
+    <div class="encabezado-pagina mb-4">
+        <h1>Marcar como realizada</h1>
+        <p th:text="${c.cliente()} + ' · ' + ${c.tecnico()} + ' · programada para el ' + ${#temporals.format(c.fechaProgramada(), 'dd-MM-yyyy HH:mm')}">Detalle</p>
+    </div>
+
+    <form th:object="${realizada}" th:action="@{/capacitaciones/{id}/realizada(id=${c.id()})}" method="post" novalidate>
+        <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}">
+            <div th:each="err : ${#fields.globalErrors()}" th:text="${err}">Error</div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-body p-4">
+                <p class="small text-secondary mb-3">Indique cuándo se dictó. Se propone la fecha y hora programadas.</p>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label for="fecha" class="form-label">Fecha</label>
+                        <input id="fecha" type="date" class="form-control" th:field="*{fecha}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{fecha}">Error</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="hora" class="form-label">Hora</label>
+                        <input id="hora" type="time" class="form-control" th:field="*{hora}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{hora}">Error</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-end">
+            <a class="btn btn-outline-secondary" th:href="@{/capacitaciones/{id}(id=${c.id()})}">Volver</a>
+            <button type="submit" class="btn btn-primary">Marcar como realizada</button>
+        </div>
+    </form>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

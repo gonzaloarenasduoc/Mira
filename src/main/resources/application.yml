@@ -25,6 +25,17 @@ spring:
   thymeleaf:
     cache: false
 
+  # Documentos adjuntos (HU-23, D22): PDF, JPG o PNG de hasta 10 MB.
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+
+server:
+  tomcat:
+    # Tomcat lee el resto de un envío demasiado grande para poder responder con el aviso.
+    max-swallow-size: 20MB
+
 app:
   upload-dir: ${APP_UPLOAD_DIR:./uploads}
 

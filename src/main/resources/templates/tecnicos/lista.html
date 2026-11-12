@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Técnicos')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div class="encabezado-pagina d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <h1>Técnicos</h1>
+            <p>Personas que dictan las capacitaciones de los equipos entregados. No necesitan acceso al sistema.</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/tecnicos/nuevo}" th:if="${puedeAgendar}">Nuevo técnico</a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <div class="card">
+        <div class="card-body text-secondary" th:if="${#lists.isEmpty(tecnicos)}">
+            Aún no hay técnicos registrados. Registre el primero para poder agendar capacitaciones.
+        </div>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(tecnicos)}">
+            <table class="table table-hover align-middle mb-0 tabla-mira">
+                <thead>
+                <tr><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Estado</th>
+                    <th class="text-end" th:if="${puedeAgendar}">Acciones</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="t : ${tecnicos}">
+                    <td class="fw-semibold" th:text="${t.nombreCompleto()}">Nombre</td>
+                    <td th:text="${t.email()} ?: '—'">correo</td>
+                    <td th:text="${t.telefono()} ?: '—'">teléfono</td>
+                    <td>
+                        <span class="estado estado-DISPONIBLE" th:if="${t.activo()}">Activo</span>
+                        <span class="estado estado-VENDIDO" th:unless="${t.activo()}">Inactivo</span>
+                    </td>
+                    <td class="text-end text-nowrap" th:if="${puedeAgendar}">
+                        <a class="btn btn-sm btn-outline-primary" th:href="@{/tecnicos/{id}/editar(id=${t.id()})}">Editar</a>
+                        <form class="d-inline" method="post" th:if="${t.activo()}" th:action="@{/tecnicos/{id}/desactivar(id=${t.id()})}">
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Desactivar</button>
+                        </form>
+                        <form class="d-inline" method="post" th:unless="${t.activo()}" th:action="@{/tecnicos/{id}/activar(id=${t.id()})}">
+                            <button class="btn btn-sm btn-outline-success" type="submit">Activar</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

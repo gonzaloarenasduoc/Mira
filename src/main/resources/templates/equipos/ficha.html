@@ -86,6 +86,9 @@
                 </div>
             </div>
         </div>
+        <div class="col-12">
+            <div th:replace="~{documentos/fragmentos :: tarjeta(${documentos}, true)}"></div>
+        </div>
     </div>
 </main>
 <footer th:replace="~{fragments/layout :: pie}"></footer>

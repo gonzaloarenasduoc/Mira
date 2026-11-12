@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  Capacitaciones de una operación (HU-20); cada fecha lleva a su ficha (HU-22). Si algún equipo es de una categoría que requiere
+  capacitación y no hay una programada, se sugiere agendarla.
+-->
+<div th:fragment="tarjeta(capacitaciones, sugerir, urlAgendar)" class="card">
+    <div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h2 class="h6 text-uppercase text-secondary mb-0">Capacitaciones</h2>
+            <a class="btn btn-sm btn-outline-primary" th:if="${puedeAgendar}" th:href="@{${urlAgendar}}">Agendar capacitación</a>
+        </div>
+        <div class="alert alert-warning d-flex flex-wrap justify-content-between align-items-center gap-2" role="status" th:if="${sugerir}">
+            <span>Esta operación incluye equipos de una categoría que requiere capacitación y aún no tiene una agendada.</span>
+            <a class="btn btn-sm btn-warning" th:if="${puedeAgendar}" th:href="@{${urlAgendar}}">Agendarla ahora</a>
+        </div>
+        <p class="text-secondary mb-0" th:if="${#lists.isEmpty(capacitaciones) and !sugerir}">Esta operación no tiene capacitaciones agendadas.</p>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(capacitaciones)}">
+            <table class="table align-middle mb-0 tabla-mira">
+                <thead><tr><th>Fecha</th><th>Técnico</th><th>Lugar</th><th>Estado</th></tr></thead>
+                <tbody>
+                <tr th:each="c : ${capacitaciones}">
+                    <td class="text-nowrap"><a th:href="@{/capacitaciones/{id}(id=${c.id()})}" th:text="${#temporals.format(c.fechaProgramada(), 'dd-MM-yyyy HH:mm')}">fecha</a></td>
+                    <td th:text="${c.tecnico()}">Técnico</td>
+                    <td th:text="${c.lugar()}">Lugar</td>
+                    <td>
+                        <span class="estado estado-EN_TRANSITO" th:if="${c.estado().name() == 'PROGRAMADA'}" th:text="${c.estado().etiqueta}">Programada</span>
+                        <span class="estado estado-DISPONIBLE" th:if="${c.estado().name() == 'REALIZADA'}" th:text="${c.estado().etiqueta}">Realizada</span>
+                        <span class="estado estado-VENDIDO" th:if="${c.estado().name() == 'CANCELADA'}" th:text="${c.estado().etiqueta}">Cancelada</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

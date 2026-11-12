@@ -27,7 +27,7 @@
                 <tbody>
                 <tr th:each="c : ${clientes}">
                     <td class="text-nowrap" th:text="${c.rut()}">RUT</td>
-                    <td class="fw-semibold" th:text="${c.razonSocial()}">Razón social</td>
+                    <td><a class="fw-semibold" th:href="@{/clientes/{id}(id=${c.id()})}" th:text="${c.razonSocial()}">Razón social</a></td>
                     <td th:text="${c.comuna()} ?: '—'">Comuna</td>
                     <td>
                         <div th:text="${c.contactoNombre()} ?: '—'">Contacto</div>

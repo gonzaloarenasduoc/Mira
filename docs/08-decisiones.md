@@ -327,5 +327,143 @@ dato; el equipo lo decidió al implementarla.
 
 ---
 
+## D21 · Historial de operaciones de un cliente (HU-19)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** La ficha del cliente muestra sus ventas y arriendos del más reciente al más antiguo.
+La fecha de un arriendo es su fecha de inicio, no la de registro, porque refleja cuándo empezó; la de
+una venta es la fecha de la venta. El total de un arriendo sigue la regla de D18 y el de una venta es
+la suma de sus valores. Según la matriz de permisos, el encargado de bodega no tiene acceso a las
+ventas (E006): en su historial solo aparecen los arriendos.
+
+**Motivo.** HU-19 pide las operaciones "ordenadas por fecha" sin decir cuál fecha usar en un
+arriendo; el equipo lo decidió al implementarla.
+
+---
+
+## D22 · Archivos adjuntos: formatos, tamaño y permisos (HU-23)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** Una operación acepta como adjuntos archivos PDF, JPG y PNG de hasta 10 MB: cubren los
+documentos digitales y las fotos o escaneos de una guía firmada. Se valida el contenido del archivo y
+no solo su extensión: un archivo renombrado a `.pdf` se rechaza. El archivo se guarda en
+`APP_UPLOAD_DIR` (D06) con un nombre generado dentro de la carpeta de su empresa; el nombre original
+solo se guarda como dato. Si la transacción se revierte, el archivo recién escrito se borra. Cada
+documento exige tipo (orden de compra, guía de despacho o factura), número o folio y fecha, que no
+puede ser futura. Los permisos siguen la matriz de E008 y se apoyan en los de cada operación:
+adjuntan el administrador, el encargado de bodega y el vendedor, la jefatura solo consulta, y el
+encargado no adjunta a ventas porque no tiene acceso a ellas.
+
+La descarga (HU-24) entrega el archivo como adjunto, con su nombre original y el tipo de contenido
+validado al subirlo. Solo lo descargan usuarios de la misma empresa; el encargado de bodega no
+descarga documentos de ventas (D21).
+
+**Motivo.** E008 no definía formatos ni tamaño. El equipo los fijó al implementar HU-23.
+
+---
+
+## D23 · Gráficos del panel con Chart.js y equipos vendidos fuera del inventario (HU-26)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** Los gráficos del panel usan Chart.js 4.4.7, que ya figuraba en el stack del proyecto,
+como webjar (`org.webjars.npm:chart.js`), igual que Bootstrap (D10): se sirve desde la aplicación,
+sin depender de un CDN. El panel muestra los equipos por bodega (barras apiladas por estado) y por
+estado (dona), con la misma información en una tabla para quien no puede ver los gráficos. Los
+equipos vendidos no se cuentan en el inventario, porque ya no están en ninguna bodega (igual que en
+la disponibilidad); su cantidad se informa aparte. Los datos salen de una sola consulta agregada por
+bodega y estado. Con las diez opciones de menú del administrador, la barra de navegación pasa a menú
+desplegable bajo 1200 px y oculta el nombre del usuario entre 1200 y 1399 px.
+
+**Motivo.** HU-26 pide gráficos y que el panel cargue en menos de 3 segundos con un año de datos
+(PNF-02). Medido con una base de un año de operación: 0,052 s en el percentil 95 en el servidor y
+0,141 s como máximo en el navegador con los gráficos dibujados.
+
+---
+
+## D24 · Cálculo de la utilización de los equipos (HU-27)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** La utilización es días arrendado sobre días disponibles en un periodo que se elige con
+dos fechas, ambas incluidas; sin fechas, los últimos 30 días, hasta hoy. El periodo no puede terminar
+en una fecha futura. Cuenta como arrendado cada día desde el inicio del arriendo hasta el anterior al
+retorno, como el cobro (D18): un equipo que vuelve el mismo día cuenta un día, y uno que sigue fuera
+cuenta hasta hoy. Los días disponibles de un equipo empiezan en su ingreso si este cae dentro del
+periodo, para que un equipo nuevo no aparezca como subutilizado. Solo cuentan los equipos del
+inventario; los vendidos no (D23). Se muestra un porcentaje global, uno por categoría con su gráfico y
+dos tablas con los diez equipos más usados y los diez menos usados, sin repetir equipos. Los arriendos
+vigentes se listan completos, con su fecha comprometida y los días que faltan o de atraso.
+
+**Motivo.** HU-27 define la fórmula, pero no el periodo ni el nivel de detalle; el equipo los decidió
+al implementarla. El porcentaje por categoría y los extremos por equipo son los datos que sirven para
+decidir compras.
+
+---
+
+## D25 · Los técnicos se administran desde la aplicación (HU-30)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** Se agrega al backlog la historia HU-30, "Administrar técnicos", dentro de E007, con
+2 PF, en el Sprint 5. Permite registrar, editar, activar y desactivar los técnicos que dictan las
+capacitaciones, con nombre, apellido, correo y teléfono. Los técnicos no se eliminan: se desactivan,
+y un técnico inactivo no se ofrece al agendar. Según la matriz de E007, los administran el
+administrador y el vendedor, la jefatura solo los consulta y el encargado de bodega no accede. El
+técnico no es usuario del sistema (supuesto 6 de `03-modelo-datos.md`).
+
+**Motivo.** HU-20 exige elegir un técnico al agendar una capacitación, pero ninguna historia permitía
+registrarlos; se detectó al implementar HU-20. Es el mismo caso de los clientes (D17): cargarlos en la
+base de datos haría depender a cada empresa de un desarrollador. La tabla `tecnico` existe desde V1.
+
+**Efecto en el alcance.** El backlog pasa de 103 a 105 PF y el Sprint 5, de 29 a 31 PF. El ajuste se
+informa en el acta de control de avance de la semana 13.
+
+**Descartado.** Cargar los técnicos con una migración. Registrar un técnico dentro del formulario de
+agendar: mezcla dos responsabilidades en una historia.
+
+## D26 · El técnico ocupado se advierte, no se bloquea (HU-21)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.** Si el técnico ya tiene otra capacitación **programada** el mismo día, el formulario lo
+advierte apenas se eligen técnico y fecha, con la hora y el lugar de las otras capacitaciones. Para
+agendar igual hay que marcar "Agendar de todas formas"; el servidor vuelve a revisar al enviar, de modo
+que sin esa marca no se guarda. Las capacitaciones realizadas o canceladas no cuentan. El aviso es por
+día calendario, porque la capacitación no registra duración.
+
+**Motivo.** E007 y CF-12 piden que el sistema "advierta" el conflicto antes de confirmar, no que lo
+impida: un técnico puede dar una capacitación en la mañana y otra en la tarde.
+
+**Descartado.** Bloquear: impediría un caso válido. Avisar solo al enviar: el criterio de HU-21 pide el
+aviso al elegir técnico y fecha.
+
+## D27 · Calendario de capacitaciones y sus estados (HU-22)
+
+**Fecha.** 09-11-2026.
+
+**Decisión.**
+- El calendario es una grilla mensual de lunes a domingo; en pantallas angostas pasa a una lista
+  por día. Muestra todas las capacitaciones, cada una con el color de su estado.
+- Al marcar una capacitación como realizada se registran la fecha y la hora en que se dictó; se
+  proponen las programadas (o las actuales, si aún no llegan) y no se aceptan futuras.
+- Realizada y cancelada son estados finales: para hacerla otra vez, se agenda una nueva desde la
+  operación.
+- Marcan y cancelan el administrador y el vendedor; la jefatura consulta y el encargado de bodega no
+  accede (matriz de E007).
+- La opción de menú "Técnicos" (HU-30) pasa a llamarse "Capacitaciones" y abre el calendario, que
+  enlaza a los técnicos. Así el menú no suma una opción más (ver D23).
+
+**Motivo.** La grilla es la forma habitual de planificar la agenda de los técnicos. La fecha
+realizada editable permite registrarla después de dictada. Los estados finales mantienen la
+trazabilidad: lo cancelado no se reescribe.
+
+**Descartado.** Una lista en lugar de la grilla; registrar como realizada la fecha del clic; volver
+a programar una capacitación cancelada o realizada.
+
+---
+
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo
 > que contradice una decisión registrada, debe advertirlo en vez de aplicarlo.

@@ -9,6 +9,16 @@ import cl.duoc.mira.inventario.dto.RegistrarTrasladoRequest;
 import cl.duoc.mira.inventario.service.EquipoService;
 import cl.duoc.mira.inventario.service.TrasladoService;
 import cl.duoc.mira.common.exception.NegocioException;
+import cl.duoc.mira.capacitaciones.dto.AgendarCapacitacionRequest;
+import cl.duoc.mira.capacitaciones.dto.GuardarTecnicoRequest;
+import cl.duoc.mira.capacitaciones.entity.EstadoCapacitacion;
+import cl.duoc.mira.capacitaciones.service.CapacitacionService;
+import cl.duoc.mira.capacitaciones.service.TecnicoService;
+import cl.duoc.mira.documentos.dto.AdjuntarDocumentoRequest;
+import cl.duoc.mira.inventario.dto.ConteoEquipos;
+import cl.duoc.mira.inventario.entity.EstadoEquipo;
+import cl.duoc.mira.documentos.entity.TipoDocumento;
+import cl.duoc.mira.documentos.service.DocumentoService;
 import cl.duoc.mira.operaciones.dto.LineaArriendoRequest;
 import cl.duoc.mira.operaciones.dto.LineaVentaRequest;
 import cl.duoc.mira.operaciones.dto.RegistrarArriendoRequest;
@@ -17,14 +27,18 @@ import cl.duoc.mira.operaciones.dto.RegistrarVentaRequest;
 import cl.duoc.mira.operaciones.repository.ArriendoRepository;
 import cl.duoc.mira.operaciones.service.ArriendoService;
 import cl.duoc.mira.operaciones.service.VentaService;
+import cl.duoc.mira.operaciones.service.HistorialClienteService;
 import cl.duoc.mira.operaciones.repository.ArriendoVigente;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -63,6 +77,14 @@ class MiraApplicationTests {
     private ArriendoService arriendoService;
     @Autowired
     private VentaService ventaService;
+    @Autowired
+    private HistorialClienteService historialClienteService;
+    @Autowired
+    private DocumentoService documentoService;
+    @Autowired
+    private TecnicoService tecnicoService;
+    @Autowired
+    private CapacitacionService capacitacionService;
     /** El reloj de la aplicación (America/Santiago): "hoy" en UTC puede ser otro día. */
     @Autowired
     private Clock reloj;
@@ -236,6 +258,125 @@ class MiraApplicationTests {
         assertThat(jdbc.queryForObject("SELECT o.cliente_id FROM operacion o JOIN venta v ON v.id = o.id WHERE v.id = ?",
                 Long.class, ventaId)).isEqualTo(cliente);
         assertThat(arriendoService.equiposDisponibles(empresa)).extracting(e -> e.id()).doesNotContain(equipo);
+    }
+
+    /** HU-19 y CF-09 contra la base real: la venta y el arriendo quedan en el historial del cliente. */
+    @Test
+    void historialCliente_ventaYArriendo_aparecenConSuTipo() {
+        long empresa = crearEmpresa("14.141.414-1");
+        insertarEquipo(empresa, "SN-0030");
+        insertarEquipo(empresa, "SN-0031");
+        long arrendado = idEquipo(empresa, "SN-0030");
+        long vendido = idEquipo(empresa, "SN-0031");
+        long cliente = crearCliente(empresa);
+        arriendoService.registrar(empresa, administrador(), arriendo(cliente, arrendado));
+        RegistrarVentaRequest venta = new RegistrarVentaRequest();
+        venta.setClienteId(cliente);
+        venta.setFecha(LocalDate.now(reloj));
+        venta.setLineas(List.of(new LineaVentaRequest(vendido, true, new BigDecimal("9800000"))));
+        ventaService.registrar(empresa, administrador(), venta);
+        entityManager.flush();
+        entityManager.clear();
+
+        var historial = historialClienteService.historial(empresa, cliente, true);
+
+        assertThat(historial).extracting(o -> o.venta()).containsExactly(true, false);
+        assertThat(historial.get(0).equipos()).containsExactly("SN-0031");
+        assertThat(historial.get(1).equipos()).containsExactly("SN-0030");
+        assertThat(historialClienteService.historial(empresa, cliente, false)).hasSize(1);
+    }
+
+    /** CF-13 contra la base real: el documento del arriendo aparece en la ficha de cada uno de sus equipos. */
+    @Test
+    void documento_deUnArriendoConDosEquipos_apareceEnAmbos() {
+        long empresa = crearEmpresa("15.151.515-1");
+        insertarEquipo(empresa, "SN-0040");
+        insertarEquipo(empresa, "SN-0041");
+        long primero = idEquipo(empresa, "SN-0040");
+        long segundo = idEquipo(empresa, "SN-0041");
+        long arriendoId = arriendoService.registrar(empresa, administrador(),
+                arriendo(crearCliente(empresa), primero, segundo)).id();
+        AdjuntarDocumentoRequest guia = new AdjuntarDocumentoRequest();
+        guia.setTipo(TipoDocumento.GUIA_DESPACHO);
+        guia.setNumeroFolio("1045");
+        guia.setFechaEmision(LocalDate.now(reloj));
+        documentoService.adjuntarAArriendo(empresa, arriendoId, guia,
+                new MockMultipartFile("archivo", "guia.pdf", "application/pdf", "%PDF-1.4".getBytes()));
+        entityManager.flush();
+
+        assertThat(documentoService.deEquipo(empresa, primero, false)).extracting(d -> d.numeroFolio()).containsExactly("1045");
+        assertThat(documentoService.deEquipo(empresa, segundo, false)).extracting(d -> d.numeroFolio()).containsExactly("1045");
+    }
+
+    /** HU-26 contra la base real: la consulta agregada cuenta los equipos por bodega y estado. */
+    @Test
+    void conteoPorBodegaYEstado_agrupaEnUnaConsulta() {
+        long empresa = crearEmpresa("16.161.616-1");
+        insertarEquipo(empresa, "SN-0050");
+        insertarEquipo(empresa, "SN-0051");
+        insertarEquipo(empresa, "SN-0052");
+        jdbc.update("UPDATE equipo SET estado = 'VENDIDO' WHERE id = ?", idEquipo(empresa, "SN-0052"));
+
+        assertThat(equipoService.conteoPorBodegaYEstado(empresa)).containsExactlyInAnyOrder(
+                new ConteoEquipos("Bodega de prueba", EstadoEquipo.DISPONIBLE, 2),
+                new ConteoEquipos("Bodega de prueba", EstadoEquipo.VENDIDO, 1));
+    }
+
+    /** HU-27 contra la base real: tramos arrendados del periodo, vigentes e inventario sin vendidos. */
+    @Test
+    void utilizacion_consultasDelPeriodo_traenLosTramosYLosVigentes() {
+        long empresa = crearEmpresa("17.171.717-1");
+        insertarEquipo(empresa, "SN-0060");
+        insertarEquipo(empresa, "SN-0061");
+        long arrendado = idEquipo(empresa, "SN-0060");
+        long vendido = idEquipo(empresa, "SN-0061");
+        jdbc.update("UPDATE equipo SET estado = 'VENDIDO' WHERE id = ?", vendido);
+        arriendoService.registrar(empresa, administrador(), arriendo(crearCliente(empresa), arrendado));
+        entityManager.flush();
+
+        assertThat(arriendoService.arrendadosEntre(empresa, LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31)))
+                .extracting(t -> t.equipoId()).containsExactly(arrendado);
+        assertThat(arriendoService.arrendadosEntre(empresa, LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 31))).isEmpty();
+        assertThat(arriendoService.arriendosVigentes(empresa)).extracting(a -> a.equipoId()).containsExactly(arrendado);
+        assertThat(equipoService.enInventario(empresa)).extracting(e -> e.id()).containsExactly(arrendado);
+    }
+
+    /** HU-20 contra la base real: la capacitación queda programada y vinculada al arriendo. */
+    @Test
+    void capacitacion_agendada_quedaVinculadaALaOperacion() {
+        long empresa = crearEmpresa("18.181.818-1");
+        insertarEquipo(empresa, "SN-0070");
+        long arriendoId = arriendoService.registrar(empresa, administrador(),
+                arriendo(crearCliente(empresa), idEquipo(empresa, "SN-0070"))).id();
+        long tecnico = tecnicoService.crear(empresa, new GuardarTecnicoRequest("Andrés", "Pérez", null, null)).id();
+        AgendarCapacitacionRequest c = new AgendarCapacitacionRequest();
+        c.setTecnicoId(tecnico);
+        c.setFecha(LocalDate.now(reloj).plusDays(2));
+        c.setHora(LocalTime.of(10, 0));
+        c.setLugar("Faena del cliente");
+        capacitacionService.agendarParaArriendo(empresa, arriendoId, c);
+        entityManager.flush();
+        entityManager.clear();
+
+        assertThat(capacitacionService.deOperacion(empresa, arriendoId)).singleElement()
+                .satisfies(r -> assertThat(r.estado()).isEqualTo(EstadoCapacitacion.PROGRAMADA));
+        assertThat(jdbc.queryForObject("SELECT estado FROM capacitacion WHERE operacion_id = ?", String.class, arriendoId))
+                .isEqualTo("PROGRAMADA");
+
+        // HU-21 contra la base real: el mismo técnico ese día genera el aviso; el día siguiente, no.
+        assertThat(capacitacionService.avisoConflicto(empresa, tecnico, c.getFecha())).contains("Andrés Pérez ya tiene");
+        assertThat(capacitacionService.avisoConflicto(empresa, tecnico, c.getFecha().plusDays(1))).isNull();
+
+        // HU-22 contra la base real: aparece en el calendario con su cliente y se cancela.
+        long id = capacitacionService.deOperacion(empresa, arriendoId).getFirst().id();
+        assertThat(capacitacionService.calendario(empresa, YearMonth.from(c.getFecha())).semanas().stream()
+                .flatMap(List::stream).flatMap(d -> d.capacitaciones().stream()))
+                .singleElement().satisfies(d -> assertThat(d.tipoOperacion()).isEqualTo("Arriendo"));
+        capacitacionService.cancelar(empresa, id);
+        entityManager.flush();
+        assertThat(jdbc.queryForObject("SELECT estado FROM capacitacion WHERE id = ?", String.class, id))
+                .isEqualTo("CANCELADA");
+        assertThat(capacitacionService.avisoConflicto(empresa, tecnico, c.getFecha())).as("una cancelada no ocupa al técnico").isNull();
     }
 
     /** CF-04 contra la base real: retorno en otra bodega, sin traslado adicional. */

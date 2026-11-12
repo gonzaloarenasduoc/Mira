@@ -76,6 +76,8 @@ Es la épica más grande y la que concentra la lógica transaccional del sistema
 - La capacitación queda vinculada a la venta o arriendo que la origina.
 - El sistema advierte si el técnico ya tiene una capacitación en la misma fecha.
 - Calendario de capacitaciones programadas.
+- Administración de los técnicos de la empresa, que se asignan a las capacitaciones (HU-30,
+  agregada en la semana 13; ver D25).
 
 ## E008 · Gestión documental de las operaciones — 13 PF
 

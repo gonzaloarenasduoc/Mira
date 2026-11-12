@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Agendar capacitación')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" style="max-width: 760px;">
+    <div class="encabezado-pagina mb-4">
+        <h1>Agendar capacitación</h1>
+        <p th:text="${operacion}">Operación</p>
+    </div>
+
+    <form th:object="${capacitacion}" th:action="@{${accion}}" method="post" novalidate>
+        <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}">
+            <div th:each="err : ${#fields.globalErrors()}" th:text="${err}">Error</div>
+        </div>
+        <div class="alert alert-warning" role="status" th:if="${#lists.isEmpty(tecnicos)}">
+            No hay técnicos activos: sin un técnico no se puede agendar.
+            <a th:href="@{/tecnicos/nuevo}">Registrar un técnico</a>.
+        </div>
+        <div class="card mb-3">
+            <div class="card-body p-4">
+                <p class="small text-secondary mb-3">
+                    Equipos de la operación: <span th:text="${#strings.listJoin(equipos, ', ')}">equipos</span>
+                </p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="tecnicoId" class="form-label">Técnico</label>
+                        <select id="tecnicoId" class="form-select" th:field="*{tecnicoId}" th:errorclass="is-invalid">
+                            <option value="">Seleccione…</option>
+                            <option th:each="t : ${tecnicos}" th:value="${t.id()}" th:text="${t.nombreCompleto()}">Técnico</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{tecnicoId}">Error</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fecha" class="form-label">Fecha</label>
+                        <input id="fecha" type="date" class="form-control" th:field="*{fecha}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{fecha}">Error</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="hora" class="form-label">Hora</label>
+                        <input id="hora" type="time" class="form-control" th:field="*{hora}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{hora}">Error</div>
+                    </div>
+                    <div class="col-12">
+                        <label for="lugar" class="form-label">Lugar</label>
+                        <input id="lugar" type="text" class="form-control" maxlength="200" th:field="*{lugar}" th:errorclass="is-invalid"
+                               placeholder="Por ejemplo, faena del cliente o Bodega Central">
+                        <div class="invalid-feedback" th:errors="*{lugar}">Error</div>
+                    </div>
+                    <div class="col-12">
+                        <label for="observaciones" class="form-label">Observaciones <span class="text-secondary">(opcional)</span></label>
+                        <textarea id="observaciones" rows="2" class="form-control" maxlength="2000" th:field="*{observaciones}" th:errorclass="is-invalid"></textarea>
+                        <div class="invalid-feedback" th:errors="*{observaciones}">Error</div>
+                    </div>
+                </div>
+                <div id="conflicto" class="alert alert-warning mt-3 mb-0" role="status" th:classappend="${conflicto == null} ? 'd-none'">
+                    <div id="conflicto-texto" class="mb-2" th:text="${conflicto}">El técnico ya tiene una capacitación ese día.</div>
+                    <div class="form-check mb-0">
+                        <input id="confirmarConflicto" type="checkbox" class="form-check-input" th:field="*{confirmarConflicto}">
+                        <label for="confirmarConflicto" class="form-check-label">Agendar de todas formas</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-end">
+            <a class="btn btn-outline-secondary" th:href="@{${volver}}">Cancelar</a>
+            <button type="submit" class="btn btn-primary" th:disabled="${#lists.isEmpty(tecnicos)}">Agendar</button>
+        </div>
+    </form>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script th:inline="javascript">
+    // HU-21: al elegir técnico y fecha, consulta si el técnico ya tiene otra capacitación ese día.
+    (() => {
+        const url = /*[[@{/capacitaciones/conflictos}]]*/ '/capacitaciones/conflictos';
+        const tecnico = document.getElementById('tecnicoId');
+        const fecha = document.getElementById('fecha');
+        const caja = document.getElementById('conflicto');
+        const texto = document.getElementById('conflicto-texto');
+        const confirmar = document.getElementById('confirmarConflicto');
+        const revisar = async () => {
+            if (!tecnico.value || !fecha.value) {
+                caja.classList.add('d-none');
+                return;
+            }
+            try {
+                const r = await fetch(url + '?' + new URLSearchParams({tecnicoId: tecnico.value, fecha: fecha.value}));
+                if (!r.ok) return;
+                const { aviso } = await r.json();
+                if (aviso && aviso !== texto.textContent) confirmar.checked = false;
+                texto.textContent = aviso || '';
+                caja.classList.toggle('d-none', !aviso);
+            } catch (e) {
+                // Sin aviso previo: el servidor vuelve a revisar al enviar.
+            }
+        };
+        tecnico.addEventListener('change', revisar);
+        fecha.addEventListener('change', revisar);
+    })();
+</script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package cl.duoc.mira.operaciones.repository;
 
+import cl.duoc.mira.operaciones.dto.ClienteDeOperacion;import cl.duoc.mira.operaciones.dto.PeriodoArrendado;
 import cl.duoc.mira.operaciones.entity.Arriendo;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -13,6 +14,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ArriendoRepository extends JpaRepository<Arriendo, Long> {
+
+    /** Cliente de cada arriendo del conjunto, en una sola consulta (HU-22). */
+    @Query("""
+            select new cl.duoc.mira.operaciones.dto.ClienteDeOperacion(a.id, c.razonSocial)
+            from Arriendo a join a.cliente c
+            where a.empresa.id = :empresaId and a.id in :ids
+            """)
+    List<ClienteDeOperacion> clientes(@Param("empresaId") Long empresaId, @Param("ids") Collection<Long> ids);
 
     /**
      * Líneas de arriendo sin retorno registrado, con su fecha comprometida, en una sola consulta
@@ -65,7 +74,40 @@ public interface ArriendoRepository extends JpaRepository<Arriendo, Long> {
             countQuery = "select count(a) from Arriendo a where a.empresa.id = :empresaId")
     Page<Arriendo> listar(@Param("empresaId") Long empresaId, Pageable pagina);
 
+    /** Arriendos de un cliente con sus líneas, para su historial (HU-19). */
+    @Query("""
+            select distinct a from Arriendo a left join fetch a.detalles
+            where a.empresa.id = :empresaId and a.cliente.id = :clienteId
+            """)
+    List<Arriendo> delCliente(@Param("empresaId") Long empresaId, @Param("clienteId") Long clienteId);
+
     /** Líneas de los arriendos de una página, en una sola consulta (sin N+1). */
     @Query("select distinct a from Arriendo a left join fetch a.detalles where a.id in :ids")
     List<Arriendo> conDetalles(@Param("ids") Collection<Long> ids);
+
+    boolean existsByIdAndEmpresaId(Long id, Long empresaId);
+
+    /** Arriendos en que participó un equipo (HU-25). */
+    @Query("select distinct a.id from Arriendo a join a.detalles d where a.empresa.id = :empresaId and d.equipoId = :equipoId")
+    List<Long> idsConEquipo(@Param("empresaId") Long empresaId, @Param("equipoId") Long equipoId);
+
+    /** Tramos arrendados que tocan el periodo, incluidos los que siguen abiertos (HU-27). */
+    @Query("""
+            select new cl.duoc.mira.operaciones.dto.PeriodoArrendado(d.equipoId, a.fechaInicio, d.fechaRetornoReal)
+            from Arriendo a join a.detalles d
+            where a.empresa.id = :empresaId and a.fechaInicio <= :hasta
+              and (d.fechaRetornoReal is null or d.fechaRetornoReal >= :desde)
+            """)
+    List<PeriodoArrendado> arrendadosEntre(@Param("empresaId") Long empresaId, @Param("desde") LocalDate desde,
+                                           @Param("hasta") LocalDate hasta);
+
+    /** Todas las líneas sin retorno, de la fecha comprometida más antigua a la más reciente (HU-27). */
+    @Query("""
+            select new cl.duoc.mira.operaciones.repository.LineaPorRetornar(
+                a.id, c.razonSocial, d.equipoId, a.fechaRetornoComprometida)
+            from Arriendo a join a.cliente c join a.detalles d
+            where a.empresa.id = :empresaId and d.fechaRetornoReal is null
+            order by a.fechaRetornoComprometida, a.id
+            """)
+    List<LineaPorRetornar> porRetornar(@Param("empresaId") Long empresaId);
 }

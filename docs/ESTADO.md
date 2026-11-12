@@ -3,14 +3,13 @@
 Este archivo se actualiza al terminar cada sesión de trabajo. Es lo primero que lee el
 asistente del otro integrante para saber qué está en curso y no pisar nada.
 
-**Última actualización:** 26-10-2026
+**Última actualización:** 12-11-2026
 
 ## Fase actual
 
-Fase 2, semana 11, rama `semana-11` (D11), creada desde `semana-10` porque el pull request #19
-todavía no se integra. **Sprint 4** en curso (HU-14 a HU-19, semanas 10 a 13): HU-14, HU-15 y HU-16 están
-implementadas y probadas, igual que HU-29 (administrar clientes), agregada al backlog con la decisión
-D17.
+Fase 2, semana 13, rama `semana-13` (D11). **Sprint 5** en curso (HU-20 a HU-28 y HU-30, 31 PF):
+E008, E009 y E007 terminadas (E007 con HU-30, HU-20, HU-21 y HU-22). **El backlog completo (105 PF)
+está implementado**; falta integrarlo a `main` con el pull request de cierre de la semana 13. El Sprint 4 está integrado en `main` (pull request #22).
 
 ## Terminado
 
@@ -126,6 +125,50 @@ D17.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- HU-22 en `semana-13` (09-11, D27): calendario mensual de capacitaciones con cliente, lugar, técnico
+  y estado, y su ficha, donde se marcan realizadas (con fecha y hora, no futuras) o se cancelan;
+  ambos estados son finales. El menú "Técnicos" pasa a ser "Capacitaciones". 219 pruebas. **E007 queda
+  completa.**
+- HU-21 en `semana-13` (09-11, D26): al elegir técnico y fecha, el formulario advierte si el técnico
+  ya tiene otra capacitación programada ese día, con su hora y lugar; se puede agendar igual marcando
+  "Agendar de todas formas" (el servidor vuelve a revisar al enviar). 211 pruebas.
+- HU-20 en `semana-13` (09-11): agendar la capacitación de un arriendo o una venta, con técnico
+  activo, fecha (hoy o posterior), hora y lugar; queda programada y vinculada a la operación. La ficha
+  sugiere agendarla cuando algún equipo es de una categoría que la requiere y no hay una programada o
+  realizada. Agendan administrador y vendedor; la jefatura solo consulta y el encargado no ve la
+  sección. 207 pruebas.
+- HU-30 en `semana-13` (09-11, D25): administrar técnicos (nueva, 2 PF, como HU-29 con los clientes).
+  El backlog pasa de 103 a 105 PF; informarlo en el acta de la semana 13. Menú Técnicos para
+  administrador, vendedor y jefatura (que solo consulta); el encargado de bodega no accede. 197 pruebas.
+- HU-27 en `semana-13` (adelantada el 09-11, D24): utilización de los equipos en un periodo elegible
+  (por omisión, 30 días), global, por categoría y con los diez más y menos usados, y la lista de
+  arriendos vigentes. Verificada contra un cálculo independiente en SQL con un año de datos; el panel
+  completo responde en 0,095 s en el percentil 95. 191 pruebas. **E009 queda completa.**
+- HU-26 en `semana-13` (adelantada el 09-11, D23): gráficos del panel con Chart.js (webjar nuevo en el
+  `pom.xml`): equipos por bodega y por estado, más una tabla con los mismos datos; los vendidos no se
+  cuentan como inventario. PNF-02 medido con un año de datos: 0,052 s en el percentil 95. La barra de
+  navegación pasa a menú desplegable bajo 1200 px. 185 pruebas.
+- HU-28 en `semana-13` (adelantada el 09-11, CF-10): nuevo panel de indicadores (`/indicadores`, opción
+  Indicadores del menú para todos los roles) que empieza con los retornos vencidos, destacados y con sus
+  días de atraso. Reutiliza las alertas de HU-16, sin consultas nuevas. 182 pruebas.
+- HU-24 en `semana-13` (adelantada el 09-11): las fichas de arriendo, venta y equipo listan los
+  documentos con su tipo, folio y fecha, y el nombre del archivo lo descarga. Solo usuarios de la
+  misma empresa; el encargado no descarga documentos de ventas (D21, D22). Verificado byte a byte
+  contra el disco; 178 pruebas. **E008 queda completa.**
+- HU-25 en `semana-13` (adelantada el 09-11, CF-13): la ficha del equipo muestra los documentos de
+  todas las operaciones en que participó; el documento de un arriendo con varios equipos aparece en
+  cada ficha. Siguiendo D21, el encargado de bodega no ve los documentos de ventas. 170 pruebas.
+- Issues del Sprint 5 creados como sub-issues de sus épicas: #23 a #31 (HU-20 a HU-28).
+- HU-23 en `semana-13` (adelantada el 09-11, D22): adjuntar orden de compra, guía de despacho o
+  factura a un arriendo o a una venta, con folio, fecha y archivo PDF, JPG o PNG de hasta 10 MB. Se
+  valida el contenido del archivo; se guarda en `APP_UPLOAD_DIR` con nombre generado. Página propia
+  para un envío sobre el límite (`error/413.html`). Verificado contra PostgreSQL y el disco; 164 pruebas.
+- Sprint 4 cerrado en desarrollo, con borrador de retrospectiva por validar con Joaquín, y Sprint 5
+  planificado en `docs/sprints/sprint-5.md`.
+- HU-19 en `semana-13` (adelantada el 09-11, D21): ficha del cliente con su historial de ventas y
+  arriendos, del más reciente al más antiguo, con tipo, equipos, estado y total. El encargado de
+  bodega ve solo los arriendos (matriz de permisos). Verificado contra PostgreSQL; 148 pruebas.
+  La rama `semana-13` parte de `semana-12`: el PR #22 aún no estaba integrado.
 - Cierre de la semana 12 (09-11): pull request #22 (`semana-12` → `main`) con HU-17, HU-18 y la
   migración V3, con la revisión pedida a Joaquín, y acta de control de avance del 09-11 en
   `docs/actas/`. Avance: 19 de 29 historias, 71 de 103 PF.
@@ -152,15 +195,20 @@ D17.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 4: HU-19 | Ambos | `semana-13` | HU-14 a HU-18 y HU-29 terminadas. Falta el historial de operaciones de un cliente (HU-19) |
+| Sprint 5: HU-20 a HU-28 y HU-30 | Ambos | `semana-13` | Las 10 historias terminadas (31 PF). Falta el pull request `semana-13` → `main` y la revisión de Joaquín |
 
 ## Siguiente
 
-1. Joaquín revisa e integra el pull request #22. Al integrarse, cerrar #16 y #17 si no se cierran solos.
-2. Actualizar el tablero: HU-15, HU-16 y HU-29 a Terminado; HU-17 y HU-18 a En revisión.
-3. Consultar con el docente las categorías que no son equipos físicos (D19).
-4. Semana 13: HU-19 (historial de operaciones de un cliente, Gonzalo), retrospectiva del Sprint 4 y
-   planificación del Sprint 5.
+1. Joaquín revisa e integra el pull request #33 (`semana-13` → `main`). `./mvnw clean verify` ya
+   pasó el 12-11 con Docker: 219 pruebas, 0 fallas, 0 omitidas, incluidas las 18 de integración
+   contra PostgreSQL 16. Al integrarse se cierran #18, #23 a #32 y las épicas E006 a E009 (#9 a #12).
+2. Validar con Joaquín los borradores de las retrospectivas de los sprints 4 y 5 (`docs/sprints/`).
+3. Entregar el acta de la semana 13 (`docs/actas/Acta_Control_de_Avance_2026_11_16.docx`), que informa
+   el ajuste del backlog a 105 PF (D25). Si el pull request #33 se integra antes, actualizarla.
+4. Actualizar el tablero: Sprint 5 a En revisión y, al integrarse, a Terminado.
+5. Consultar con el docente las categorías que no son equipos físicos (D19).
+6. Semanas 14 y 15: pruebas integradas de punta a punta (CF-01 a CF-14 y los no funcionales de
+   `10-casos-de-prueba.md`) y corrección de observaciones. No se agregan funcionalidades.
 
 ## Bloqueado
 

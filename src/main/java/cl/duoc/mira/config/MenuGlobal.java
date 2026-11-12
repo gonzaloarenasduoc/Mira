@@ -33,6 +33,8 @@ public class MenuGlobal {
             new OpcionMenu("Traslados", "/traslados", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Clientes", "/clientes", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Bodegas", "/bodegas", EnumSet.allOf(RolUsuario.class)),
+            new OpcionMenu("Capacitaciones", "/capacitaciones", EnumSet.of(ADMINISTRADOR, VENDEDOR, JEFATURA)),
+            new OpcionMenu("Indicadores", "/indicadores", EnumSet.allOf(RolUsuario.class)),
             new OpcionMenu("Usuarios", "/usuarios", EnumSet.of(ADMINISTRADOR)));
 
     public static List<OpcionMenu> opcionesPara(RolUsuario rol) {
@@ -64,6 +66,12 @@ public class MenuGlobal {
     @ModelAttribute("puedeVerVentas")
     public boolean puedeVerVentas(@AuthenticationPrincipal UsuarioAutenticado usuario) {
         return usuario != null && usuario.tieneRol(ADMINISTRADOR, VENDEDOR, JEFATURA);
+    }
+
+    /** E007: agendan capacitaciones y administran técnicos el administrador y el vendedor. */
+    @ModelAttribute("puedeAgendar")
+    public boolean puedeAgendar(@AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return usuario != null && usuario.tieneRol(ADMINISTRADOR, VENDEDOR);
     }
 
     @ModelAttribute("puedeArrendar")

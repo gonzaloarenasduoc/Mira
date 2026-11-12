@@ -1,0 +1,165 @@
+# Evidencias de la semana 13
+
+Capturas de HU-19 (Sprint 4), tomadas con un navegador automatizado sobre la aplicación levantada
+contra PostgreSQL 16, con los datos de las demostraciones anteriores. HU-19 se adelantó: se
+desarrolló el 09-11-2026.
+
+## Historial de operaciones de un cliente (HU-19, D21)
+
+| Captura | Qué muestra |
+|---|---|
+| [01-clientes-con-enlace.png](01-clientes-con-enlace.png) | En el listado de clientes, la razón social abre la ficha |
+| [02-historial-cliente.png](02-historial-cliente.png) | Ficha del cliente: la venta N° 4 y el arriendo N° 1, del más reciente al más antiguo, con equipos, estado y total |
+| [03-historial-encargado.png](03-historial-encargado.png) | El encargado de bodega ve solo los arriendos del cliente (matriz de permisos) |
+
+CF-09 se cumple completo: la venta registrada en la semana 12 queda en el historial del cliente.
+
+## Adjuntar documentos a una operación (HU-23, D22)
+
+Adelantada al 09-11-2026. Pruebas con el encargado de bodega sobre el arriendo N° 3 y con el vendedor
+sobre la venta N° 4.
+
+| Captura | Qué muestra |
+|---|---|
+| [04-ficha-arriendo-con-adjuntar.png](04-ficha-arriendo-con-adjuntar.png) | La ficha del arriendo ofrece Adjuntar documento |
+| [05-formulario-documento.png](05-formulario-documento.png) | Formulario con tipo, número o folio, fecha y archivo |
+| [06-archivo-renombrado-rechazado.png](06-archivo-renombrado-rechazado.png) | Un archivo que no es PDF, aunque se llame `.pdf`, se rechaza |
+| [07-guia-adjuntada.png](07-guia-adjuntada.png) | Guía de despacho N° 1045 adjuntada al arriendo |
+| [08-archivo-sobre-10mb.png](08-archivo-sobre-10mb.png) | Un archivo de 11 MB se rechaza con una página propia; no queda nada guardado |
+| [09-factura-adjuntada-a-venta.png](09-factura-adjuntada-a-venta.png) | Factura N° 2210 adjuntada a la venta por el vendedor |
+
+En la base quedaron los dos documentos con su tipo, folio, fecha, nombre original, ruta generada,
+tipo de contenido, tamaño y el usuario que los subió; en el disco, los dos archivos bajo
+`uploads/1/`. El encargado de bodega recibe 403 al intentar adjuntar a una venta. Los documentos se
+consultan con HU-24 y HU-25.
+
+## Documentos de un equipo (HU-25, CF-13)
+
+| Captura | Qué muestra |
+|---|---|
+| [10-documentos-en-ficha-GS18.png](10-documentos-en-ficha-GS18.png) | CF-13: la guía de despacho del arriendo N° 3 aparece en la ficha del GS18-778201; también aparece en la del TS16-334512, el otro equipo del arriendo |
+| [11-documentos-ficha-equipo-vendido.png](11-documentos-ficha-equipo-vendido.png) | La factura de la venta N° 4 aparece en la ficha del equipo vendido |
+| [12-encargado-sin-documentos-de-venta.png](12-encargado-sin-documentos-de-venta.png) | El encargado de bodega no ve los documentos de ventas (D21); sí los de arriendos |
+
+Un equipo sin operaciones con documentos, como el R12I-90311, muestra "Ninguna operación de este
+equipo tiene documentos adjuntos".
+
+## Documentos de una operación y su descarga (HU-24)
+
+| Captura | Qué muestra |
+|---|---|
+| [13-documentos-en-ficha-arriendo.png](13-documentos-en-ficha-arriendo.png) | La ficha del arriendo N° 3 lista su guía de despacho; el nombre del archivo la descarga |
+| [14-documentos-en-ficha-venta.png](14-documentos-en-ficha-venta.png) | La ficha de la venta N° 4 lista su factura |
+
+Los archivos descargados son idénticos byte a byte a los subidos. Se entregan como adjunto
+(`Content-Disposition: attachment`), con su nombre original, el tipo de contenido validado al subirlos
+y `X-Content-Type-Options: nosniff`. El encargado de bodega descarga la guía del arriendo, pero recibe
+404 con la factura de la venta (D21); un documento inexistente o de otra empresa también responde 404.
+
+## Panel de indicadores: retornos vencidos (HU-28, CF-10)
+
+| Captura | Qué muestra |
+|---|---|
+| [15-panel-retornos-vencidos.png](15-panel-retornos-vencidos.png) | CF-10: la jefatura entra al panel y el arriendo N° 2 aparece primero, destacado, con el cliente, el equipo y 5 días de atraso |
+
+La opción Indicadores aparece en el menú de todos los roles (E009 es de lectura para todos). Los
+arriendos que vencen hoy o más adelante no se muestran en esta sección: siguen en las alertas del
+inicio (HU-16).
+
+## Panel: equipos por bodega y estado (HU-26, D23) y PNF-02
+
+| Captura | Qué muestra |
+|---|---|
+| [16-panel-con-un-anio-de-datos.png](16-panel-con-un-anio-de-datos.png) | Panel con un año de datos: los 22 retornos vencidos primero, y debajo los gráficos por bodega (barras apiladas) y por estado (dona) con su tabla; los 50 vendidos se informan aparte |
+| [17-barra-1440.png](17-barra-1440.png), [18-barra-1366.png](18-barra-1366.png) | Con la opción Indicadores, la barra del administrador cabe en una línea; entre 1200 y 1399 px se oculta el nombre |
+
+**PNF-02, carga del panel con un año de datos.** Base aparte (`mira_carga`) cargada con
+[carga-un-anio.sql](carga-un-anio.sql): 5 bodegas, 500 equipos, 80 clientes, 1.200 arriendos en
+365 días (1.630 líneas), 50 ventas y 3.650 movimientos; 60 equipos arrendados, 22 con retorno
+vencido, 15 en mantención y 50 vendidos. 30 solicitudes consecutivas a `/indicadores` con sesión
+iniciada, después de una de calentamiento, medidas con `curl` ([pnf02-tiempos.txt](pnf02-tiempos.txt)),
+y 10 cargas completas en el navegador hasta que ambos gráficos quedaron dibujados:
+
+| Medición | Mínimo | Mediana | Percentil 95 | Máximo | Criterio |
+|---|---|---|---|---|---|
+| Respuesta del servidor | 0,026 s | 0,032 s | 0,052 s | 0,059 s | < 3 s |
+| Carga en el navegador con gráficos | — | 0,114 s | — | 0,141 s | < 3 s |
+
+La tabla del panel cuadra con la base: 375 disponibles, 60 arrendados y 15 en mantención, 450 en
+total. El caso de prueba pide medirlo con el registro de tiempos de la aplicación; la medición con
+`curl` y con el navegador es equivalente para un solo usuario.
+
+## Panel: utilización y arriendos vigentes (HU-27, D24)
+
+Con la base de un año de datos (`mira_carga`).
+
+| Captura | Qué muestra |
+|---|---|
+| [19-utilizacion-12-meses.png](19-utilizacion-12-meses.png) | Utilización de los últimos 12 meses: 10,8 % global, por categoría y los diez equipos más y menos usados |
+| [20-arriendos-vigentes.png](20-arriendos-vigentes.png) | Arriendos vigentes con su fecha comprometida; los vencidos, destacados |
+
+**Verificación del cálculo.** Los días-equipo del panel coinciden con un cálculo independiente en SQL
+sobre la misma base: 1.463 de 13.500 en los últimos 30 días y 17.687 de 164.250 en los últimos 12 meses.
+Un periodo invertido o que termina en el futuro se avisa y se muestran los últimos 30 días.
+
+**PNF-02 con el panel completo** (retornos vencidos, inventario, utilización y vigentes), 30 solicitudes
+después de una de calentamiento:
+
+| Periodo de utilización | Mediana | Percentil 95 | Máximo | Criterio |
+|---|---|---|---|---|
+| Últimos 30 días ([pnf02-hu27-30d.txt](pnf02-hu27-30d.txt)) | 0,072 s | 0,094 s | 0,117 s | < 3 s |
+| Últimos 12 meses ([pnf02-hu27-12m.txt](pnf02-hu27-12m.txt)) | 0,066 s | 0,095 s | 0,100 s | < 3 s |
+
+En el navegador, el panel de 12 meses con sus tres gráficos dibujados cargó en 0,26 s, sin errores de
+JavaScript.
+
+## Técnicos (HU-30, D25)
+
+| Captura | Qué muestra |
+|---|---|
+| [21-tecnico-sin-datos.png](21-tecnico-sin-datos.png) | Nombre y apellido son obligatorios |
+| [22-tecnicos.png](22-tecnicos.png) | Tres técnicos registrados por el vendedor, uno de ellos desactivado |
+
+La jefatura ve la lista sin el botón para registrar; el encargado de bodega recibe 403 (matriz de E007).
+
+## Agendar una capacitación (HU-20)
+
+| Captura | Qué muestra |
+|---|---|
+| [23-ficha-sugiere-capacitacion.png](23-ficha-sugiere-capacitacion.png) | El arriendo N° 3 (TS16 y GS18, categorías que requieren capacitación) sugiere agendarla |
+| [24-capacitacion-fecha-pasada.png](24-capacitacion-fecha-pasada.png) | Una fecha anterior a hoy se rechaza |
+| [25-capacitacion-agendada.png](25-capacitacion-agendada.png) | Agendada con Andrés Pérez para el 12-11 a las 09:30; queda programada y la sugerencia desaparece |
+
+Solo se ofrecen los técnicos activos (Diego Fuentes, desactivado, no aparece). La jefatura ve la
+capacitación sin el botón para agendar y recibe 403 en el formulario; el encargado de bodega no ve la
+sección y también recibe 403.
+
+## Técnico ocupado (HU-21, CF-12, D26)
+
+| Captura | Qué muestra |
+|---|---|
+| [26-tecnico-ocupado-aviso.png](26-tecnico-ocupado-aviso.png) | Al elegir a Andrés Pérez y el 12-11, el formulario advierte su capacitación de las 09:30, antes de enviar |
+| [27-tecnico-ocupado-sin-confirmar.png](27-tecnico-ocupado-sin-confirmar.png) | Enviado sin marcar "Agendar de todas formas": no se guarda y el aviso se mantiene |
+| [28-capacitacion-confirmada.png](28-capacitacion-confirmada.png) | Con la marca, la capacitación de la venta N° 4 queda agendada a las 16:00 |
+
+El 13-11 no hay aviso, y tampoco para Camila Rojas el 12-11. Con dos capacitaciones ese día, el aviso
+detalla ambas. El campo de fecha se ve en formato mes/día porque el navegador de prueba usa la
+configuración regional en inglés; el valor enviado es el 12-11-2026.
+
+## Calendario de capacitaciones (HU-22, D27)
+
+| Captura | Qué muestra |
+|---|---|
+| [29-calendario.png](29-calendario.png) | Noviembre de 2026 con las capacitaciones de cada día (hora, cliente, técnico y lugar); hoy, destacado |
+| [30-capacitacion-realizada.png](30-capacitacion-realizada.png) | La capacitación de hoy marcada como realizada a las 08:45; ya no ofrece acciones |
+| [31-calendario-estados.png](31-calendario-estados.png) | El calendario con una realizada (verde), una cancelada (tachada) y las programadas |
+| [32-calendario-celular.png](32-calendario-celular.png) | En un celular, la grilla pasa a una lista por día, sin desplazamiento horizontal |
+
+Marcarla realizada a una hora futura se rechaza. La jefatura ve el calendario y las fichas sin los
+botones para marcar o cancelar; el encargado de bodega no tiene la opción en el menú y recibe 403.
+Un mes mal escrito en la dirección muestra el actual con un aviso.
+
+**Nota sobre los datos.** El 09-11 se reemplazó el contenedor de trabajo y la base de demo se perdió.
+Para estas capturas se restauró el respaldo del 02-11 (semana 11) y se volvieron a registrar desde la
+aplicación los usuarios de jefatura y bodega, los técnicos, una venta y las capacitaciones. Por eso
+los clientes y las operaciones de las capturas 29 a 32 no coinciden con los de las capturas 23 a 28.

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Capacitaciones')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" th:with="cal=${calendario}">
+    <div class="encabezado-pagina d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <h1>Capacitaciones</h1>
+            <p>Calendario de las capacitaciones de los equipos entregados, con su cliente, lugar y técnico.</p>
+        </div>
+        <a class="btn btn-outline-primary" th:href="@{/tecnicos}">Técnicos</a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: mensajes}"></div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <div class="btn-group" role="group" aria-label="Cambiar de mes">
+                    <a class="btn btn-outline-secondary" th:href="@{/capacitaciones(mes=${cal.anterior()})}" aria-label="Mes anterior">‹</a>
+                    <a class="btn btn-outline-secondary" th:href="@{/capacitaciones}">Hoy</a>
+                    <a class="btn btn-outline-secondary" th:href="@{/capacitaciones(mes=${cal.siguiente()})}" aria-label="Mes siguiente">›</a>
+                </div>
+                <h2 class="h5 mb-0" th:text="${cal.etiqueta()}">Noviembre de 2026</h2>
+                <div class="small text-secondary d-flex flex-wrap gap-2 align-items-center">
+                    <span th:text="${cal.total() == 1 ? '1 capacitación' : cal.total() + ' capacitaciones'}">0 capacitaciones</span>
+                    <span class="estado estado-EN_TRANSITO">Programada</span>
+                    <span class="estado estado-DISPONIBLE">Realizada</span>
+                    <span class="estado estado-VENDIDO">Cancelada</span>
+                </div>
+            </div>
+
+            <!-- Grilla de lunes a domingo en pantallas medianas y grandes. -->
+            <div class="d-none d-md-block">
+                <table class="calendario">
+                    <thead>
+                    <tr><th>Lunes</th><th>Martes</th><th>Miércoles</th><th>Jueves</th><th>Viernes</th><th>Sábado</th><th>Domingo</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="semana : ${cal.semanas()}">
+                        <td th:each="dia : ${semana}" th:classappend="${!dia.delMes()} ? 'fuera-mes' : (${dia.hoy()} ? 'hoy')">
+                            <div class="numero-dia" th:text="${dia.fecha().dayOfMonth}">1</div>
+                            <a th:each="c : ${dia.capacitaciones()}" th:href="@{/capacitaciones/{id}(id=${c.id()})}"
+                               class="evento" th:classappend="'evento-' + ${c.estado().name()}"
+                               th:title="${c.estado().etiqueta} + ' · ' + ${c.cliente()} + ' · ' + ${c.lugar()} + ' · ' + ${c.tecnico()}">
+                                <span class="fw-semibold" th:text="${#temporals.format(c.fechaProgramada(), 'HH:mm')}">09:30</span>
+                                <span class="d-block text-truncate" th:text="${c.cliente()}">Cliente</span>
+                                <span class="d-block text-truncate text-secondary" th:text="${c.tecnico()} + ' · ' + ${c.lugar()}">Técnico · lugar</span>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- En pantallas angostas, los días del mes que tienen capacitaciones. -->
+            <div class="d-md-none">
+                <p class="text-secondary mb-0" th:if="${#lists.isEmpty(cal.diasConCapacitaciones())}">No hay capacitaciones este mes.</p>
+                <div th:each="dia : ${cal.diasConCapacitaciones()}" class="mb-3">
+                    <h3 class="h6 text-secondary text-uppercase" th:text="${#temporals.format(dia.fecha(), 'dd-MM-yyyy')}">12-11-2026</h3>
+                    <a th:each="c : ${dia.capacitaciones()}" th:href="@{/capacitaciones/{id}(id=${c.id()})}"
+                       class="evento" th:classappend="'evento-' + ${c.estado().name()}">
+                        <span class="fw-semibold" th:text="${#temporals.format(c.fechaProgramada(), 'HH:mm')} + ' · ' + ${c.cliente()}">09:30 · Cliente</span>
+                        <span class="d-block text-secondary" th:text="${c.tecnico()} + ' · ' + ${c.lugar()}">Técnico · lugar</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
