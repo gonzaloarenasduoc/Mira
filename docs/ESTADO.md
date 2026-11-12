@@ -202,9 +202,9 @@ está implementado**; falta integrarlo a `main` con el pull request de cierre de
 1. Joaquín revisa e integra el pull request #33 (`semana-13` → `main`). `./mvnw clean verify` ya
    pasó el 12-11 con Docker: 219 pruebas, 0 fallas, 0 omitidas, incluidas las 18 de integración
    contra PostgreSQL 16. Al integrarse se cierran #18, #23 a #32 y las épicas E006 a E009 (#9 a #12).
-2. Validar con Joaquín el borrador de la retrospectiva del Sprint 4 y escribir la del Sprint 5.
-3. Acta de control de avance de la semana 13: informar el ajuste del backlog a 105 PF (D25), el
-   Sprint 5 completo y las decisiones D26 y D27.
+2. Validar con Joaquín los borradores de las retrospectivas de los sprints 4 y 5 (`docs/sprints/`).
+3. Entregar el acta de la semana 13 (`docs/actas/Acta_Control_de_Avance_2026_11_16.docx`), que informa
+   el ajuste del backlog a 105 PF (D25). Si el pull request #33 se integra antes, actualizarla.
 4. Actualizar el tablero: Sprint 5 a En revisión y, al integrarse, a Terminado.
 5. Consultar con el docente las categorías que no son equipos físicos (D19).
 6. Semanas 14 y 15: pruebas integradas de punta a punta (CF-01 a CF-14 y los no funcionales de

@@ -5,7 +5,7 @@ retornos con alertas.
 
 **Resultado:** cumplido en desarrollo el 09-11-2026, una semana antes del plazo. 7 historias y 32 PF:
 HU-14 a HU-18 y HU-29 integradas a `main` (pull requests #19, #21 y #22); HU-19 terminada en la rama
-`semana-13`, por integrar al cierre de la semana 13.
+`semana-13`, en el pull request #33.
 
 ## Sprint Backlog
 
@@ -16,7 +16,7 @@ HU-14 a HU-18 y HU-29 integradas a `main` (pull requests #19, #21 y #22); HU-19 
 | HU-16 · Alertas de retorno próximo o vencido | #15 | 5 | Gonzalo (vistas) y Joaquín (servicios) | Terminada e integrada (PR #21) |
 | HU-17 · Consultar los arriendos y su total | #16 | 3 | Gonzalo | Terminada e integrada (PR #22, D18) |
 | HU-18 · Registrar una venta | #17 | 5 | Joaquín (asignada); la implementó Gonzalo | Terminada e integrada (PR #22, D20) |
-| HU-19 · Consultar el historial de operaciones de un cliente | #18 | 3 | Gonzalo | Terminada, rama `semana-13` (D21) |
+| HU-19 · Consultar el historial de operaciones de un cliente | #18 | 3 | Gonzalo | Terminada, pull request #33 (D21) |
 | HU-29 · Administrar clientes (agregada, D17) | #20 | 3 | Joaquín (servicios) y Gonzalo (vistas) | Terminada e integrada (PR #21) |
 
 **Ajuste al backlog (semana 11):** el registro de arriendos y ventas exige elegir un cliente
