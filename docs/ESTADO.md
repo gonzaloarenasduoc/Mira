@@ -3,7 +3,7 @@
 Este archivo se actualiza al terminar cada sesión de trabajo. Es lo primero que lee el
 asistente del otro integrante para saber qué está en curso y no pisar nada.
 
-**Última actualización:** 09-11-2026
+**Última actualización:** 12-11-2026
 
 ## Fase actual
 
@@ -199,10 +199,16 @@ está implementado**; falta integrarlo a `main` con el pull request de cierre de
 
 ## Siguiente
 
-1. Joaquín revisa e integra el pull request #22. Al integrarse, cerrar #16 y #17 si no se cierran solos.
-2. Actualizar el tablero: HU-15, HU-16 y HU-29 a Terminado; HU-17 y HU-18 a En revisión.
-3. Consultar con el docente las categorías que no son equipos físicos (D19).
-4. Semana 13: retrospectiva del Sprint 4 y planificación del Sprint 5. HU-19 ya está terminada.
+1. Joaquín corre `./mvnw clean verify` (las pruebas de integración de HU-20 a HU-22 no se han
+   ejecutado sin Docker), revisa e integra el pull request `semana-13` → `main`. Al integrarse se
+   cierran #18, #23 a #32 y las épicas E006 a E009 (#9 a #12).
+2. Validar con Joaquín el borrador de la retrospectiva del Sprint 4 y escribir la del Sprint 5.
+3. Acta de control de avance de la semana 13: informar el ajuste del backlog a 105 PF (D25), el
+   Sprint 5 completo y las decisiones D26 y D27.
+4. Actualizar el tablero: Sprint 5 a En revisión y, al integrarse, a Terminado.
+5. Consultar con el docente las categorías que no son equipos físicos (D19).
+6. Semanas 14 y 15: pruebas integradas de punta a punta (CF-01 a CF-14 y los no funcionales de
+   `10-casos-de-prueba.md`) y corrección de observaciones. No se agregan funcionalidades.
 
 ## Bloqueado
 
