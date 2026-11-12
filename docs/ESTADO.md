@@ -7,9 +7,11 @@ asistente del otro integrante para saber qué está en curso y no pisar nada.
 
 ## Fase actual
 
-Fase 2, semana 13, rama `semana-13` (D11). **Sprint 5** en curso (HU-20 a HU-28 y HU-30, 31 PF):
-E008, E009 y E007 terminadas (E007 con HU-30, HU-20, HU-21 y HU-22). **El backlog completo (105 PF)
-está implementado**; falta integrarlo a `main` con el pull request de cierre de la semana 13. El Sprint 4 está integrado en `main` (pull request #22).
+Fase 2, semana 14, rama `semana-14` (D11). **El backlog completo (30 historias, 105 PF) está
+implementado e integrado en `main`**: el pull request #33 se integró el 12-11 con la aprobación de
+Joaquín y cerró los issues del Sprint 5 y las épicas E006 a E009. `./mvnw clean verify` sobre `main`:
+219 pruebas, 0 fallas, 0 omitidas. Las semanas 14 y 15 son de pruebas integradas, implantación y
+preparación de la presentación; no se agregan funcionalidades.
 
 ## Terminado
 
@@ -125,6 +127,9 @@ está implementado**; falta integrarlo a `main` con el pull request de cierre de
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- Pull request #33 (`semana-13` → `main`) integrado el 12-11 con la aprobación de Joaquín: HU-19 a
+  HU-28 y HU-30. Se cerraron #18, #23 a #32 y las épicas #9 a #12. Cobertura de la capa de
+  servicios: 84,6% (PNF-15 exige 70%).
 - HU-22 en `semana-13` (09-11, D27): calendario mensual de capacitaciones con cliente, lugar, técnico
   y estado, y su ficha, donde se marcan realizadas (con fecha y hora, no futuras) o se cancelan;
   ambos estados son finales. El menú "Técnicos" pasa a ser "Capacitaciones". 219 pruebas. **E007 queda
@@ -195,20 +200,20 @@ está implementado**; falta integrarlo a `main` con el pull request de cierre de
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 5: HU-20 a HU-28 y HU-30 | Ambos | `semana-13` | Las 10 historias terminadas (31 PF). Falta el pull request `semana-13` → `main` y la revisión de Joaquín |
+| Implantación con Docker: servicio `app` en `docker-compose.yml` | Gonzalo | `semana-14` | Comprometida en la Sumativa 2 para la semana 16; se adelanta para la presentación (PNF-16) |
 
 ## Siguiente
 
-1. Joaquín revisa e integra el pull request #33 (`semana-13` → `main`). `./mvnw clean verify` ya
-   pasó el 12-11 con Docker: 219 pruebas, 0 fallas, 0 omitidas, incluidas las 18 de integración
-   contra PostgreSQL 16. Al integrarse se cierran #18, #23 a #32 y las épicas E006 a E009 (#9 a #12).
+1. Joaquín reemplaza el texto de plantilla que quedó en la observación de su aprobación del pull
+   request #33 por su observación real (editar la revisión o comentar en el PR).
 2. Validar con Joaquín los borradores de las retrospectivas de los sprints 4 y 5 (`docs/sprints/`).
 3. Entregar el acta de la semana 13 (`docs/actas/Acta_Control_de_Avance_2026_11_16.docx`), que informa
-   el ajuste del backlog a 105 PF (D25). Si el pull request #33 se integra antes, actualizarla.
-4. Actualizar el tablero: Sprint 5 a En revisión y, al integrarse, a Terminado.
+   el ajuste del backlog a 105 PF (D25).
+4. Actualizar el tablero: sprints 4 y 5 a Terminado.
 5. Consultar con el docente las categorías que no son equipos físicos (D19).
-6. Semanas 14 y 15: pruebas integradas de punta a punta (CF-01 a CF-14 y los no funcionales de
-   `10-casos-de-prueba.md`) y corrección de observaciones. No se agregan funcionalidades.
+6. Base de demostración reproducible para la presentación, con su respaldo.
+7. Semanas 14 y 15: pruebas integradas de punta a punta (CF-01 a CF-14 y los no funcionales de
+   `10-casos-de-prueba.md`), repartidas entre ambos, y corrección de observaciones.
 
 ## Bloqueado
 

@@ -9,5 +9,5 @@ Projects ("Mira - Tablero del proyecto"), campo *Sprint*.
 | [Sprint 1](sprint-1.md) | 6 y 7 | HU-01 a HU-05 | No cumplido; trasladado al Sprint 2 |
 | [Sprint 2](sprint-2.md) | 8 y 9 | HU-01 a HU-08 (24 PF) | Terminado e integrado (PR #2) |
 | [Sprint 3](sprint-3.md) | 10 y 11, adelantado a la 9 | HU-09 a HU-13 (18 PF) | Terminado e integrado (PR #3) |
-| [Sprint 4](sprint-4.md) | 10 a 13 | HU-14 a HU-19 y HU-29 (32 PF) | Desarrollado; HU-19 en el PR #33. Retro en borrador |
-| [Sprint 5](sprint-5.md) | 14 y 15, adelantado a la 13 | HU-20 a HU-28 y HU-30 (31 PF) | Desarrollado; en el PR #33. Retro en borrador |
+| [Sprint 4](sprint-4.md) | 10 a 13 | HU-14 a HU-19 y HU-29 (32 PF) | Terminado e integrado (PR #19, #21, #22 y #33). Retro en borrador |
+| [Sprint 5](sprint-5.md) | 14 y 15, adelantado a la 13 | HU-20 a HU-28 y HU-30 (31 PF) | Terminado e integrado (PR #33). Retro en borrador |
