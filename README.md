@@ -49,7 +49,7 @@ Esto se traduce en:
 | Vistas | Thymeleaf + Bootstrap 5 | Renderizado en el servidor: un solo proyecto y un solo modelo mental |
 | Gráficos | Chart.js | Visualización de indicadores en el panel |
 | Base de datos | PostgreSQL 16 | Integridad referencial y soporte transaccional para el control de estados |
-| Utilidades | Lombok · MapStruct | Reducción de código repetitivo en entidades y DTOs |
+| Utilidades | Lombok | Reducción de código repetitivo en entidades; el mapeo a DTOs se escribe a mano (D08) |
 | Build | Maven (wrapper incluido) | Construcción reproducible sin instalación previa |
 | Pruebas | JUnit 5 · Mockito · Testcontainers | Pruebas unitarias y de integración contra PostgreSQL real |
 | Contenedores | Docker + Docker Compose | Entorno reproducible entre los integrantes |
@@ -115,8 +115,23 @@ docker compose up -d db
 ./mvnw spring-boot:run          # Windows: .\mvnw.cmd spring-boot:run
 ```
 
-> **Pendiente.** `docker-compose.yml` incluye solo el servicio `db`. El servicio `app` con
-> su `Dockerfile`, para levantar todo con un solo comando, queda para una sesión posterior.
+### Opción C — Todo en Docker (un solo comando)
+
+Solo requiere Docker. Construye la imagen de la aplicación desde el código y la levanta junto a la
+base de datos (D28):
+
+```bash
+git clone https://github.com/<usuario>/mira.git
+cd mira
+docker compose up --build       # la primera vez descarga dependencias y tarda unos minutos
+```
+
+La aplicación queda en `http://localhost:8080` con el usuario inicial de más arriba. Los documentos
+adjuntos se guardan en el volumen `mira-uploads` y la base en `mira-db-data`, así que sobreviven a
+`docker compose down`; `docker compose down -v` borra ambos y deja el sistema vacío.
+
+> El puerto 5432 debe estar libre: si ya tienes PostgreSQL instalado, detenlo antes o usa la
+> opción A.
 
 ### Variables de entorno
 

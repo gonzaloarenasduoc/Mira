@@ -127,6 +127,9 @@ preparación de la presentación; no se agregan funcionalidades.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- Implantación con Docker en `semana-14` (12-11, D28): `Dockerfile` de dos etapas y servicio `app` en
+  `docker-compose.yml`; `docker compose up --build` levanta el sistema completo. Probada sobre una
+  base vacía, con un documento adjunto que sobrevive al reinicio del contenedor.
 - Pull request #33 (`semana-13` → `main`) integrado el 12-11 con la aprobación de Joaquín: HU-19 a
   HU-28 y HU-30. Se cerraron #18, #23 a #32 y las épicas #9 a #12. Cobertura de la capa de
   servicios: 84,6% (PNF-15 exige 70%).
@@ -200,19 +203,17 @@ preparación de la presentación; no se agregan funcionalidades.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Implantación con Docker: servicio `app` en `docker-compose.yml` | Gonzalo | `semana-14` | Comprometida en la Sumativa 2 para la semana 16; se adelanta para la presentación (PNF-16) |
+| Preparación de la presentación: base de demo reproducible y diapositivas | Gonzalo | `semana-14` | Falta saber el formato y la fecha de la presentación |
 
 ## Siguiente
 
-1. Joaquín reemplaza el texto de plantilla que quedó en la observación de su aprobación del pull
-   request #33 por su observación real (editar la revisión o comentar en el PR).
-2. Validar con Joaquín los borradores de las retrospectivas de los sprints 4 y 5 (`docs/sprints/`).
-3. Entregar el acta de la semana 13 (`docs/actas/Acta_Control_de_Avance_2026_11_16.docx`), que informa
+1. Validar con Joaquín los borradores de las retrospectivas de los sprints 4 y 5 (`docs/sprints/`).
+2. Entregar el acta de la semana 13 (`docs/actas/Acta_Control_de_Avance_2026_11_16.docx`), que informa
    el ajuste del backlog a 105 PF (D25).
-4. Actualizar el tablero: sprints 4 y 5 a Terminado.
-5. Consultar con el docente las categorías que no son equipos físicos (D19).
-6. Base de demostración reproducible para la presentación, con su respaldo.
-7. Semanas 14 y 15: pruebas integradas de punta a punta (CF-01 a CF-14 y los no funcionales de
+3. Actualizar el tablero: sprints 4 y 5 a Terminado.
+4. Consultar con el docente las categorías que no son equipos físicos (D19).
+5. Base de demostración reproducible para la presentación, con su respaldo.
+6. Semanas 14 y 15: pruebas integradas de punta a punta (CF-01 a CF-14 y los no funcionales de
    `10-casos-de-prueba.md`), repartidas entre ambos, y corrección de observaciones.
 
 ## Bloqueado
@@ -272,8 +273,8 @@ funcionan.
 - La aplicación **no lee `.env`**: ese archivo es para Docker Compose. `application.yml`
   trae los valores por omisión (`localhost:5432/mira`, usuario y clave `mira`), así que
   clonar y levantar funciona sin configurar nada. Es lo que mide PNF-16.
-- `docker-compose.yml` tiene solo el servicio `db`. El servicio `app` con su `Dockerfile`
-  está pendiente; el README ya quedó corregido y no promete otra cosa.
+- `docker compose up --build` levanta base y aplicación (D28). Para desarrollar se sigue usando
+  `docker compose up -d db` y `./mvnw spring-boot:run`.
 
 ---
 

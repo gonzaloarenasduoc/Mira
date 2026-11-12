@@ -1,0 +1,13 @@
+# Solo pom.xml y src/ entran a la construcción; lo demás no viaja al contexto de Docker.
+target/
+uploads/
+docs/
+.git/
+.github/
+.idea/
+.vscode/
+.mvn/
+mvnw
+mvnw.cmd
+.env
+*.md

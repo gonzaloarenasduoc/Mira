@@ -16,8 +16,26 @@ services:
       timeout: 5s
       retries: 5
 
-  # Pendiente: servicio "app" con su Dockerfile, para levantar todo con un solo comando.
-  # Hoy la aplicacion se ejecuta con ./mvnw spring-boot:run contra este contenedor.
+  # Aplicacion (D28). `docker compose up --build` levanta la base y la aplicacion; para
+  # desarrollar se sigue usando `docker compose up -d db` y ./mvnw spring-boot:run.
+  app:
+    build: .
+    image: mira-app
+    container_name: mira-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Dentro de Compose la base se llama "db", no localhost.
+      DB_URL: jdbc:postgresql://db:5432/mira
+      DB_USER: ${DB_USER:-mira}
+      DB_PASSWORD: ${DB_PASSWORD:-mira}
+      APP_UPLOAD_DIR: /data/uploads
+    ports:
+      - "8080:8080"
+    volumes:
+      - mira-uploads:/data/uploads
 
 volumes:
   mira-db-data:
+  mira-uploads:
