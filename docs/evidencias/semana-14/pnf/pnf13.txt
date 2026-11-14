@@ -1,0 +1,8 @@
+Antes:   336 operaciones, 337 líneas, 698 movimientos; AX10M-240311=DISPONIBLE, DLS03-180209=DISPONIBLE
+Base congelada (docker compose pause db); se envía el arriendo de AX10M-240311 y DLS03-180209
+Base detenida a la fuerza en medio de la operación (docker compose kill db)
+Navegador: respondió · página: Ocurrió un problema
+Base restablecida (docker compose start db)
+Después: 336 operaciones, 337 líneas, 698 movimientos; AX10M-240311=DISPONIBLE, DLS03-180209=DISPONIBLE
+Operaciones sin líneas: 0
+La aplicación sigue atendiendo: Disponible

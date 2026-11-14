@@ -3,13 +3,15 @@
 Este archivo se actualiza al terminar cada sesión de trabajo. Es lo primero que lee el
 asistente del otro integrante para saber qué está en curso y no pisar nada.
 
-**Última actualización:** 12-11-2026
+**Última actualización:** 14-11-2026
 
 ## Fase actual
 
-Fase 2, semana 13, rama `semana-13` (D11). **Sprint 5** en curso (HU-20 a HU-28 y HU-30, 31 PF):
-E008, E009 y E007 terminadas (E007 con HU-30, HU-20, HU-21 y HU-22). **El backlog completo (105 PF)
-está implementado**; falta integrarlo a `main` con el pull request de cierre de la semana 13. El Sprint 4 está integrado en `main` (pull request #22).
+Fase 2, semana 14, rama `semana-14` (D11). **El backlog completo (30 historias, 105 PF) está
+implementado e integrado en `main`**: el pull request #33 se integró el 12-11 con la aprobación de
+Joaquín y cerró los issues del Sprint 5 y las épicas E006 a E009. `./mvnw clean verify` sobre `main`:
+219 pruebas, 0 fallas, 0 omitidas. Las semanas 14 y 15 son de pruebas integradas, implantación y
+preparación de la presentación; no se agregan funcionalidades.
 
 ## Terminado
 
@@ -125,6 +127,19 @@ está implementado**; falta integrarlo a `main` con el pull request de cierre de
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- Entregables del 16-11 en `semana-14` (14-11): video `Demo/Demo_v5.mp4`; informe final
+  `Fase 2/Evidencias Grupales/Informe_Final_Proyecto_APT.docx`; versiones finales del Product Backlog
+  (105 PF), la DoD y el Documento de Diseño (archivos nuevos, los del 16-10 no se tocan); matriz de
+  pruebas `docs/12-matriz-pruebas.md` con PNF-03, PNF-13 y PNF-14 medidos. Al medir PNF-13 se corrigió
+  la página de error 5xx (antes salía la Whitelabel).
+- Datos de demostración en `docs/demo/` (14-11): seis meses de operación ficticia, coherentes con
+  las reglas del sistema; se cargan en segundos con `cargar-demo.sh` sobre una base vacía.
+- Implantación con Docker en `semana-14` (12-11, D28): `Dockerfile` de dos etapas y servicio `app` en
+  `docker-compose.yml`; `docker compose up --build` levanta el sistema completo. Probada sobre una
+  base vacía, con un documento adjunto que sobrevive al reinicio del contenedor.
+- Pull request #33 (`semana-13` → `main`) integrado el 12-11 con la aprobación de Joaquín: HU-19 a
+  HU-28 y HU-30. Se cerraron #18, #23 a #32 y las épicas #9 a #12. Cobertura de la capa de
+  servicios: 84,6% (PNF-15 exige 70%).
 - HU-22 en `semana-13` (09-11, D27): calendario mensual de capacitaciones con cliente, lugar, técnico
   y estado, y su ficha, donde se marcan realizadas (con fecha y hora, no futuras) o se cancelan;
   ambos estados son finales. El menú "Técnicos" pasa a ser "Capacitaciones". 219 pruebas. **E007 queda
@@ -195,20 +210,18 @@ está implementado**; falta integrarlo a `main` con el pull request de cierre de
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Sprint 5: HU-20 a HU-28 y HU-30 | Ambos | `semana-13` | Las 10 historias terminadas (31 PF). Falta el pull request `semana-13` → `main` y la revisión de Joaquín |
+| Entregas del 16-11: Retrospectiva Semana 13 (acta y video) e Informe final Fase 2 (30%) con la defensa | Gonzalo y Joaquín | `semana-14` | Listos: acta, Demo_v5, informe final, versiones finales de Backlog, DoD y Diseño, matriz de pruebas. Faltan la presentación de la defensa y la revisión de ambos (sección 6 del informe y retros) |
 
 ## Siguiente
 
-1. Joaquín revisa e integra el pull request #33 (`semana-13` → `main`). `./mvnw clean verify` ya
-   pasó el 12-11 con Docker: 219 pruebas, 0 fallas, 0 omitidas, incluidas las 18 de integración
-   contra PostgreSQL 16. Al integrarse se cierran #18, #23 a #32 y las épicas E006 a E009 (#9 a #12).
-2. Validar con Joaquín los borradores de las retrospectivas de los sprints 4 y 5 (`docs/sprints/`).
-3. Entregar el acta de la semana 13 (`docs/actas/Acta_Control_de_Avance_2026_11_16.docx`), que informa
-   el ajuste del backlog a 105 PF (D25). Si el pull request #33 se integra antes, actualizarla.
-4. Actualizar el tablero: Sprint 5 a En revisión y, al integrarse, a Terminado.
-5. Consultar con el docente las categorías que no son equipos físicos (D19).
-6. Semanas 14 y 15: pruebas integradas de punta a punta (CF-01 a CF-14 y los no funcionales de
-   `10-casos-de-prueba.md`) y corrección de observaciones. No se agregan funcionalidades.
+1. Validar con Joaquín los borradores de las retrospectivas de los sprints 4 y 5 (`docs/sprints/`).
+2. Entregar el acta de la semana 13 (`docs/actas/Acta_Control_de_Avance_2026_11_16.docx`), que informa
+   el ajuste del backlog a 105 PF (D25).
+3. Actualizar el tablero: sprints 4 y 5 a Terminado.
+4. Consultar con el docente las categorías que no son equipos físicos (D19).
+5. Pendientes de la matriz que requieren personas: PNF-09 (3 personas ajenas registran un arriendo), PNF-11
+   (probar en Firefox y Edge) y PNF-16 (alguien del curso levanta el sistema con el README).
+6. Revisar y ajustar cada uno su párrafo de la sección 6 del informe final (intereses y proyecciones).
 
 ## Bloqueado
 
@@ -267,8 +280,8 @@ funcionan.
 - La aplicación **no lee `.env`**: ese archivo es para Docker Compose. `application.yml`
   trae los valores por omisión (`localhost:5432/mira`, usuario y clave `mira`), así que
   clonar y levantar funciona sin configurar nada. Es lo que mide PNF-16.
-- `docker-compose.yml` tiene solo el servicio `db`. El servicio `app` con su `Dockerfile`
-  está pendiente; el README ya quedó corregido y no promete otra cosa.
+- `docker compose up --build` levanta base y aplicación (D28). Para desarrollar se sigue usando
+  `docker compose up -d db` y `./mvnw spring-boot:run`.
 
 ---
 

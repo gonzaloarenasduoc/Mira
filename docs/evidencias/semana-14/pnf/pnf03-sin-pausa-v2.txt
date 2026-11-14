@@ -1,0 +1,9 @@
+1 usuario:  50 solicitudes · p95 0.057 s · promedio 0.035 s
+10 usuarios: 500 solicitudes en 5.7 s · p95 0.192 s · promedio 0.112 s
+Pausa entre acciones: 0 ms (promedio)
+  /disponibilidad  p95 1 usuario 0.038 s · 10 usuarios 0.160 s
+  /arriendos       p95 1 usuario 0.061 s · 10 usuarios 0.160 s
+  /equipos         p95 1 usuario 0.044 s · 10 usuarios 0.159 s
+  /indicadores     p95 1 usuario 0.071 s · 10 usuarios 0.235 s
+  /capacitaciones  p95 1 usuario 0.041 s · 10 usuarios 0.129 s
+Degradación del p95: 236 % (criterio PNF-03: no más de 50 %)

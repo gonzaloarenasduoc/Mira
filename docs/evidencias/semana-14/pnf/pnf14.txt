@@ -1,0 +1,25 @@
+PNF-14 · Respaldo y restauración · 14-11-2026 19:41
+
+1. pg_dump de la base mira (formato custom)
+   70646 bytes
+2. Ambiente limpio: contenedor postgres:16 nuevo y pg_restore
+   restaurada sin errores
+3. Conteo por tabla (original | restaurada)
+   arriendo              332 |    332 ok
+   bodega                  3 |      3 ok
+   capacitacion            9 |      9 ok
+   categoria              11 |     11 ok
+   cliente                 8 |      8 ok
+   documento               6 |      6 ok
+   empresa                 1 |      1 ok
+   equipo                 32 |     32 ok
+   movimiento            698 |    698 ok
+   operacion             336 |    336 ok
+   operacion_detalle     337 |    337 ok
+   tecnico                 3 |      3 ok
+   usuario                 4 |      4 ok
+   venta                   4 |      4 ok
+4. Integridad: huella MD5 de todos los movimientos en ambas bases
+   huella de movimiento original fd959025d21172e96ee2eb56a6c2f7e3
+   huella de movimiento restaurada fd959025d21172e96ee2eb56a6c2f7e3
+   idénticas

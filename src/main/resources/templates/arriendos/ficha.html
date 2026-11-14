@@ -20,12 +20,12 @@
                 <div class="card-body">
                     <h2 class="h6 text-uppercase text-secondary mb-3">Datos del arriendo</h2>
                     <dl class="row mb-0">
-                        <dt class="col-sm-6">Registrado</dt><dd class="col-sm-6" th:text="${#temporals.format(a.fecha(), 'dd-MM-yyyy')}">fecha</dd>
-                        <dt class="col-sm-6">Inicio</dt><dd class="col-sm-6" th:text="${#temporals.format(a.fechaInicio(), 'dd-MM-yyyy')}">inicio</dd>
-                        <dt class="col-sm-6">Retorno comprometido</dt><dd class="col-sm-6 fw-semibold" th:text="${#temporals.format(a.fechaRetornoComprometida(), 'dd-MM-yyyy')}">retorno</dd>
-                        <dt class="col-sm-6">Orden de compra</dt><dd class="col-sm-6" th:text="${a.numeroOrdenCompra() ?: '—'}">OC</dd>
-                        <dt class="col-sm-6">Tarifa diaria total</dt>
-                        <dd class="col-sm-6" th:text="'$ ' + ${#numbers.formatDecimal(a.tarifaDiariaTotal(), 1, 'POINT', 0, 'COMMA')}">total</dd>
+                        <dt class="col-sm-7">Registrado</dt><dd class="col-sm-5" th:text="${#temporals.format(a.fecha(), 'dd-MM-yyyy')}">fecha</dd>
+                        <dt class="col-sm-7">Inicio</dt><dd class="col-sm-5" th:text="${#temporals.format(a.fechaInicio(), 'dd-MM-yyyy')}">inicio</dd>
+                        <dt class="col-sm-7">Retorno comprometido</dt><dd class="col-sm-5 fw-semibold" th:text="${#temporals.format(a.fechaRetornoComprometida(), 'dd-MM-yyyy')}">retorno</dd>
+                        <dt class="col-sm-7">Orden de compra</dt><dd class="col-sm-5" th:text="${a.numeroOrdenCompra() ?: '—'}">OC</dd>
+                        <dt class="col-sm-7">Tarifa diaria total</dt>
+                        <dd class="col-sm-5" th:text="'$ ' + ${#numbers.formatDecimal(a.tarifaDiariaTotal(), 1, 'POINT', 0, 'COMMA')}">total</dd>
                         <dt class="col-sm-12" th:if="${a.observaciones() != null}">Observaciones</dt>
                         <dd class="col-sm-12 mb-0" th:if="${a.observaciones() != null}" th:text="${a.observaciones()}">obs</dd>
                     </dl>

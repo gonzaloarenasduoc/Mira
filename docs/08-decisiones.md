@@ -463,6 +463,28 @@ trazabilidad: lo cancelado no se reescribe.
 **Descartado.** Una lista en lugar de la grilla; registrar como realizada la fecha del clic; volver
 a programar una capacitación cancelada o realizada.
 
+## D28 · Implantación con Docker Compose
+
+**Fecha.** 12-11-2026.
+
+**Decisión.** La aplicación se empaqueta en una imagen propia (`Dockerfile`) y `docker-compose.yml`
+suma el servicio `app` junto a `db`, de modo que `docker compose up --build` levanta el sistema
+completo.
+- La imagen se construye en dos etapas: `maven:3.9-eclipse-temurin-21` compila y
+  `eclipse-temurin:21-jre` ejecuta solo el `.jar`. La imagen final no lleva Maven ni el código
+  fuente.
+- La aplicación corre con un usuario sin privilegios y con la zona horaria `America/Santiago`.
+- Los documentos adjuntos quedan en el volumen `mira-uploads`, separado del contenedor.
+- La construcción no ejecuta las pruebas: se corren antes con `./mvnw clean verify` (regla 5).
+- Se mantiene el perfil por omisión, porque Compose sirve por HTTP; el perfil `demo` exige HTTPS.
+- Para desarrollar se sigue usando `docker compose up -d db` y `./mvnw spring-boot:run`.
+
+**Motivo.** Cumple lo comprometido en la presentación de la Sumativa 2 ("la implantación con
+Docker") y facilita PNF-16: quien clona el repositorio levanta el sistema solo con Docker.
+
+**Descartado.** Construir el `.jar` fuera de Docker y copiarlo, porque obliga a tener Java
+instalado. Usar el perfil `demo` en Compose, porque la cookie `Secure` rompe la sesión sin HTTPS.
+
 ---
 
 > Agrega acá toda decisión nueva que afecte al otro integrante. Si Claude Code propone algo

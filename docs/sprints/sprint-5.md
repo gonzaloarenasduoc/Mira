@@ -4,8 +4,8 @@
 panel de indicadores.
 
 **Resultado:** cumplido en desarrollo el 09-11-2026, en la semana 13, antes de que comenzara el plazo
-del sprint. 10 historias y 31 PF, con HU-30 agregada (D25). Todas en la rama `semana-13`, en el pull
-request #33, que espera la aprobación de Joaquín. Con este sprint, el backlog completo (30 historias,
+del sprint. 10 historias y 31 PF, con HU-30 agregada (D25). Integradas a `main` el 12-11-2026 con el
+pull request #33, aprobado por Joaquín. Con este sprint, el backlog completo (30 historias,
 105 PF) queda implementado.
 
 ## Sprint Backlog
@@ -16,16 +16,16 @@ panel (`docs/06-flujo-trabajo.md`).
 
 | Prioridad | Historia | Issue | Épica | PF | Responsable | Estado |
 |---|---|---|---|---|---|---|
-| 20 | HU-23 · Adjuntar documentos a una operación | #26 | E008 | 5 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, rama `semana-13` (D22) |
-| 21 | HU-25 · Consultar los documentos de un equipo | #28 | E008 | 5 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, rama `semana-13` (CF-13) |
-| 22 | HU-24 · Consultar los documentos de una operación | #27 | E008 | 3 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, rama `semana-13` |
-| 23 | HU-28 · Alertas de retorno vencido en el panel | #31 | E009 | 2 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, rama `semana-13` (CF-10) |
-| 24 | HU-26 · Panel de equipos por bodega y estado | #29 | E009 | 3 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, rama `semana-13` (D23, PNF-02) |
-| 25 | HU-27 · Utilización de equipos y arriendos vigentes | #30 | E009 | 3 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, rama `semana-13` (D24) |
-| — | HU-30 · Administrar técnicos (agregada, D25) | #32 | E007 | 2 | Gonzalo | Terminada el 09-11, rama `semana-13` |
-| 26 | HU-20 · Agendar la capacitación de una operación | #23 | E007 | 3 | Joaquín (servicios) y Gonzalo (vistas) | Terminada el 09-11, rama `semana-13` |
-| 27 | HU-21 · Advertir la doble asignación de un técnico | #24 | E007 | 2 | Joaquín (servicios) y Gonzalo (vistas) | Terminada el 09-11, rama `semana-13` (D26) |
-| 28 | HU-22 · Calendario de capacitaciones | #25 | E007 | 3 | Joaquín (servicios) y Gonzalo (vistas) | Terminada el 09-11, rama `semana-13` (D27) |
+| 20 | HU-23 · Adjuntar documentos a una operación | #26 | E008 | 5 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, integrada (PR #33) (D22) |
+| 21 | HU-25 · Consultar los documentos de un equipo | #28 | E008 | 5 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, integrada (PR #33) (CF-13) |
+| 22 | HU-24 · Consultar los documentos de una operación | #27 | E008 | 3 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, integrada (PR #33) |
+| 23 | HU-28 · Alertas de retorno vencido en el panel | #31 | E009 | 2 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, integrada (PR #33) (CF-10) |
+| 24 | HU-26 · Panel de equipos por bodega y estado | #29 | E009 | 3 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, integrada (PR #33) (D23, PNF-02) |
+| 25 | HU-27 · Utilización de equipos y arriendos vigentes | #30 | E009 | 3 | Gonzalo (lidera) y Joaquín (servicios) | Terminada, adelantada el 09-11, integrada (PR #33) (D24) |
+| — | HU-30 · Administrar técnicos (agregada, D25) | #32 | E007 | 2 | Gonzalo | Terminada el 09-11, integrada (PR #33) |
+| 26 | HU-20 · Agendar la capacitación de una operación | #23 | E007 | 3 | Joaquín (servicios) y Gonzalo (vistas) | Terminada el 09-11, integrada (PR #33) |
+| 27 | HU-21 · Advertir la doble asignación de un técnico | #24 | E007 | 2 | Joaquín (servicios) y Gonzalo (vistas) | Terminada el 09-11, integrada (PR #33) (D26) |
+| 28 | HU-22 · Calendario de capacitaciones | #25 | E007 | 3 | Joaquín (servicios) y Gonzalo (vistas) | Terminada el 09-11, integrada (PR #33) (D27) |
 
 Total: 10 historias, 31 PF, con HU-30 agregada en la semana 13 (D25; el backlog pasa de 103 a 105 PF). Las tablas `documento`, `tecnico` y `capacitacion` existen desde V1.
 

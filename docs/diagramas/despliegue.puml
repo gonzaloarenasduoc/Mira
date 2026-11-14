@@ -3,24 +3,30 @@
 node "Equipo del usuario" {
   artifact "Navegador web\n(Chrome, Firefox, Edge)" as NAV
 }
-node "Servidor de demostración\n(máquina virtual de capa gratuita)" as VM {
+node "Equipo con Docker\n(implantación de demostración, D28)" as VM {
   node "Docker Engine + Docker Compose" {
-    node "Contenedor app\n(eclipse-temurin:21-jre)" as APP {
+    node "Contenedor mira-app\n(eclipse-temurin:21-jre, usuario sin privilegios)" as APP {
       artifact "mira.jar\nSpring Boot 4.1" as JAR
     }
-    node "Contenedor db\n(postgres:16)" as DBC {
+    node "Contenedor mira-db\n(postgres:16)" as DBC {
       database "mira" as DB
     }
-    storage "Volumen pgdata" as V1
-    storage "Volumen uploads" as V2
+    storage "Volumen mira-db-data" as V1
+    storage "Volumen mira-uploads\n(documentos adjuntos)" as V2
   }
 }
-NAV --> JAR : HTTPS :443 / HTTP :8080
+NAV --> JAR : HTTP :8080
 JAR --> DB : JDBC :5432\n(red interna de Compose)
 DB --> V1
 JAR --> V2
 note bottom of APP
-  Las migraciones Flyway se aplican
-  automáticamente al arrancar la aplicación.
+  docker compose up --build construye la imagen
+  (Maven compila, JRE ejecuta) y levanta ambos servicios.
+  Flyway aplica las migraciones al arrancar.
+end note
+note right of VM
+  Trabajo futuro: el mismo Compose en un
+  servidor en la nube, con HTTPS y el perfil demo
+  (cookie Secure, PNF-08).
 end note
 @enduml
