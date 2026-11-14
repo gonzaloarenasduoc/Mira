@@ -54,7 +54,7 @@ Esto se traduce en:
 | Pruebas | JUnit 5 · Mockito · Testcontainers | Pruebas unitarias y de integración contra PostgreSQL real |
 | Contenedores | Docker + Docker Compose | Entorno reproducible entre los integrantes |
 | Control de versiones | Git + GitHub | Ramas por funcionalidad y revisión por *pull request* |
-| Despliegue | VM Oracle Cloud (Always Free) | Memoria suficiente para la JVM, sin costo de operación |
+| Despliegue | Docker Compose (D28) | La base y la aplicación se levantan con un solo comando; el despliegue en un servidor en la nube queda como trabajo futuro |
 
 > **Sobre la elección del stack.** Se evaluaron alternativas de desarrollo más rápido para este tipo de solución. Se optó por Java con Spring Boot considerando su adecuación a una aplicación de gestión con alto componente transaccional y el objetivo formativo del equipo de desarrollar competencias en el entorno tecnológico de mayor demanda en el mercado nacional. Para compensar el mayor volumen de código, se descartó una interfaz de página única (SPA) en favor de renderizado en el servidor con Thymeleaf.
 >
