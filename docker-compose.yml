@@ -31,6 +31,9 @@ services:
       DB_USER: ${DB_USER:-mira}
       DB_PASSWORD: ${DB_PASSWORD:-mira}
       APP_UPLOAD_DIR: /data/uploads
+      # Configuración de ejecución, no de desarrollo: plantillas en caché y registros en INFO (D28).
+      SPRING_THYMELEAF_CACHE: "true"
+      LOGGING_LEVEL_CL_DUOC_MIRA: INFO
     ports:
       - "8080:8080"
     volumes:

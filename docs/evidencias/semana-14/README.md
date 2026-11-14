@@ -55,6 +55,7 @@ caso está en [`docs/12-matriz-pruebas.md`](../../12-matriz-pruebas.md).
 |---|---|---|
 | [pnf/pnf03-pausa-1s.txt](pnf/pnf03-pausa-1s.txt) | PNF-03 con pausas de 1 s | Sin degradación (−10 % en el p95) |
 | [pnf/pnf03-sin-pausa.txt](pnf/pnf03-sin-pausa.txt) | PNF-03 en saturación | +371 % en el p95 (de 0,036 a 0,171 s): no cumple el criterio relativo |
+| [pnf/pnf03-sin-pausa-v2.txt](pnf/pnf03-sin-pausa-v2.txt) y [pnf/pnf03-pausa-1s-v2.txt](pnf/pnf03-pausa-1s-v2.txt) | PNF-03 repetida con plantillas en caché y registros en INFO | +236 % en saturación y 0 % con pausas: no hay un cambio de fondo |
 | [pnf/pnf13.txt](pnf/pnf13.txt) | PNF-13 | Ningún registro parcial tras la caída de la base; el usuario ve "Ocurrió un problema" |
 | [pnf/pnf14.txt](pnf/pnf14.txt) | PNF-14 | Restauración completa: mismos conteos en las 14 tablas y la misma huella de movimientos |
 
