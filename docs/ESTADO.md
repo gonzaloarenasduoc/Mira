@@ -127,6 +127,11 @@ preparación de la presentación; no se agregan funcionalidades.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- Entregables del 16-11 en `semana-14` (14-11): video `Demo/Demo_v5.mp4`; informe final
+  `Fase 2/Evidencias Grupales/Informe_Final_Proyecto_APT.docx`; versiones finales del Product Backlog
+  (105 PF), la DoD y el Documento de Diseño (archivos nuevos, los del 16-10 no se tocan); matriz de
+  pruebas `docs/12-matriz-pruebas.md` con PNF-03, PNF-13 y PNF-14 medidos. Al medir PNF-13 se corrigió
+  la página de error 5xx (antes salía la Whitelabel).
 - Datos de demostración en `docs/demo/` (14-11): seis meses de operación ficticia, coherentes con
   las reglas del sistema; se cargan en segundos con `cargar-demo.sh` sobre una base vacía.
 - Implantación con Docker en `semana-14` (12-11, D28): `Dockerfile` de dos etapas y servicio `app` en
@@ -205,7 +210,7 @@ preparación de la presentación; no se agregan funcionalidades.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Entregas del 16-11: Retrospectiva Semana 13 (acta y video) e Informe final Fase 2 (30%) con la defensa | Gonzalo y Joaquín | `semana-14` | Base de demo lista; faltan video, informe 2.6 final, documentos finales del producto y presentación |
+| Entregas del 16-11: Retrospectiva Semana 13 (acta y video) e Informe final Fase 2 (30%) con la defensa | Gonzalo y Joaquín | `semana-14` | Listos: acta, Demo_v5, informe final, versiones finales de Backlog, DoD y Diseño, matriz de pruebas. Faltan la presentación de la defensa y la revisión de ambos (sección 6 del informe y retros) |
 
 ## Siguiente
 
@@ -214,8 +219,9 @@ preparación de la presentación; no se agregan funcionalidades.
    el ajuste del backlog a 105 PF (D25).
 3. Actualizar el tablero: sprints 4 y 5 a Terminado.
 4. Consultar con el docente las categorías que no son equipos físicos (D19).
-6. Semanas 14 y 15: pruebas integradas de punta a punta (CF-01 a CF-14 y los no funcionales de
-   `10-casos-de-prueba.md`), repartidas entre ambos, y corrección de observaciones.
+5. Pendientes de la matriz que requieren personas: PNF-09 (3 personas ajenas registran un arriendo), PNF-11
+   (probar en Firefox y Edge) y PNF-16 (alguien del curso levanta el sistema con el README).
+6. Revisar y ajustar cada uno su párrafo de la sección 6 del informe final (intereses y proyecciones).
 
 ## Bloqueado
 
