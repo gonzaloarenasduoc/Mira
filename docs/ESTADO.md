@@ -3,7 +3,7 @@
 Este archivo se actualiza al terminar cada sesión de trabajo. Es lo primero que lee el
 asistente del otro integrante para saber qué está en curso y no pisar nada.
 
-**Última actualización:** 12-11-2026
+**Última actualización:** 14-11-2026
 
 ## Fase actual
 
@@ -127,6 +127,8 @@ preparación de la presentación; no se agregan funcionalidades.
   (02-11) informa el ajuste del backlog por HU-29 (de 100 a 103 PF).
 - Pull request #21 (`semana-11` → `main`) integrado el 02-11 con la aprobación de Joaquín: HU-15,
   HU-16 y HU-29 están en `main` y sus issues (#14, #15 y #20) quedaron cerrados.
+- Datos de demostración en `docs/demo/` (14-11): seis meses de operación ficticia, coherentes con
+  las reglas del sistema; se cargan en segundos con `cargar-demo.sh` sobre una base vacía.
 - Implantación con Docker en `semana-14` (12-11, D28): `Dockerfile` de dos etapas y servicio `app` en
   `docker-compose.yml`; `docker compose up --build` levanta el sistema completo. Probada sobre una
   base vacía, con un documento adjunto que sobrevive al reinicio del contenedor.
@@ -203,7 +205,7 @@ preparación de la presentación; no se agregan funcionalidades.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Preparación de la presentación: base de demo reproducible y diapositivas | Gonzalo | `semana-14` | Falta saber el formato y la fecha de la presentación |
+| Entregas del 16-11: Retrospectiva Semana 13 (acta y video) e Informe final Fase 2 (30%) con la defensa | Gonzalo y Joaquín | `semana-14` | Base de demo lista; faltan video, informe 2.6 final, documentos finales del producto y presentación |
 
 ## Siguiente
 
@@ -212,7 +214,6 @@ preparación de la presentación; no se agregan funcionalidades.
    el ajuste del backlog a 105 PF (D25).
 3. Actualizar el tablero: sprints 4 y 5 a Terminado.
 4. Consultar con el docente las categorías que no son equipos físicos (D19).
-5. Base de demostración reproducible para la presentación, con su respaldo.
 6. Semanas 14 y 15: pruebas integradas de punta a punta (CF-01 a CF-14 y los no funcionales de
    `10-casos-de-prueba.md`), repartidas entre ambos, y corrección de observaciones.
 

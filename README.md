@@ -133,6 +133,12 @@ adjuntos se guardan en el volumen `mira-uploads` y la base en `mira-db-data`, as
 > El puerto 5432 debe estar libre: si ya tienes PostgreSQL instalado, detenlo antes o usa la
 > opción A.
 
+### Datos de demostración
+
+Para presentar el sistema con seis meses de operación (equipos, arriendos vigentes y vencidos,
+ventas, documentos y capacitaciones), sobre una base vacía: `docs/demo/cargar-demo.sh docker` o
+`docs/demo/cargar-demo.sh local`. Detalle en [`docs/demo/README.md`](docs/demo/README.md).
+
 ### Variables de entorno
 
 | Variable | Descripción | Ejemplo |
