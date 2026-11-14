@@ -210,7 +210,7 @@ preparación de la presentación; no se agregan funcionalidades.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Entregas del 16-11: Retrospectiva Semana 13 (acta y video) e Informe final Fase 2 (30%) con la defensa | Gonzalo y Joaquín | `semana-14` | Listos: acta, Demo_v5, informe final, versiones finales de Backlog, DoD y Diseño, matriz de pruebas. Faltan la presentación de la defensa y la revisión de ambos (sección 6 del informe y retros) |
+| Entregas del 16-11: Retrospectiva Semana 13 (acta y video) e Informe final Fase 2 (30%) con la defensa | Gonzalo y Joaquín | `semana-14` | Todo listo, incluida la presentación de la defensa (`Fase 2/Evidencias Grupales/Presentacion_Defensa_Final.pptx`, guion en `docs/guion-defensa.md`). Falta la revisión de ambos (sección 6 del informe y retros) y ensayar |
 
 ## Siguiente
 
