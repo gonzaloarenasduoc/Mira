@@ -45,3 +45,19 @@ cambios de `semana-14`:
 
 Para grabarlo, la imagen `mira-app` se construyó antes con la copia del `Dockerfile` que agrega el
 proxy de ese entorno (ver arriba). El video lo dice en pantalla antes del `docker compose up -d`.
+
+## Pruebas no funcionales (14-11-2026)
+
+Medidas sobre el sistema levantado con Docker Compose y los datos de demostración. El resultado de cada
+caso está en [`docs/12-matriz-pruebas.md`](../../12-matriz-pruebas.md).
+
+| Archivo | Caso | Resultado |
+|---|---|---|
+| [pnf/pnf03-pausa-1s.txt](pnf/pnf03-pausa-1s.txt) | PNF-03 con pausas de 1 s | Sin degradación (−10 % en el p95) |
+| [pnf/pnf03-sin-pausa.txt](pnf/pnf03-sin-pausa.txt) | PNF-03 en saturación | +371 % en el p95 (de 0,036 a 0,171 s): no cumple el criterio relativo |
+| [pnf/pnf13.txt](pnf/pnf13.txt) | PNF-13 | Ningún registro parcial tras la caída de la base; el usuario ve "Ocurrió un problema" |
+| [pnf/pnf14.txt](pnf/pnf14.txt) | PNF-14 | Restauración completa: mismos conteos en las 14 tablas y la misma huella de movimientos |
+
+La primera ejecución de PNF-13 mostró la página Whitelabel de Spring en lugar de un mensaje propio, lo que
+incumplía PNF-10. La plantilla de error existía con un nombre que Spring no usa (`error/error.html`). Se
+renombró a `error/5xx.html` y la prueba se repitió con el mensaje correcto.
