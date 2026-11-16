@@ -43,6 +43,10 @@ cambios de `semana-14`:
 4. **Pruebas:** `./mvnw clean verify` en vivo, con 219 pruebas sin fallas ni omitidas y una
    cobertura de servicios de 84,6%.
 
+El video no tiene audio. Desde el 16-11 lleva subtítulos en la imagen que explican cada escena, con la
+historia o el caso de prueba que se ve; el mismo texto está en [`Demo/Demo_v5.srt`](../../../Demo/Demo_v5.srt).
+La versión sin subtítulos se reemplazó.
+
 Para grabarlo, la imagen `mira-app` se construyó antes con la copia del `Dockerfile` que agrega el
 proxy de ese entorno (ver arriba). El video lo dice en pantalla antes del `docker compose up -d`.
 

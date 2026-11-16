@@ -229,6 +229,8 @@ preparación de la presentación; no se agregan funcionalidades.
   referencias (APA), referencias en orden alfabético, tabla de competencias del perfil de egreso con
   su evidencia por indicador de calidad, ajuste por las observaciones del docente al diseño,
   pull requests hasta el #36 y commits al 16-11. La sección 6 no se modificó.
+- `Demo/Demo_v5.mp4` con subtítulos en la imagen (16-11): 47 subtítulos que explican cada escena;
+  el texto también está en `Demo/Demo_v5.srt`. Reemplaza la versión sin subtítulos.
 
 1. Validar con Joaquín los borradores de las retrospectivas de los sprints 4 y 5 (`docs/sprints/`).
 2. Entregar el acta de la semana 13 (`docs/actas/Acta_Control_de_Avance_2026_11_16.docx`), que informa
