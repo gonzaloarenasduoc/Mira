@@ -225,6 +225,10 @@ preparación de la presentación; no se agregan funcionalidades.
   repositorios y entidades), en notación UML 2.5 (uml-diagrams.org). Van en los Anexos A y B, una
   figura por página con la orientación que da más tamaño. Fuentes en `docs/diagramas`. Se retiraron
   `clases-dominio` (era de entidades) y `secuencia-registrar-arriendo` (tenía PostgreSQL como participante).
+- Informe final corregido según la rúbrica de la Fase 2 (16-11): citas en el texto de las seis
+  referencias (APA), referencias en orden alfabético, tabla de competencias del perfil de egreso con
+  su evidencia por indicador de calidad, ajuste por las observaciones del docente al diseño,
+  pull requests hasta el #36 y commits al 16-11. La sección 6 no se modificó.
 
 1. Validar con Joaquín los borradores de las retrospectivas de los sprints 4 y 5 (`docs/sprints/`).
 2. Entregar el acta de la semana 13 (`docs/actas/Acta_Control_de_Avance_2026_11_16.docx`), que informa
@@ -233,7 +237,8 @@ preparación de la presentación; no se agregan funcionalidades.
 4. Consultar con el docente las categorías que no son equipos físicos (D19).
 5. Pendientes de la matriz que requieren personas: PNF-09 (3 personas ajenas registran un arriendo), PNF-11
    (probar en Firefox y Edge) y PNF-16 (alguien del curso levanta el sistema con el README).
-6. Revisar y ajustar cada uno su párrafo de la sección 6 del informe final (intereses y proyecciones).
+6. Revisar cada uno su párrafo de la sección 6 del informe final (intereses y proyecciones); se
+   entrega tal como está.
 
 ## Bloqueado
 
