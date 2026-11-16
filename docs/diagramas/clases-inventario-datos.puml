@@ -1,0 +1,141 @@
+@startuml clases-inventario-datos
+!include _estilo.iuml
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam nodesep 25
+skinparam ranksep 45
+title Inventario: equipos, bodegas, traslados y disponibilidad (E002 a E004) · datos
+
+package "service" {
+  class BodegaService <<Service>> {
+  }
+  class CategoriaService <<Service>> {
+  }
+  class EquipoService <<Service>> {
+  }
+  class TrasladoService <<Service>> {
+  }
+}
+package "repository" {
+  interface BodegaRepository <<Repository>> {
+    + findByEmpresaIdOrderByNombre(empresaId) : List<Bodega>
+    + findByEmpresaIdAndActivaTrueOrderByNombre(empresaId) : List<Bodega>
+    + findByIdAndEmpresaId(id, empresaId) : Optional<Bodega>
+    + findByEmpresaIdAndNombreIgnoreCase(empresaId, nombre) : Optional<Bodega>
+  }
+  interface CategoriaRepository <<Repository>> {
+    + findByEmpresaIdAndActivaTrueOrderByNombre(empresaId) : List<Categoria>
+    + findByIdAndEmpresaId(id, empresaId) : Optional<Categoria>
+  }
+  interface EquipoRepository <<Repository>> {
+    + existsByEmpresaIdAndNumeroSerieIgnoreCase(empresaId, numeroSerie) : boolean
+    + buscarFicha(empresaId, id) : Optional<Equipo>
+    + buscarPorIds(empresaId, ids) : List<Equipo>
+    + buscarParaActualizar(empresaId, id) : Optional<Equipo>
+    + buscar(empresaId, categoriaId, bodegaId, estado, patron) : List<Equipo>
+    + contarPorBodegaYEstado(empresaId) : List<ConteoEquipos>
+    + enInventario(empresaId) : List<Equipo>
+  }
+  interface MovimientoRepository <<Repository>> {
+    + historial(empresaId, equipoId) : List<Movimiento>
+    + findFirstByEmpresaIdAndEquipoIdAndTipoOrderByIdDesc(empresaId, equipoId, tipo) : Optional<Movimiento>
+    + trasladosEnTransito(empresaId) : List<Movimiento>
+    + traslados(empresaId, tipos, serie, bodegaId, desde, hasta, pagina) : Page<Movimiento>
+  }
+}
+BodegaRepository -[hidden]down- CategoriaRepository
+CategoriaRepository -[hidden]down- EquipoRepository
+EquipoRepository -[hidden]down- MovimientoRepository
+package "entity" {
+  class Bodega <<Entity>> {
+    - nombre : String
+    - direccion : String
+    - comuna : String
+    - activa : boolean
+    + actualizar(nombre, direccion, comuna) : void
+    + cambiarEstado(activa) : void
+  }
+  class Categoria <<Entity>> {
+    - nombre : String
+    - descripcion : String
+    - requiereCapacitacion : boolean
+    - activa : boolean
+  }
+  class Equipo <<Entity>> {
+    - numeroSerie : String
+    - marca : String
+    - modelo : String
+    - estado : EstadoEquipo
+    - fechaAdquisicion : LocalDate
+    - valorAdquisicion : BigDecimal
+    - tarifaDiaria : BigDecimal
+    - observaciones : String
+    - activo : boolean
+  }
+  class Movimiento <<Entity>> {
+    - tipo : TipoMovimiento
+    - fecha : LocalDateTime
+    - operacionId : Long
+    - usuarioId : Long
+    - observacion : String
+    + registrar(equipo, tipo, fecha, origen, destino, usuarioId, observacion) : Movimiento {static}
+    + registrar(equipo, tipo, fecha, origen, destino, operacionId, usuarioId, observacion) : Movimiento {static}
+  }
+  enum EstadoEquipo {
+    DISPONIBLE
+    ARRENDADO
+    EN_TRANSITO
+    EN_MANTENCION
+    VENDIDO
+    + getEtiqueta() : String
+  }
+  enum TipoMovimiento {
+    INGRESO
+    TRASLADO_SALIDA
+    TRASLADO_LLEGADA
+    SALIDA_ARRIENDO
+    RETORNO_ARRIENDO
+    SALIDA_VENTA
+    ENTRADA_MANTENCION
+    SALIDA_MANTENCION
+    + getEtiqueta() : String
+    + getEstadoResultante() : EstadoEquipo
+    + isReubica() : boolean
+  }
+}
+package "otros módulos" #F7F7F7 {
+  class Empresa <<Entity>>
+  interface EmpresaRepository <<Repository>>
+  abstract class EntidadAuditable <<Entity>>
+}
+BodegaRepository ..> Bodega : <<manage>>
+CategoriaRepository ..> Categoria : <<manage>>
+EquipoRepository ..> Equipo : <<manage>>
+MovimientoRepository ..> Movimiento : <<manage>>
+TrasladoService --> "1" EquipoRepository
+TrasladoService --> "1" MovimientoRepository
+BodegaService --> "1" BodegaRepository
+BodegaService --> "1" EmpresaRepository
+EquipoService --> "1" EquipoRepository
+EquipoService --> "1" CategoriaRepository
+EquipoService --> "1" MovimientoRepository
+EquipoService --> "1" EmpresaRepository
+CategoriaService --> "1" CategoriaRepository
+TipoMovimiento ..> EstadoEquipo
+Movimiento --|> EntidadAuditable
+Movimiento "*" --> "1" Empresa : empresa
+Movimiento "*" --> "1" Equipo : equipo
+Movimiento ..> TipoMovimiento
+Movimiento "*" --> "1" Bodega : bodegaOrigen
+Movimiento "*" --> "1" Bodega : bodegaDestino
+Bodega --|> EntidadAuditable
+Bodega "*" --> "1" Empresa : empresa
+Categoria --|> EntidadAuditable
+Categoria "*" --> "1" Empresa : empresa
+Equipo --|> EntidadAuditable
+Equipo "*" --> "1" Empresa : empresa
+Equipo "*" --> "1" Categoria : categoria
+Equipo "*" --> "1" Bodega : bodega
+Equipo ..> EstadoEquipo
+@enduml

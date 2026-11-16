@@ -1,0 +1,25 @@
+@startuml secuencia-hu-11
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-11 · Buscar equipos por sus atributos
+actor "Vendedor" as A
+boundary "equipos/lista.html" as L_VISTA_equipos_lista
+control ":EquipoController" as L_EquipoController
+participant ":EquipoService" as L_EquipoService
+participant ":EquipoRepository" as L_EquipoRepository
+A -> L_VISTA_equipos_lista : escribe marca, modelo o parte de la serie
+L_VISTA_equipos_lista -> L_EquipoController : GET /equipos
+L_EquipoController -> L_EquipoService : buscar(empresaId, filtro)
+L_EquipoService -> L_EquipoRepository : buscar(empresaId, categoriaId, bodegaId, estado, patron)
+L_EquipoRepository --> L_EquipoService : List<Equipo>
+L_EquipoService --> L_EquipoController : List<EquipoResponse>
+L_EquipoController --> L_VISTA_equipos_lista : equipos que coinciden
+L_VISTA_equipos_lista --> A : resultados de la búsqueda
+note over A
+El texto viaja como parámetro y con
+sus comodines escapados (Busqueda.contiene):
+no altera la consulta (PNF-07).
+end note
+@enduml

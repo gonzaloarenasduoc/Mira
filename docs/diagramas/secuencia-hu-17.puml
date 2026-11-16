@@ -1,0 +1,25 @@
+@startuml secuencia-hu-17
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-17 · Consultar los arriendos y su total
+actor "Vendedor" as A
+boundary "arriendos/lista.html" as L_VISTA_arriendos_lista
+control ":ArriendoController" as L_ArriendoController
+participant ":ArriendoService" as L_ArriendoService
+participant ":ArriendoRepository" as L_ArriendoRepository
+participant ":EquipoService" as L_EquipoService
+A -> L_VISTA_arriendos_lista : abre Arriendos
+L_VISTA_arriendos_lista -> L_ArriendoController : GET /arriendos
+L_ArriendoController -> L_ArriendoService : listar(empresaId, pagina)
+L_ArriendoService -> L_ArriendoRepository : listar(empresaId, pagina)
+L_ArriendoRepository --> L_ArriendoService : Page<Arriendo>
+L_ArriendoService -> L_ArriendoRepository : conDetalles(ids)
+L_ArriendoRepository --> L_ArriendoService : List<Arriendo>
+L_ArriendoService -> L_EquipoService : resumenPorId(empresaId, ids)
+L_EquipoService --> L_ArriendoService : Map<Long, EquipoResponse>
+L_ArriendoService --> L_ArriendoController : Page<ResumenArriendoResponse>
+L_ArriendoController --> L_VISTA_arriendos_lista : listado paginado con estado y total
+L_VISTA_arriendos_lista --> A : arriendos con su total
+@enduml

@@ -1,0 +1,20 @@
+@startuml secuencia-hu-05
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-05 · Listar equipos con filtros
+actor "Usuario autenticado" as A
+boundary "equipos/lista.html" as L_VISTA_equipos_lista
+control ":EquipoController" as L_EquipoController
+participant ":EquipoService" as L_EquipoService
+participant ":EquipoRepository" as L_EquipoRepository
+A -> L_VISTA_equipos_lista : elige categoría, bodega o estado
+L_VISTA_equipos_lista -> L_EquipoController : GET /equipos
+L_EquipoController -> L_EquipoService : buscar(empresaId, filtro)
+L_EquipoService -> L_EquipoRepository : buscar(empresaId, categoriaId, bodegaId, estado, patron)
+L_EquipoRepository --> L_EquipoService : List<Equipo>
+L_EquipoService --> L_EquipoController : List<EquipoResponse>
+L_EquipoController --> L_VISTA_equipos_lista : listado filtrado
+L_VISTA_equipos_lista --> A : equipos de su empresa
+@enduml

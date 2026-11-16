@@ -1,0 +1,94 @@
+@startuml clases-inventario-aplicacion
+!include _estilo.iuml
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam nodesep 25
+skinparam ranksep 45
+title Inventario: equipos, bodegas, traslados y disponibilidad (E002 a E004) · aplicación
+
+package "controller" {
+  class BodegaController <<Controller>> {
+    + listar() : String
+    + nueva() : String
+    + crear(bodega) : String
+    + editar(id) : String
+    + actualizar(id, bodega) : String
+    + desactivar(id) : String
+    + activar(id) : String
+  }
+  class EquipoController <<Controller>> {
+    + listar(filtro) : String
+    + nuevo() : String
+    + registrar(equipo) : String
+    + ficha(id) : String
+  }
+  class TrasladoController <<Controller>> {
+    + listar(filtro, pagina) : String
+    + nuevo(equipoId) : String
+    + registrar(traslado) : String
+    + confirmarLlegada(equipoId, volverAlListado) : String
+  }
+}
+BodegaController -[hidden]down- EquipoController
+EquipoController -[hidden]down- TrasladoController
+package "service" {
+  class BodegaService <<Service>> {
+    + listar(empresaId) : List<BodegaResponse>
+    + listarActivas(empresaId) : List<BodegaResponse>
+    + buscar(empresaId, id) : BodegaResponse
+    + crear(empresaId, request) : BodegaResponse
+    + actualizar(empresaId, id, request) : BodegaResponse
+    + cambiarEstado(empresaId, id, activa) : void
+  }
+  class CategoriaService <<Service>> {
+    + listarActivas(empresaId) : List<CategoriaResponse>
+  }
+  class EquipoNoDisponibleException <<Exception>> {
+  }
+  class EquipoService <<Service>> {
+    + registrar(empresaId, usuarioId, request) : EquipoResponse
+    + buscar(empresaId, filtro) : List<EquipoResponse>
+    + conteoPorBodegaYEstado(empresaId) : List<ConteoEquipos>
+    + enInventario(empresaId) : List<EquipoEnInventario>
+    + requierenCapacitacion(empresaId, ids) : boolean
+    + resumenPorId(empresaId, ids) : Map<Long, EquipoResponse>
+    + despacharEnArriendo(empresaId, usuarioId, equipoId, operacionId) : void
+    + despacharEnVenta(empresaId, usuarioId, equipoId, operacionId) : void
+    + recibirDeArriendo(empresaId, usuarioId, equipoId, operacionId, bodegaId, observacion) : void
+    + ficha(empresaId, id) : FichaEquipoResponse
+  }
+  class NumeroSerieDuplicadoException <<Exception>> {
+  }
+  class TrasladoService <<Service>> {
+    + preparar(empresaId, equipoId) : PreparacionTrasladoResponse
+    + registrarSalida(empresaId, usuarioId, request) : TrasladoResponse
+    + confirmarLlegada(empresaId, usuarioId, equipoId) : TrasladoResponse
+    + enTransito(empresaId) : List<TrasladoResponse>
+    + historial(empresaId, filtro, pagina) : Page<TrasladoResponse>
+  }
+}
+BodegaService -[hidden]down- CategoriaService
+CategoriaService -[hidden]down- EquipoNoDisponibleException
+EquipoNoDisponibleException -[hidden]down- EquipoService
+EquipoService -[hidden]down- NumeroSerieDuplicadoException
+NumeroSerieDuplicadoException -[hidden]down- TrasladoService
+package "otros módulos" #F7F7F7 {
+  class DocumentoService <<Service>>
+  class NegocioException <<Exception>>
+  class UsuarioService <<Service>>
+}
+TrasladoService ..> BodegaService : <<use>>
+TrasladoService ..> UsuarioService : <<use>>
+NumeroSerieDuplicadoException --|> NegocioException
+EquipoService ..> BodegaService : <<use>>
+EquipoService ..> UsuarioService : <<use>>
+EquipoNoDisponibleException --|> NegocioException
+TrasladoController ..> TrasladoService : <<use>>
+TrasladoController ..> BodegaService : <<use>>
+EquipoController ..> EquipoService : <<use>>
+EquipoController ..> CategoriaService : <<use>>
+EquipoController ..> BodegaService : <<use>>
+EquipoController ..> DocumentoService : <<use>>
+BodegaController ..> BodegaService : <<use>>
+@enduml

@@ -219,9 +219,12 @@ preparación de la presentación; no se agregan funcionalidades.
   entrega con esas secciones vacías (corregido el 16-11).
 - Carpeta renombrada a `Fase 2/Evidencias Proyecto` (16-11). Los documentos ya entregados que
   mencionan el nombre anterior no se modifican.
-- Documento de Diseño: diagrama de clases de clases (no de entidades), un diagrama de secuencia por
-  historia de usuario, solo con componentes reales del proyecto (sin base de datos ni bibliotecas), y
-  letra legible en todos los diagramas, con la notación de uml-diagrams.org.
+- Documento de Diseño, revisión 03 (16-11): 12 diagramas de clases (dos por módulo: aplicación y
+  datos) con operaciones, dependencias, asociaciones y herencia; 30 diagramas de secuencia, uno por
+  historia, trazados desde el código, solo con componentes del proyecto (vista, controlador, servicios,
+  repositorios y entidades), en notación UML 2.5 (uml-diagrams.org). Van en los Anexos A y B, una
+  figura por página con la orientación que da más tamaño. Fuentes en `docs/diagramas`. Se retiraron
+  `clases-dominio` (era de entidades) y `secuencia-registrar-arriendo` (tenía PostgreSQL como participante).
 
 1. Validar con Joaquín los borradores de las retrospectivas de los sprints 4 y 5 (`docs/sprints/`).
 2. Entregar el acta de la semana 13 (`docs/actas/Acta_Control_de_Avance_2026_11_16.docx`), que informa

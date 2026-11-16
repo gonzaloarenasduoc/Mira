@@ -1,0 +1,26 @@
+@startuml secuencia-hu-07
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-07 · Ficha del equipo con su historial
+actor "Encargado de bodega" as A
+boundary "equipos/ficha.html" as L_VISTA_equipos_ficha
+control ":EquipoController" as L_EquipoController
+participant ":EquipoService" as L_EquipoService
+participant ":EquipoRepository" as L_EquipoRepository
+participant ":MovimientoRepository" as L_MovimientoRepository
+participant ":UsuarioService" as L_UsuarioService
+A -> L_VISTA_equipos_ficha : abre un equipo del listado
+L_VISTA_equipos_ficha -> L_EquipoController : GET /equipos/{id}
+L_EquipoController -> L_EquipoService : ficha(empresaId, id)
+L_EquipoService -> L_EquipoRepository : buscarFicha(empresaId, id)
+L_EquipoRepository --> L_EquipoService : Optional<Equipo>
+L_EquipoService -> L_MovimientoRepository : historial(empresaId, equipoId)
+L_MovimientoRepository --> L_EquipoService : List<Movimiento>
+L_EquipoService -> L_UsuarioService : nombresPorId(empresaId, ids)
+L_UsuarioService --> L_EquipoService : Map<Long, String>
+L_EquipoService --> L_EquipoController : FichaEquipoResponse
+L_EquipoController --> L_VISTA_equipos_ficha : ficha con estado, bodega e historial
+L_VISTA_equipos_ficha --> A : historial de movimientos
+@enduml

@@ -1,0 +1,46 @@
+@startuml secuencia-hu-24
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-24 · Consultar los documentos de una operación
+actor "Vendedor" as A
+boundary "arriendos/ficha.html" as L_VISTA_arriendos_ficha
+control ":ArriendoController" as L_ArriendoController
+participant ":ArriendoService" as L_ArriendoService
+participant ":ArriendoRepository" as L_ArriendoRepository
+participant ":DocumentoService" as L_DocumentoService
+participant ":DocumentoRepository" as L_DocumentoRepository
+control ":DocumentoController" as L_DocumentoController
+participant ":VentaService" as L_VentaService
+participant ":AlmacenArchivos" as L_AlmacenArchivos
+A -> L_VISTA_arriendos_ficha : abre la ficha de un arriendo
+L_VISTA_arriendos_ficha -> L_ArriendoController : GET /arriendos/{id}
+L_ArriendoController -> L_ArriendoService : ficha(empresaId, id)
+L_ArriendoService -> L_ArriendoRepository : buscarFicha(empresaId, id)
+L_ArriendoRepository --> L_ArriendoService : Optional<Arriendo>
+L_ArriendoService --> L_ArriendoController : ArriendoResponse
+L_ArriendoController -> L_DocumentoService : deArriendo(empresaId, arriendoId)
+L_DocumentoService -> L_DocumentoRepository : findByEmpresaIdAndOperacionIdOrderByFechaEmisionDescIdDesc(empresaId, operacionId)
+L_DocumentoRepository --> L_DocumentoService : List<Documento>
+L_DocumentoService --> L_ArriendoController : List<DocumentoResponse>
+L_ArriendoController --> L_VISTA_arriendos_ficha : ficha con sus documentos
+L_VISTA_arriendos_ficha --> A : documentos de la operación
+A -> L_VISTA_arriendos_ficha : descarga un documento
+L_VISTA_arriendos_ficha -> L_DocumentoController : GET /documentos/{id}/archivo
+alt documento de su empresa
+L_DocumentoController -> L_DocumentoService : descargar(empresaId, id, incluirVentas)
+L_DocumentoService -> L_DocumentoRepository : findByIdAndEmpresaId(id, empresaId)
+L_DocumentoRepository --> L_DocumentoService : Optional<Documento>
+L_DocumentoService -> L_VentaService : existe(empresaId, id)
+L_VentaService --> L_DocumentoService : boolean
+L_DocumentoService -> L_AlmacenArchivos : resolver(rutaRelativa)
+L_AlmacenArchivos --> L_DocumentoService : Path
+L_DocumentoService --> L_DocumentoController : ArchivoDocumento
+L_DocumentoController --> L_VISTA_arriendos_ficha : el archivo
+else documento de otra empresa
+L_DocumentoService --> L_DocumentoController : <<exception>> RecursoNoEncontradoException
+L_DocumentoController --> L_VISTA_arriendos_ficha : 404: no encontrado (PNF-06)
+end
+L_VISTA_arriendos_ficha --> A : archivo descargado
+@enduml

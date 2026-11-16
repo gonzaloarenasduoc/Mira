@@ -1,0 +1,31 @@
+@startuml secuencia-hu-10
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-10 · Consultar el historial de traslados
+actor "Encargado de bodega" as A
+boundary "traslados/lista.html" as L_VISTA_traslados_lista
+control ":TrasladoController" as L_TrasladoController
+participant ":TrasladoService" as L_TrasladoService
+participant ":MovimientoRepository" as L_MovimientoRepository
+participant ":UsuarioService" as L_UsuarioService
+A -> L_VISTA_traslados_lista : abre Traslados
+L_VISTA_traslados_lista -> L_TrasladoController : GET /traslados
+L_TrasladoController -> L_TrasladoService : historial(empresaId, filtro, pagina)
+L_TrasladoService -> L_MovimientoRepository : traslados(empresaId, tipos, serie, bodegaId, desde, hasta, pagina)
+L_MovimientoRepository --> L_TrasladoService : Page<Movimiento>
+L_TrasladoService -> L_TrasladoService : nombres()
+L_TrasladoService -> L_UsuarioService : nombresPorId(empresaId, ids)
+L_UsuarioService --> L_TrasladoService : Map<Long, String>
+L_TrasladoService --> L_TrasladoController : Page<TrasladoResponse>
+L_TrasladoController -> L_TrasladoService : enTransito(empresaId)
+L_TrasladoService -> L_MovimientoRepository : trasladosEnTransito(empresaId)
+L_MovimientoRepository --> L_TrasladoService : List<Movimiento>
+L_TrasladoService -> L_TrasladoService : nombres()
+L_TrasladoService -> L_UsuarioService : nombresPorId(empresaId, ids)
+L_UsuarioService --> L_TrasladoService : Map<Long, String>
+L_TrasladoService --> L_TrasladoController : List<TrasladoResponse>
+L_TrasladoController --> L_VISTA_traslados_lista : traslados en tránsito e historial paginado
+L_VISTA_traslados_lista --> A : historial de traslados
+@enduml

@@ -1,0 +1,41 @@
+@startuml secuencia-hu-14
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-14 · Registrar un arriendo validando disponibilidad
+actor "Vendedor" as A
+boundary "arriendos/formulario.html" as L_VISTA_arriendos_formulario
+control ":ArriendoController" as L_ArriendoController
+participant ":ArriendoService" as L_ArriendoService
+participant ":ClienteService" as L_ClienteService
+participant ":EquipoService" as L_EquipoService
+participant ":ArriendoRepository" as L_ArriendoRepository
+entity ":Arriendo" as L_Arriendo
+A -> L_VISTA_arriendos_formulario : elige cliente, equipos y fecha de retorno
+L_VISTA_arriendos_formulario -> L_ArriendoController : POST /arriendos
+alt todos los equipos disponibles
+L_ArriendoController -> L_ArriendoService : registrar(empresaId, usuarioId, request)
+L_ArriendoService -> L_ArriendoService : validar()
+L_ArriendoService -> L_ClienteService : obtener()
+L_ArriendoService -> L_EquipoService : resumenPorId(empresaId, ids)
+L_EquipoService --> L_ArriendoService : Map<Long, EquipoResponse>
+L_ArriendoService -> L_ArriendoService : rechazarSiTieneArriendoVigente()
+L_ArriendoService -> L_ArriendoRepository : vigentesDelEquipo(empresaId, equipoId)
+L_ArriendoRepository --> L_ArriendoService : List<ArriendoVigente>
+L_ArriendoService -> L_EquipoService : resumenPorId(empresaId, ids)
+L_EquipoService --> L_ArriendoService : Map<Long, EquipoResponse>
+L_ArriendoService -> L_Arriendo : <<create>>
+L_ArriendoService -> L_ArriendoRepository : save()
+L_ArriendoService -> L_EquipoService : despacharEnArriendo(empresaId, usuarioId, equipoId, operacionId)
+L_ArriendoService -> L_ArriendoService : conFechaDeRetorno()
+L_ArriendoService -> L_ArriendoRepository : vigentesDelEquipo(empresaId, equipoId)
+L_ArriendoRepository --> L_ArriendoService : List<ArriendoVigente>
+L_ArriendoService --> L_ArriendoController : ArriendoResponse
+L_ArriendoController --> L_VISTA_arriendos_formulario : redirige a la ficha del arriendo
+else algún equipo dejó de estar disponible
+L_EquipoService --> L_ArriendoController : <<exception>> EquipoNoDisponibleException
+L_ArriendoController --> L_VISTA_arriendos_formulario : formulario con el mensaje; la transacción se revierte completa (CF-03)
+end
+L_VISTA_arriendos_formulario --> A : arriendo registrado o el mensaje
+@enduml

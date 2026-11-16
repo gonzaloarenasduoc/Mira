@@ -1,0 +1,35 @@
+@startuml secuencia-hu-19
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-19 · Consultar el historial de operaciones de un cliente
+actor "Vendedor" as A
+boundary "clientes/ficha.html" as L_VISTA_clientes_ficha
+control ":ClienteController" as L_ClienteController
+participant ":ClienteService" as L_ClienteService
+participant ":HistorialClienteService" as L_HistorialClienteService
+participant ":ArriendoRepository" as L_ArriendoRepository
+participant ":VentaRepository" as L_VentaRepository
+participant ":EquipoService" as L_EquipoService
+participant ":ArriendoService" as L_ArriendoService
+A -> L_VISTA_clientes_ficha : abre la ficha de un cliente
+L_VISTA_clientes_ficha -> L_ClienteController : GET /clientes/{id}
+L_ClienteController -> L_ClienteService : buscar(empresaId, id)
+L_ClienteService --> L_ClienteController : ClienteResponse
+L_ClienteController -> L_HistorialClienteService : historial(empresaId, clienteId, incluirVentas)
+L_HistorialClienteService -> L_ClienteService : obtener()
+L_HistorialClienteService -> L_ArriendoRepository : delCliente(empresaId, clienteId)
+L_ArriendoRepository --> L_HistorialClienteService : List<Arriendo>
+L_HistorialClienteService -> L_VentaRepository : delCliente(empresaId, clienteId)
+L_VentaRepository --> L_HistorialClienteService : List<Venta>
+L_HistorialClienteService -> L_EquipoService : resumenPorId(empresaId, ids)
+L_EquipoService --> L_HistorialClienteService : Map<Long, EquipoResponse>
+L_HistorialClienteService -> L_HistorialClienteService : series()
+L_HistorialClienteService -> L_ArriendoService : estado()
+L_HistorialClienteService -> L_ArriendoService : total()
+L_HistorialClienteService -> L_HistorialClienteService : series()
+L_HistorialClienteService --> L_ClienteController : List<OperacionClienteResponse>
+L_ClienteController --> L_VISTA_clientes_ficha : ficha con sus arriendos y ventas
+L_VISTA_clientes_ficha --> A : historial del cliente
+@enduml

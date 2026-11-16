@@ -1,0 +1,54 @@
+@startuml secuencia-hu-09
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-09 · Registrar un traslado entre bodegas
+actor "Encargado de bodega" as A
+boundary "traslados/formulario.html" as L_VISTA_traslados_formulario
+control ":TrasladoController" as L_TrasladoController
+participant ":TrasladoService" as L_TrasladoService
+participant ":EquipoRepository" as L_EquipoRepository
+participant ":BodegaService" as L_BodegaService
+entity ":Movimiento" as L_Movimiento
+participant ":MovimientoRepository" as L_MovimientoRepository
+participant ":UsuarioService" as L_UsuarioService
+boundary "traslados/lista.html" as L_VISTA_traslados_lista
+A -> L_VISTA_traslados_formulario : elige el equipo y la bodega de destino
+L_VISTA_traslados_formulario -> L_TrasladoController : POST /traslados
+alt equipo disponible y destino distinto
+L_TrasladoController -> L_TrasladoService : registrarSalida(empresaId, usuarioId, request)
+L_TrasladoService -> L_TrasladoService : bloquear()
+L_TrasladoService -> L_EquipoRepository : buscarParaActualizar(empresaId, id)
+L_EquipoRepository --> L_TrasladoService : Optional<Equipo>
+L_TrasladoService -> L_TrasladoService : validarDisponible()
+L_TrasladoService -> L_BodegaService : obtener()
+L_TrasladoService -> L_Movimiento : registrar(equipo, tipo, fecha, origen, destino, usuarioId, observacion)
+L_TrasladoService -> L_MovimientoRepository : save()
+L_TrasladoService -> L_TrasladoService : nombre()
+L_TrasladoService -> L_UsuarioService : nombresPorId(empresaId, ids)
+L_UsuarioService --> L_TrasladoService : Map<Long, String>
+L_TrasladoService --> L_TrasladoController : TrasladoResponse
+L_TrasladoController --> L_VISTA_traslados_formulario : redirige a la ficha: equipo en tránsito
+else equipo no disponible o destino igual al origen
+L_TrasladoService --> L_TrasladoController : <<exception>> NegocioException
+L_TrasladoController --> L_VISTA_traslados_formulario : formulario con el mensaje
+end
+L_VISTA_traslados_formulario --> A : salida registrada o el mensaje
+A -> L_VISTA_traslados_lista : confirma la llegada en la bodega de destino
+L_VISTA_traslados_lista -> L_TrasladoController : POST /traslados/llegada
+L_TrasladoController -> L_TrasladoService : confirmarLlegada(empresaId, usuarioId, equipoId)
+L_TrasladoService -> L_TrasladoService : bloquear()
+L_TrasladoService -> L_EquipoRepository : buscarParaActualizar(empresaId, id)
+L_EquipoRepository --> L_TrasladoService : Optional<Equipo>
+L_TrasladoService -> L_MovimientoRepository : findFirstByEmpresaIdAndEquipoIdAndTipoOrderByIdDesc(empresaId, equipoId, tipo)
+L_MovimientoRepository --> L_TrasladoService : Optional<Movimiento>
+L_TrasladoService -> L_Movimiento : registrar(equipo, tipo, fecha, origen, destino, usuarioId, observacion)
+L_TrasladoService -> L_MovimientoRepository : save()
+L_TrasladoService -> L_TrasladoService : nombre()
+L_TrasladoService -> L_UsuarioService : nombresPorId(empresaId, ids)
+L_UsuarioService --> L_TrasladoService : Map<Long, String>
+L_TrasladoService --> L_TrasladoController : TrasladoResponse
+L_TrasladoController --> L_VISTA_traslados_lista : listado: equipo disponible en el destino
+L_VISTA_traslados_lista --> A : llegada registrada
+@enduml

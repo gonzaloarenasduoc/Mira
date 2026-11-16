@@ -1,0 +1,37 @@
+@startuml secuencia-hu-04
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-04 · Registrar un equipo por número de serie
+actor "Encargado de bodega" as A
+boundary "equipos/formulario.html" as L_VISTA_equipos_formulario
+control ":EquipoController" as L_EquipoController
+participant ":EquipoService" as L_EquipoService
+participant ":EquipoRepository" as L_EquipoRepository
+participant ":CategoriaRepository" as L_CategoriaRepository
+participant ":BodegaService" as L_BodegaService
+entity ":Equipo" as L_Equipo
+entity ":Movimiento" as L_Movimiento
+participant ":MovimientoRepository" as L_MovimientoRepository
+A -> L_VISTA_equipos_formulario : completa serie, categoría, marca, modelo y bodega
+L_VISTA_equipos_formulario -> L_EquipoController : POST /equipos
+alt serie nueva y bodega activa
+L_EquipoController -> L_EquipoService : registrar(empresaId, usuarioId, request)
+L_EquipoService -> L_EquipoRepository : existsByEmpresaIdAndNumeroSerieIgnoreCase(empresaId, numeroSerie)
+L_EquipoRepository --> L_EquipoService : boolean
+L_EquipoService -> L_CategoriaRepository : findByIdAndEmpresaId(id, empresaId)
+L_CategoriaRepository --> L_EquipoService : Optional<Categoria>
+L_EquipoService -> L_BodegaService : obtener()
+L_EquipoService -> L_Equipo : <<create>>
+L_EquipoService -> L_Movimiento : registrar(equipo, tipo, fecha, origen, destino, usuarioId, observacion)
+L_EquipoService -> L_EquipoRepository : save()
+L_EquipoService -> L_MovimientoRepository : save()
+L_EquipoService --> L_EquipoController : EquipoResponse
+L_EquipoController --> L_VISTA_equipos_formulario : redirige a la ficha del equipo
+else número de serie ya registrado en la empresa
+L_EquipoService --> L_EquipoController : <<exception>> NumeroSerieDuplicadoException
+L_EquipoController --> L_VISTA_equipos_formulario : formulario con el mensaje
+end
+L_VISTA_equipos_formulario --> A : ficha o el mensaje
+@enduml

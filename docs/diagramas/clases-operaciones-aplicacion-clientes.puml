@@ -1,0 +1,55 @@
+@startuml clases-operaciones-aplicacion-clientes
+!include _estilo.iuml
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam nodesep 25
+skinparam ranksep 45
+title Operaciones: clientes y disponibilidad (E004 y HU-29) · aplicación
+
+package "controller" {
+  class ClienteController <<Controller>> {
+    + listar() : String
+    + ficha(id) : String
+    + nuevo() : String
+    + crear(cliente) : String
+    + editar(id) : String
+    + actualizar(id, cliente) : String
+    + desactivar(id) : String
+    + activar(id) : String
+  }
+  class DisponibilidadController <<Controller>> {
+    + consultar(filtro) : String
+  }
+}
+ClienteController -[hidden]down- DisponibilidadController
+package "service" {
+  class ClienteService <<Service>> {
+    + listar(empresaId) : List<ClienteResponse>
+    + listarActivos(empresaId) : List<ClienteResponse>
+    + buscar(empresaId, id) : ClienteResponse
+    + crear(empresaId, request) : ClienteResponse
+    + actualizar(empresaId, id, request) : ClienteResponse
+    + cambiarEstado(empresaId, id, activo) : void
+  }
+  class DisponibilidadService <<Service>> {
+    + consultar(empresaId, filtro) : DisponibilidadResponse
+  }
+  class HistorialClienteService <<Service>> {
+    + historial(empresaId, clienteId, incluirVentas) : List<OperacionClienteResponse>
+  }
+}
+ClienteService -[hidden]down- DisponibilidadService
+DisponibilidadService -[hidden]down- HistorialClienteService
+package "otros módulos" #F7F7F7 {
+  class CategoriaService <<Service>>
+  class EquipoService <<Service>>
+}
+DisponibilidadService ..> EquipoService : <<use>>
+HistorialClienteService ..> ClienteService : <<use>>
+HistorialClienteService ..> EquipoService : <<use>>
+ClienteController ..> ClienteService : <<use>>
+ClienteController ..> HistorialClienteService : <<use>>
+DisponibilidadController ..> DisponibilidadService : <<use>>
+DisponibilidadController ..> CategoriaService : <<use>>
+@enduml

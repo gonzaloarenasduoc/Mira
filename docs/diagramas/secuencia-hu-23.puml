@@ -1,0 +1,38 @@
+@startuml secuencia-hu-23
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-23 · Adjuntar documentos a una operación
+actor "Encargado de bodega" as A
+boundary "documentos/formulario.html" as L_VISTA_documentos_formulario
+control ":DocumentoController" as L_DocumentoController
+participant ":DocumentoService" as L_DocumentoService
+participant ":ArriendoService" as L_ArriendoService
+participant ":AlmacenArchivos" as L_AlmacenArchivos
+participant ":DocumentoRepository" as L_DocumentoRepository
+entity ":Documento" as L_Documento
+A -> L_VISTA_documentos_formulario : elige tipo, folio, fecha y archivo
+L_VISTA_documentos_formulario -> L_DocumentoController : POST /arriendos/{id}/documentos
+alt PDF, JPG o PNG de hasta 10 MB
+L_DocumentoController -> L_DocumentoService : adjuntarAArriendo(empresaId, arriendoId, request, archivo)
+L_DocumentoService -> L_ArriendoService : existe(empresaId, id)
+L_ArriendoService --> L_DocumentoService : boolean
+L_DocumentoService -> L_DocumentoService : adjuntar()
+L_DocumentoService -> L_DocumentoService : nombreOriginal()
+L_DocumentoService -> L_DocumentoService : extension()
+L_DocumentoService -> L_DocumentoService : comienzaCon()
+L_DocumentoService -> L_AlmacenArchivos : guardar(empresaId, extension, contenido)
+L_AlmacenArchivos --> L_DocumentoService : String
+L_DocumentoService -> L_DocumentoService : borrarSiSeRevierte()
+L_DocumentoService -> L_AlmacenArchivos : eliminar(rutaRelativa)
+L_DocumentoService -> L_DocumentoRepository : save()
+L_DocumentoService -> L_Documento : <<create>>
+L_DocumentoService --> L_DocumentoController : DocumentoResponse
+L_DocumentoController --> L_VISTA_documentos_formulario : redirige a la ficha del arriendo
+else formato no permitido o contenido que no coincide
+L_DocumentoService --> L_DocumentoController : <<exception>> NegocioException
+L_DocumentoController --> L_VISTA_documentos_formulario : formulario con el mensaje; si la transacción falla, el archivo se borra
+end
+L_VISTA_documentos_formulario --> A : documento adjunto o el mensaje
+@enduml

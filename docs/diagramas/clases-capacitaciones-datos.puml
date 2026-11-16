@@ -1,0 +1,75 @@
+@startuml clases-capacitaciones-datos
+!include _estilo.iuml
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam nodesep 25
+skinparam ranksep 45
+title Capacitaciones y técnicos (E007) · datos
+
+package "service" {
+  class CapacitacionService <<Service>> {
+  }
+  class TecnicoService <<Service>> {
+  }
+}
+package "repository" {
+  interface CapacitacionRepository <<Repository>> {
+    + findByEmpresaIdAndOperacionIdOrderByFechaProgramada(empresaId, operacionId) : List<Capacitacion>
+    + entre(empresaId, desde, hasta) : List<Capacitacion>
+    + findByIdAndEmpresaId(id, empresaId) : Optional<Capacitacion>
+    + delTecnicoEntre(empresaId, tecnicoId, estado, desde, hasta) : List<Capacitacion>
+  }
+  interface TecnicoRepository <<Repository>> {
+    + findByEmpresaIdOrderByApellidoAscNombreAsc(empresaId) : List<Tecnico>
+    + findByEmpresaIdAndActivoTrueOrderByApellidoAscNombreAsc(empresaId) : List<Tecnico>
+    + findByIdAndEmpresaId(id, empresaId) : Optional<Tecnico>
+  }
+}
+CapacitacionRepository -[hidden]down- TecnicoRepository
+package "entity" {
+  class Capacitacion <<Entity>> {
+    - operacionId : Long
+    - fechaProgramada : LocalDateTime
+    - fechaRealizada : LocalDateTime
+    - lugar : String
+    - estado : EstadoCapacitacion
+    - observaciones : String
+    + marcarRealizada(fechaRealizada) : void
+    + cancelar() : void
+  }
+  class Tecnico <<Entity>> {
+    - nombre : String
+    - apellido : String
+    - email : String
+    - telefono : String
+    - activo : boolean
+    + actualizar(nombre, apellido, email, telefono) : void
+    + cambiarEstado(activo) : void
+    + getNombreCompleto() : String
+  }
+  enum EstadoCapacitacion {
+    PROGRAMADA
+    REALIZADA
+    CANCELADA
+    + getEtiqueta() : String
+  }
+}
+package "otros módulos" #F7F7F7 {
+  class Empresa <<Entity>>
+  interface EmpresaRepository <<Repository>>
+  abstract class EntidadAuditable <<Entity>>
+}
+TecnicoRepository ..> Tecnico : <<manage>>
+CapacitacionRepository ..> Capacitacion : <<manage>>
+TecnicoService --> "1" TecnicoRepository
+TecnicoService --> "1" EmpresaRepository
+CapacitacionService --> "1" CapacitacionRepository
+CapacitacionService --> "1" EmpresaRepository
+Tecnico --|> EntidadAuditable
+Tecnico "*" --> "1" Empresa : empresa
+Capacitacion --|> EntidadAuditable
+Capacitacion "*" --> "1" Empresa : empresa
+Capacitacion "*" --> "1" Tecnico : tecnico
+Capacitacion ..> EstadoCapacitacion
+@enduml

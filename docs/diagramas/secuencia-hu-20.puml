@@ -1,0 +1,32 @@
+@startuml secuencia-hu-20
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-20 · Agendar la capacitación de una operación
+actor "Vendedor" as A
+boundary "capacitaciones/formulario.html" as L_VISTA_capacitaciones_formulario
+control ":CapacitacionController" as L_CapacitacionController
+participant ":CapacitacionService" as L_CapacitacionService
+participant ":ArriendoService" as L_ArriendoService
+participant ":TecnicoService" as L_TecnicoService
+entity ":Capacitacion" as L_Capacitacion
+participant ":CapacitacionRepository" as L_CapacitacionRepository
+A -> L_VISTA_capacitaciones_formulario : elige técnico, fecha, hora y lugar
+L_VISTA_capacitaciones_formulario -> L_CapacitacionController : POST /arriendos/{id}/capacitaciones
+alt fecha de hoy o posterior y técnico activo
+L_CapacitacionController -> L_CapacitacionService : agendarParaArriendo(empresaId, arriendoId, request)
+L_CapacitacionService -> L_ArriendoService : existe(empresaId, id)
+L_ArriendoService --> L_CapacitacionService : boolean
+L_CapacitacionService -> L_CapacitacionService : agendar()
+L_CapacitacionService -> L_TecnicoService : obtener()
+L_CapacitacionService -> L_Capacitacion : <<create>>
+L_CapacitacionService -> L_CapacitacionRepository : save()
+L_CapacitacionService --> L_CapacitacionController : CapacitacionResponse
+L_CapacitacionController --> L_VISTA_capacitaciones_formulario : redirige a la ficha del arriendo
+else fecha pasada o técnico inactivo
+L_CapacitacionService --> L_CapacitacionController : <<exception>> NegocioException
+L_CapacitacionController --> L_VISTA_capacitaciones_formulario : formulario con el mensaje
+end
+L_VISTA_capacitaciones_formulario --> A : capacitación programada o el mensaje
+@enduml

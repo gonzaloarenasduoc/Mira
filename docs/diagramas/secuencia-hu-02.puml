@@ -1,0 +1,28 @@
+@startuml secuencia-hu-02
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-02 · Crear usuarios con un rol
+actor "Administrador" as A
+boundary "usuarios/formulario.html" as L_VISTA_usuarios_formulario
+control ":UsuarioController" as L_UsuarioController
+participant ":UsuarioService" as L_UsuarioService
+participant ":UsuarioRepository" as L_UsuarioRepository
+entity ":Usuario" as L_Usuario
+A -> L_VISTA_usuarios_formulario : completa nombre, correo, contraseña y rol
+L_VISTA_usuarios_formulario -> L_UsuarioController : POST /usuarios
+alt datos válidos y correo no registrado
+L_UsuarioController -> L_UsuarioService : crear(empresaId, request)
+L_UsuarioService -> L_UsuarioRepository : existsByEmailIgnoreCase(email)
+L_UsuarioRepository --> L_UsuarioService : boolean
+L_UsuarioService -> L_Usuario : <<create>>
+L_UsuarioService -> L_UsuarioRepository : save()
+L_UsuarioService --> L_UsuarioController : UsuarioResponse
+L_UsuarioController --> L_VISTA_usuarios_formulario : redirige al listado de usuarios
+else correo ya registrado en la empresa
+L_UsuarioService --> L_UsuarioController : <<exception>> CorreoDuplicadoException
+L_UsuarioController --> L_VISTA_usuarios_formulario : formulario con el mensaje
+end
+L_VISTA_usuarios_formulario --> A : usuario creado o el mensaje
+@enduml

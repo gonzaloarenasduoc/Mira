@@ -1,0 +1,32 @@
+@startuml secuencia-hu-22
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-22 · Calendario de capacitaciones
+actor "Vendedor" as A
+boundary "capacitaciones/calendario.html" as L_VISTA_capacitaciones_calendario
+control ":CapacitacionController" as L_CapacitacionController
+participant ":CapacitacionService" as L_CapacitacionService
+participant ":CapacitacionRepository" as L_CapacitacionRepository
+boundary "capacitaciones/realizada.html" as L_VISTA_capacitaciones_realizada
+A -> L_VISTA_capacitaciones_calendario : abre Capacitaciones
+L_VISTA_capacitaciones_calendario -> L_CapacitacionController : GET /capacitaciones
+L_CapacitacionController -> L_CapacitacionService : calendario(empresaId, mes)
+L_CapacitacionService -> L_CapacitacionRepository : entre(empresaId, desde, hasta)
+L_CapacitacionRepository --> L_CapacitacionService : List<Capacitacion>
+L_CapacitacionService --> L_CapacitacionController : CalendarioMes
+L_CapacitacionController --> L_VISTA_capacitaciones_calendario : grilla del mes
+L_VISTA_capacitaciones_calendario --> A : calendario
+A -> L_VISTA_capacitaciones_realizada : marca una capacitación como realizada
+L_VISTA_capacitaciones_realizada -> L_CapacitacionController : POST /capacitaciones/{id}/realizada
+alt programada y fecha no futura
+L_CapacitacionController -> L_CapacitacionService : marcarRealizada(empresaId, id, request)
+L_CapacitacionService --> L_CapacitacionController : DetalleCapacitacionResponse
+L_CapacitacionController --> L_VISTA_capacitaciones_realizada : redirige a la ficha de la capacitación
+else ya realizada o cancelada, o fecha futura
+L_CapacitacionService --> L_CapacitacionController : <<exception>> NegocioException
+L_CapacitacionController --> L_VISTA_capacitaciones_realizada : formulario con el mensaje
+end
+L_VISTA_capacitaciones_realizada --> A : realizada o el mensaje
+@enduml

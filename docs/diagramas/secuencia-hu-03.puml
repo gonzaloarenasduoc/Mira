@@ -1,0 +1,30 @@
+@startuml secuencia-hu-03
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-03 · Menú y acceso según el rol
+actor "Usuario autenticado" as A
+boundary "inicio.html" as L_VISTA_inicio
+control ":InicioController" as L_InicioController
+participant ":ArriendoService" as L_ArriendoService
+participant ":ArriendoRepository" as L_ArriendoRepository
+participant ":SeguridadConfig" as L_SeguridadConfig
+A -> L_VISTA_inicio : entra a la página de inicio
+L_VISTA_inicio -> L_InicioController : GET /
+L_InicioController -> L_ArriendoService : alertasDeRetorno(empresaId)
+L_ArriendoService -> L_ArriendoRepository : porRetornarHasta(empresaId, limite)
+L_ArriendoRepository --> L_ArriendoService : List<LineaPorRetornar>
+L_ArriendoService --> L_InicioController : List<AlertaRetornoResponse>
+L_InicioController --> L_VISTA_inicio : página de inicio con el menú de su rol (MenuGlobal)
+L_VISTA_inicio --> A : solo las opciones de su rol
+A -> L_VISTA_inicio : escribe a mano una dirección no permitida
+L_VISTA_inicio -> L_SeguridadConfig : GET de una ruta de otro rol
+L_SeguridadConfig --> L_VISTA_inicio : 403: página de acceso denegado (error/403)
+L_VISTA_inicio --> A : acceso denegado
+note over A
+MenuGlobal arma el menú con
+opcionesPara(rol) en cada página;
+SeguridadConfig aplica la matriz de permisos.
+end note
+@enduml

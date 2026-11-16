@@ -1,0 +1,35 @@
+@startuml secuencia-hu-27
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-27 · Utilización de equipos y arriendos vigentes
+actor "Jefatura" as A
+boundary "indicadores/panel.html" as L_VISTA_indicadores_panel
+control ":IndicadoresController" as L_IndicadoresController
+participant ":IndicadoresService" as L_IndicadoresService
+participant ":ArriendoService" as L_ArriendoService
+participant ":EquipoService" as L_EquipoService
+A -> L_VISTA_indicadores_panel : elige el periodo y consulta
+L_VISTA_indicadores_panel -> L_IndicadoresController : GET /indicadores
+L_IndicadoresController -> L_IndicadoresService : utilizacion(empresaId, desde, hasta)
+L_IndicadoresService -> L_ArriendoService : arrendadosEntre(empresaId, desde, hasta)
+L_ArriendoService --> L_IndicadoresService : List<PeriodoArrendado>
+L_IndicadoresService -> L_EquipoService : enInventario(empresaId)
+L_EquipoService --> L_IndicadoresService : List<EquipoEnInventario>
+L_IndicadoresService -> L_IndicadoresService : porcentaje()
+L_IndicadoresService --> L_IndicadoresController : UtilizacionResponse
+L_IndicadoresController -> L_IndicadoresService : utilizacion(empresaId, desde, hasta)
+L_IndicadoresService -> L_ArriendoService : arrendadosEntre(empresaId, desde, hasta)
+L_ArriendoService --> L_IndicadoresService : List<PeriodoArrendado>
+L_IndicadoresService -> L_EquipoService : enInventario(empresaId)
+L_EquipoService --> L_IndicadoresService : List<EquipoEnInventario>
+L_IndicadoresService -> L_IndicadoresService : porcentaje()
+L_IndicadoresService --> L_IndicadoresController : UtilizacionResponse
+L_IndicadoresController -> L_IndicadoresService : arriendosVigentes(empresaId)
+L_IndicadoresService -> L_ArriendoService : arriendosVigentes(empresaId)
+L_ArriendoService --> L_IndicadoresService : List<AlertaRetornoResponse>
+L_IndicadoresService --> L_IndicadoresController : List<AlertaRetornoResponse>
+L_IndicadoresController --> L_VISTA_indicadores_panel : utilización global, por categoría y por equipo; arriendos vigentes
+L_VISTA_indicadores_panel --> A : utilización del periodo
+@enduml

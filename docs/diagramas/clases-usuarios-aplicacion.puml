@@ -1,0 +1,48 @@
+@startuml clases-usuarios-aplicacion
+!include _estilo.iuml
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam nodesep 25
+skinparam ranksep 45
+title Usuarios y control de acceso (E001) · aplicación
+
+package "controller" {
+  class LoginController <<Controller>> {
+    + login() : String
+  }
+  class UsuarioController <<Controller>> {
+    + roles() : RolUsuario[]
+    + listar() : String
+    + nuevo() : String
+    + crear(usuario) : String
+    + editar(id) : String
+    + actualizar(id, usuario) : String
+    + desactivar(id) : String
+    + activar(id) : String
+  }
+}
+LoginController -[hidden]down- UsuarioController
+package "service" {
+  class CorreoDuplicadoException <<Exception>> {
+  }
+  class UsuarioDetallesService <<Service>> {
+    + loadUserByUsername(email) : UserDetails
+  }
+  class UsuarioService <<Service>> {
+    + listar(empresaId) : List<UsuarioResponse>
+    + buscar(empresaId, id) : UsuarioResponse
+    + crear(empresaId, request) : UsuarioResponse
+    + actualizar(empresaId, id, request) : UsuarioResponse
+    + cambiarEstado(empresaId, id, activo, idSolicitante) : void
+    + nombresPorId(empresaId, ids) : Map<Long, String>
+  }
+}
+CorreoDuplicadoException -[hidden]down- UsuarioDetallesService
+UsuarioDetallesService -[hidden]down- UsuarioService
+package "otros módulos" #F7F7F7 {
+  class NegocioException <<Exception>>
+}
+CorreoDuplicadoException --|> NegocioException
+UsuarioController ..> UsuarioService : <<use>>
+@enduml

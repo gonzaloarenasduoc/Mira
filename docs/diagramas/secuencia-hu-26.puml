@@ -1,0 +1,20 @@
+@startuml secuencia-hu-26
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+title HU-26 · Panel de equipos por bodega y estado
+actor "Jefatura" as A
+boundary "indicadores/panel.html" as L_VISTA_indicadores_panel
+control ":IndicadoresController" as L_IndicadoresController
+participant ":IndicadoresService" as L_IndicadoresService
+participant ":EquipoService" as L_EquipoService
+A -> L_VISTA_indicadores_panel : abre Indicadores
+L_VISTA_indicadores_panel -> L_IndicadoresController : GET /indicadores
+L_IndicadoresController -> L_IndicadoresService : inventario(empresaId)
+L_IndicadoresService -> L_EquipoService : conteoPorBodegaYEstado(empresaId)
+L_EquipoService --> L_IndicadoresService : List<ConteoEquipos>
+L_IndicadoresService --> L_IndicadoresController : PanelInventario
+L_IndicadoresController --> L_VISTA_indicadores_panel : panel con los gráficos por bodega y estado
+L_VISTA_indicadores_panel --> A : distribución del inventario
+@enduml
