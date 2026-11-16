@@ -1,0 +1,36 @@
+@startuml secuencia-hu-18
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+mainframe sd HU-18 Registrar una venta
+actor "Vendedor" as A
+participant "ventas/formulario.html" as L_VISTA_ventas_formulario <<boundary>>
+participant ":VentaController" as L_VentaController <<control>>
+participant ":VentaService" as L_VentaService
+participant ":ClienteService" as L_ClienteService
+participant ":EquipoService" as L_EquipoService
+participant ":ArriendoRepository" as L_ArriendoRepository
+participant ":Venta" as L_Venta <<entity>>
+participant ":VentaRepository" as L_VentaRepository
+A -> L_VISTA_ventas_formulario : elige cliente, equipos y valor de cada uno
+L_VISTA_ventas_formulario -> L_VentaController : POST /ventas
+alt todos los equipos disponibles
+L_VentaController -> L_VentaService : registrar(empresaId, usuarioId, request)
+L_VentaService -> L_VentaService : validar()
+L_VentaService -> L_ClienteService : obtener()
+L_VentaService -> L_EquipoService : resumenPorId(empresaId, ids)
+L_EquipoService --> L_VentaService : Map<Long, EquipoResponse>
+L_VentaService -> L_ArriendoRepository : vigentesDelEquipo(empresaId, equipoId)
+L_ArriendoRepository --> L_VentaService : List<ArriendoVigente>
+L_VentaService --> L_Venta : <<create>>
+L_VentaService -> L_VentaRepository : save()
+L_VentaService -> L_EquipoService : despacharEnVenta(empresaId, usuarioId, equipoId, operacionId)
+L_VentaService --> L_VentaController : VentaResponse
+L_VentaController --> L_VISTA_ventas_formulario : redirige a la ficha de la venta
+else algún equipo no está disponible
+L_EquipoService --> L_VentaController : <<exception>> EquipoNoDisponibleException
+L_VentaController --> L_VISTA_ventas_formulario : formulario con el mensaje
+end
+L_VISTA_ventas_formulario --> A : venta registrada o el mensaje
+@enduml

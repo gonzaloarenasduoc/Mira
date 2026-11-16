@@ -1,0 +1,20 @@
+@startuml secuencia-hu-16
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+mainframe sd HU-16 Alertas de retorno próximo o vencido
+actor "Encargado de bodega" as A
+participant "inicio.html" as L_VISTA_inicio <<boundary>>
+participant ":InicioController" as L_InicioController <<control>>
+participant ":ArriendoService" as L_ArriendoService
+participant ":ArriendoRepository" as L_ArriendoRepository
+A -> L_VISTA_inicio : entra a la página de inicio
+L_VISTA_inicio -> L_InicioController : GET /
+L_InicioController -> L_ArriendoService : alertasDeRetorno(empresaId)
+L_ArriendoService -> L_ArriendoRepository : porRetornarHasta(empresaId, limite)
+L_ArriendoRepository --> L_ArriendoService : List<LineaPorRetornar>
+L_ArriendoService --> L_InicioController : List<AlertaRetornoResponse>
+L_InicioController --> L_VISTA_inicio : inicio con las alertas de retorno
+L_VISTA_inicio --> A : vencidos y los que vencen en 3 días
+@enduml

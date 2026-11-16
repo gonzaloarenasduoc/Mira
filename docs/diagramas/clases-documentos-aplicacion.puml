@@ -1,0 +1,47 @@
+@startuml clases-documentos-aplicacion
+!include _estilo.iuml
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+skinparam packageStyle folder
+skinparam nodesep 25
+skinparam ranksep 45
+mainframe class Documentos de las operaciones (E008) · aplicación
+
+package "controller" {
+  class DocumentoController <<Controller>> {
+    + tipos() : TipoDocumento[]
+    + nuevoParaArriendo(id) : String
+    + adjuntarAArriendo(id, documento, archivo) : String
+    + nuevoParaVenta(id) : String
+    + adjuntarAVenta(id, documento, archivo) : String
+    + descargar(id) : ResponseEntity<Resource>
+  }
+}
+package "service" {
+  class AlmacenArchivos <<Service>> {
+    + guardar(empresaId, extension, contenido) : String
+    + eliminar(rutaRelativa) : void
+    + resolver(rutaRelativa) : Path
+  }
+  class DocumentoService <<Service>> {
+    + adjuntarAArriendo(empresaId, arriendoId, request, archivo) : DocumentoResponse
+    + adjuntarAVenta(empresaId, ventaId, request, archivo) : DocumentoResponse
+    + deArriendo(empresaId, arriendoId) : List<DocumentoResponse>
+    + deVenta(empresaId, ventaId) : List<DocumentoResponse>
+    + descargar(empresaId, id, incluirVentas) : ArchivoDocumento
+    + deEquipo(empresaId, equipoId, incluirVentas) : List<DocumentoResponse>
+  }
+}
+AlmacenArchivos -[hidden]down- DocumentoService
+package "otros módulos" #F7F7F7 {
+  class ArriendoService <<Service>>
+  class VentaService <<Service>>
+}
+DocumentoService ..> ArriendoService : <<use>>
+DocumentoService ..> VentaService : <<use>>
+DocumentoService ..> AlmacenArchivos : <<use>>
+DocumentoController ..> DocumentoService : <<use>>
+DocumentoController ..> ArriendoService : <<use>>
+DocumentoController ..> VentaService : <<use>>
+@enduml

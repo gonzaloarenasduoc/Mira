@@ -1,0 +1,58 @@
+@startuml clases-usuarios-datos
+!include _estilo.iuml
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+skinparam packageStyle folder
+skinparam nodesep 25
+skinparam ranksep 45
+mainframe class Usuarios y control de acceso (E001) · datos
+
+package "service" {
+  class UsuarioDetallesService <<Service>> {
+  }
+  class UsuarioService <<Service>> {
+  }
+}
+package "repository" {
+  interface UsuarioRepository <<interface>> <<Repository>> {
+    + findByEmailIgnoreCase(email) : Optional<Usuario>
+    + existsByEmailIgnoreCase(email) : boolean
+    + findByEmpresaIdOrderByApellidoAscNombreAsc(empresaId) : List<Usuario>
+    + findByIdAndEmpresaId(id, empresaId) : Optional<Usuario>
+    + findByEmpresaIdAndIdIn(empresaId, ids) : List<Usuario>
+  }
+}
+package "entity" {
+  class Usuario <<Entity>> {
+    - nombre : String
+    - apellido : String
+    - email : String
+    - passwordHash : String
+    - rol : RolUsuario
+    - activo : boolean
+    + actualizar(nombre, apellido, rol) : void
+    + cambiarEstado(activo) : void
+    + getNombreCompleto() : String
+  }
+  enum RolUsuario <<enumeration>> {
+    ADMINISTRADOR
+    ENCARGADO_BODEGA
+    VENDEDOR
+    JEFATURA
+    + getEtiqueta() : String
+  }
+}
+package "otros módulos" #F7F7F7 {
+  class Empresa <<Entity>>
+  interface EmpresaRepository <<interface>> <<Repository>>
+  abstract class EntidadAuditable <<Entity>>
+}
+UsuarioRepository ..> Usuario : <<manage>>
+UsuarioService --> "1" UsuarioRepository
+UsuarioService --> "1" EmpresaRepository
+UsuarioDetallesService --> "1" UsuarioRepository
+Usuario --|> EntidadAuditable
+Usuario "*" --> "1" Empresa : empresa
+Usuario ..> RolUsuario
+@enduml

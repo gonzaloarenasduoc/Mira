@@ -1,0 +1,80 @@
+@startuml clases-operaciones-aplicacion
+!include _estilo.iuml
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+skinparam packageStyle folder
+skinparam nodesep 25
+skinparam ranksep 45
+mainframe class Operaciones: arriendos y ventas (E005 y E006) · aplicación
+
+package "controller" {
+  class ArriendoController <<Controller>> {
+    + listar(pagina) : String
+    + nuevo(equipoId) : String
+    + registrar(arriendo) : String
+    + ficha(id) : String
+    + retorno(id, equipoId) : String
+    + registrarRetorno(id, retorno) : String
+  }
+  class VentaController <<Controller>> {
+    + nueva(equipoId) : String
+    + registrar(venta) : String
+    + ficha(id) : String
+  }
+}
+ArriendoController -[hidden]down- VentaController
+package "service" {
+  class ArriendoService <<Service>> {
+    + registrar(empresaId, usuarioId, request) : ArriendoResponse
+    + registrarRetorno(empresaId, usuarioId, arriendoId, request) : ArriendoResponse
+    + alertasDeRetorno(empresaId) : List<AlertaRetornoResponse>
+    + arriendosVigentes(empresaId) : List<AlertaRetornoResponse>
+    + arrendadosEntre(empresaId, desde, hasta) : List<PeriodoArrendado>
+    + equiposDisponibles(empresaId) : List<EquipoResponse>
+    + idsConEquipo(empresaId, equipoId) : List<Long>
+    + clientesPorId(empresaId, ids) : Map<Long, String>
+    + existe(empresaId, id) : boolean
+    + ficha(empresaId, id) : ArriendoResponse
+    + listar(empresaId, pagina) : Page<ResumenArriendoResponse>
+  }
+  class ClienteService <<Service>> {
+    + listar(empresaId) : List<ClienteResponse>
+    + listarActivos(empresaId) : List<ClienteResponse>
+    + buscar(empresaId, id) : ClienteResponse
+    + crear(empresaId, request) : ClienteResponse
+    + actualizar(empresaId, id, request) : ClienteResponse
+    + cambiarEstado(empresaId, id, activo) : void
+  }
+  class VentaService <<Service>> {
+    + registrar(empresaId, usuarioId, request) : VentaResponse
+    + idsConEquipo(empresaId, equipoId) : List<Long>
+    + clientesPorId(empresaId, ids) : Map<Long, String>
+    + existe(empresaId, id) : boolean
+    + ficha(empresaId, id) : VentaResponse
+  }
+}
+ArriendoService -[hidden]down- ClienteService
+ClienteService -[hidden]down- VentaService
+package "otros módulos" #F7F7F7 {
+  class BodegaService <<Service>>
+  class CapacitacionService <<Service>>
+  class DocumentoService <<Service>>
+  class EquipoService <<Service>>
+}
+ArriendoService ..> ClienteService : <<use>>
+ArriendoService ..> EquipoService : <<use>>
+VentaService ..> ClienteService : <<use>>
+VentaService ..> EquipoService : <<use>>
+ArriendoController ..> DocumentoService : <<use>>
+ArriendoController ..> CapacitacionService : <<use>>
+ArriendoController ..> ArriendoService : <<use>>
+ArriendoController ..> ClienteService : <<use>>
+ArriendoController ..> BodegaService : <<use>>
+ArriendoController ..> EquipoService : <<use>>
+VentaController ..> DocumentoService : <<use>>
+VentaController ..> CapacitacionService : <<use>>
+VentaController ..> VentaService : <<use>>
+VentaController ..> ArriendoService : <<use>>
+VentaController ..> ClienteService : <<use>>
+@enduml

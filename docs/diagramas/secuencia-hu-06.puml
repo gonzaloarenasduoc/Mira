@@ -1,0 +1,29 @@
+@startuml secuencia-hu-06
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+mainframe sd HU-06 Editar y desactivar usuarios
+actor "Administrador" as A
+participant "usuarios/formulario.html" as L_VISTA_usuarios_formulario <<boundary>>
+participant ":UsuarioController" as L_UsuarioController <<control>>
+participant ":UsuarioService" as L_UsuarioService
+participant "usuarios/lista.html" as L_VISTA_usuarios_lista <<boundary>>
+A -> L_VISTA_usuarios_formulario : cambia nombre o rol de un usuario
+L_VISTA_usuarios_formulario -> L_UsuarioController : POST /usuarios/{id}
+L_UsuarioController -> L_UsuarioService : buscar(empresaId, id)
+L_UsuarioService --> L_UsuarioController : UsuarioResponse
+L_UsuarioController -> L_UsuarioService : actualizar(empresaId, id, request)
+L_UsuarioService --> L_UsuarioController : UsuarioResponse
+L_UsuarioController --> L_VISTA_usuarios_formulario : redirige al listado
+L_VISTA_usuarios_formulario --> A : usuario actualizado
+A -> L_VISTA_usuarios_lista : desactiva un usuario
+L_VISTA_usuarios_lista -> L_UsuarioController : POST /usuarios/{id}/desactivar
+alt no es su propia cuenta
+L_UsuarioController --> L_VISTA_usuarios_lista : listado con el usuario inactivo
+else intenta desactivar su propia cuenta
+L_UsuarioService --> L_UsuarioController : <<exception>> NegocioException
+L_UsuarioController --> L_VISTA_usuarios_lista : listado con el mensaje
+end
+L_VISTA_usuarios_lista --> A : usuario desactivado o el mensaje
+@enduml

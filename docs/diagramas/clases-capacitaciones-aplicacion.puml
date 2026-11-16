@@ -1,0 +1,76 @@
+@startuml clases-capacitaciones-aplicacion
+!include _estilo.iuml
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+skinparam packageStyle folder
+skinparam nodesep 25
+skinparam ranksep 45
+mainframe class Capacitaciones y técnicos (E007) · aplicación
+
+package "controller" {
+  class CapacitacionController <<Controller>> {
+    + nuevaParaArriendo(id) : String
+    + agendarParaArriendo(id, capacitacion) : String
+    + nuevaParaVenta(id) : String
+    + agendarParaVenta(id, capacitacion) : String
+    + calendario(mes) : String
+    + ficha(id) : String
+    + realizada(id) : String
+    + marcarRealizada(id, realizada) : String
+    + cancelar(id) : String
+    + conflictos(tecnicoId, fecha) : AvisoConflicto
+  }
+  class TecnicoController <<Controller>> {
+    + listar() : String
+    + nuevo() : String
+    + crear(tecnico) : String
+    + editar(id) : String
+    + actualizar(id, tecnico) : String
+    + desactivar(id) : String
+    + activar(id) : String
+  }
+}
+CapacitacionController -[hidden]down- TecnicoController
+package "service" {
+  class CapacitacionService <<Service>> {
+    + agendarParaArriendo(empresaId, arriendoId, request) : CapacitacionResponse
+    + agendarParaVenta(empresaId, ventaId, request) : CapacitacionResponse
+    + deOperacion(empresaId, operacionId) : List<CapacitacionResponse>
+    + sugerirAgendar(empresaId, operacionId, equipos) : boolean
+    + calendario(empresaId, mes) : CalendarioMes
+    + detalle(empresaId, id) : DetalleCapacitacionResponse
+    + marcarRealizada(empresaId, id, request) : DetalleCapacitacionResponse
+    + cancelar(empresaId, id) : DetalleCapacitacionResponse
+    + avisoConflicto(empresaId, tecnicoId, fecha) : String
+  }
+  class ConflictoTecnicoException <<Exception>> {
+  }
+  class TecnicoService <<Service>> {
+    + listar(empresaId) : List<TecnicoResponse>
+    + listarActivos(empresaId) : List<TecnicoResponse>
+    + buscar(empresaId, id) : TecnicoResponse
+    + crear(empresaId, request) : TecnicoResponse
+    + actualizar(empresaId, id, request) : TecnicoResponse
+    + cambiarEstado(empresaId, id, activo) : void
+  }
+}
+CapacitacionService -[hidden]down- ConflictoTecnicoException
+ConflictoTecnicoException -[hidden]down- TecnicoService
+package "otros módulos" #F7F7F7 {
+  class ArriendoService <<Service>>
+  class EquipoService <<Service>>
+  class NegocioException <<Exception>>
+  class VentaService <<Service>>
+}
+ConflictoTecnicoException --|> NegocioException
+CapacitacionService ..> TecnicoService : <<use>>
+CapacitacionService ..> ArriendoService : <<use>>
+CapacitacionService ..> VentaService : <<use>>
+CapacitacionService ..> EquipoService : <<use>>
+TecnicoController ..> TecnicoService : <<use>>
+CapacitacionController ..> CapacitacionService : <<use>>
+CapacitacionController ..> TecnicoService : <<use>>
+CapacitacionController ..> ArriendoService : <<use>>
+CapacitacionController ..> VentaService : <<use>>
+@enduml

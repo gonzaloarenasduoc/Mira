@@ -1,0 +1,31 @@
+@startuml clases-indicadores-aplicacion
+!include _estilo.iuml
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+skinparam packageStyle folder
+skinparam nodesep 25
+skinparam ranksep 45
+mainframe class Panel de indicadores (E009) · aplicación
+
+package "controller" {
+  class IndicadoresController <<Controller>> {
+    + panel(desde, hasta) : String
+  }
+}
+package "service" {
+  class IndicadoresService <<Service>> {
+    + retornosVencidos(empresaId) : List<AlertaRetornoResponse>
+    + inventario(empresaId) : PanelInventario
+    + arriendosVigentes(empresaId) : List<AlertaRetornoResponse>
+    + utilizacion(empresaId, desde, hasta) : UtilizacionResponse
+  }
+}
+package "otros módulos" #F7F7F7 {
+  class ArriendoService <<Service>>
+  class EquipoService <<Service>>
+}
+IndicadoresService ..> ArriendoService : <<use>>
+IndicadoresService ..> EquipoService : <<use>>
+IndicadoresController ..> IndicadoresService : <<use>>
+@enduml

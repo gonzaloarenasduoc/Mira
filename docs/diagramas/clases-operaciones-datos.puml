@@ -1,0 +1,120 @@
+@startuml clases-operaciones-datos
+!include _estilo.iuml
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+skinparam packageStyle folder
+skinparam nodesep 25
+skinparam ranksep 45
+mainframe class Operaciones: clientes, arriendos y ventas (E005 y E006) · datos
+
+package "service" {
+  class ArriendoService <<Service>> {
+  }
+  class ClienteService <<Service>> {
+  }
+  class DisponibilidadService <<Service>> {
+  }
+  class HistorialClienteService <<Service>> {
+  }
+  class VentaService <<Service>> {
+  }
+}
+package "repository" {
+  interface ArriendoRepository <<interface>> <<Repository>> {
+    + clientes(empresaId, ids) : List<ClienteDeOperacion>
+    + vigentes(empresaId) : List<ArriendoVigente>
+    + vigentesDelEquipo(empresaId, equipoId) : List<ArriendoVigente>
+    + porRetornarHasta(empresaId, limite) : List<LineaPorRetornar>
+    + buscarFicha(empresaId, id) : Optional<Arriendo>
+    + listar(empresaId, pagina) : Page<Arriendo>
+    + delCliente(empresaId, clienteId) : List<Arriendo>
+    + conDetalles(ids) : List<Arriendo>
+    + existsByIdAndEmpresaId(id, empresaId) : boolean
+    + idsConEquipo(empresaId, equipoId) : List<Long>
+    + arrendadosEntre(empresaId, desde, hasta) : List<PeriodoArrendado>
+    + porRetornar(empresaId) : List<LineaPorRetornar>
+  }
+  interface ClienteRepository <<interface>> <<Repository>> {
+    + findByEmpresaIdAndActivoTrueOrderByRazonSocial(empresaId) : List<Cliente>
+    + findByEmpresaIdOrderByRazonSocial(empresaId) : List<Cliente>
+    + findByEmpresaIdAndRut(empresaId, rut) : Optional<Cliente>
+    + findByIdAndEmpresaId(id, empresaId) : Optional<Cliente>
+  }
+  interface VentaRepository <<interface>> <<Repository>> {
+    + clientes(empresaId, ids) : List<ClienteDeOperacion>
+    + buscarFicha(empresaId, id) : Optional<Venta>
+    + delCliente(empresaId, clienteId) : List<Venta>
+    + existsByIdAndEmpresaId(id, empresaId) : boolean
+    + idsConEquipo(empresaId, equipoId) : List<Long>
+  }
+}
+ArriendoRepository -[hidden]down- ClienteRepository
+ClienteRepository -[hidden]down- VentaRepository
+package "entity" {
+  class Arriendo <<Entity>> {
+    - fechaInicio : LocalDate
+    - fechaRetornoComprometida : LocalDate
+    - numeroOrdenCompra : String
+    + registrarRetorno(linea, fecha, observacion) : void
+    + agregarLinea(equipoId, tarifaDiaria) : void
+  }
+  class Cliente <<Entity>> {
+    - rut : String
+    - razonSocial : String
+    - giro : String
+    - direccion : String
+    - comuna : String
+    - contactoNombre : String
+    - contactoEmail : String
+    - contactoTelefono : String
+    - activo : boolean
+    + actualizar(razonSocial, giro, direccion, comuna, contactoNombre, contactoEmail, contactoTelefono) : void
+    + cambiarEstado(activo) : void
+  }
+  abstract class Operacion <<Entity>> {
+    - usuarioId : Long
+    - fecha : LocalDate
+    - observaciones : String
+  }
+  class OperacionDetalle <<Entity>> {
+    - equipoId : Long
+    - valorUnitario : BigDecimal
+    - fechaRetornoReal : LocalDate
+    - observacion : String
+    + estaPendienteDeRetorno() : boolean
+  }
+  class Venta <<Entity>> {
+    - numeroOrdenCompra : String
+    + agregarLinea(equipoId, valor) : void
+  }
+}
+package "otros módulos" #F7F7F7 {
+  class Empresa <<Entity>>
+  interface EmpresaRepository <<interface>> <<Repository>>
+  abstract class EntidadAuditable <<Entity>>
+}
+ClienteRepository ..> Cliente : <<manage>>
+ArriendoRepository ..> Arriendo : <<manage>>
+VentaRepository ..> Venta : <<manage>>
+DisponibilidadService --> "1" ArriendoRepository
+ArriendoService --> "1" ArriendoRepository
+ArriendoService --> "1" EmpresaRepository
+HistorialClienteService --> "1" ArriendoRepository
+HistorialClienteService --> "1" VentaRepository
+VentaService --> "1" VentaRepository
+VentaService --> "1" ArriendoRepository
+VentaService --> "1" EmpresaRepository
+ClienteService --> "1" ClienteRepository
+ClienteService --> "1" EmpresaRepository
+OperacionDetalle --|> EntidadAuditable
+OperacionDetalle "*" --> "1" Operacion : operacion
+Venta --|> Operacion
+Cliente --|> EntidadAuditable
+Cliente "*" --> "1" Empresa : empresa
+Operacion --|> EntidadAuditable
+Operacion "*" --> "1" Empresa : empresa
+Operacion "*" --> "1" Cliente : cliente
+Operacion "1" *-- "*" OperacionDetalle : detalles
+Arriendo --|> Operacion
+@enduml

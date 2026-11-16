@@ -1,0 +1,30 @@
+@startuml secuencia-hu-01
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+mainframe sd HU-01 Iniciar sesión con credenciales
+actor "Usuario" as A
+participant "login.html" as L_VISTA_login <<boundary>>
+participant ":LoginController" as L_LoginController <<control>>
+participant ":SeguridadConfig" as L_SeguridadConfig
+participant ":UsuarioDetallesService" as L_UsuarioDetallesService
+participant ":UsuarioRepository" as L_UsuarioRepository
+A -> L_VISTA_login : abre Mira
+L_VISTA_login -> L_LoginController : GET /login
+L_LoginController --> L_VISTA_login : formulario de inicio de sesión
+L_VISTA_login --> A : pide correo y contraseña
+A -> L_VISTA_login : ingresa correo y contraseña
+L_VISTA_login -> L_SeguridadConfig : POST /login
+L_SeguridadConfig -> L_UsuarioDetallesService : loadUserByUsername(email)
+alt credenciales válidas y usuario activo
+L_UsuarioDetallesService -> L_UsuarioRepository : findByEmailIgnoreCase(email)
+L_UsuarioRepository --> L_UsuarioDetallesService : Optional<Usuario>
+L_UsuarioDetallesService --> L_SeguridadConfig : UserDetails
+L_SeguridadConfig --> L_VISTA_login : redirige a la página de inicio de su rol
+else credenciales inválidas o usuario desactivado
+L_UsuarioDetallesService --> L_SeguridadConfig : <<exception>> credenciales inválidas
+L_SeguridadConfig --> L_VISTA_login : vuelve al inicio de sesión con un mensaje genérico
+end
+L_VISTA_login --> A : inicio o mensaje de error
+@enduml

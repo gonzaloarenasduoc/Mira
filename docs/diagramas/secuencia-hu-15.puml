@@ -1,0 +1,29 @@
+@startuml secuencia-hu-15
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+mainframe sd HU-15 Registrar el retorno de un equipo arrendado
+actor "Encargado de bodega" as A
+participant "arriendos/retorno.html" as L_VISTA_arriendos_retorno <<boundary>>
+participant ":ArriendoController" as L_ArriendoController <<control>>
+participant ":ArriendoService" as L_ArriendoService
+participant ":ArriendoRepository" as L_ArriendoRepository
+participant ":EquipoService" as L_EquipoService
+A -> L_VISTA_arriendos_retorno : indica la bodega que recibe y la fecha
+L_VISTA_arriendos_retorno -> L_ArriendoController : POST /arriendos/{id}/retornos
+alt el equipo está arrendado y la bodega activa
+L_ArriendoController -> L_ArriendoService : registrarRetorno(empresaId, usuarioId, arriendoId, request)
+L_ArriendoService -> L_ArriendoRepository : buscarFicha(empresaId, id)
+L_ArriendoRepository --> L_ArriendoService : Optional<Arriendo>
+L_ArriendoService -> L_EquipoService : resumenPorId(empresaId, ids)
+L_EquipoService --> L_ArriendoService : Map<Long, EquipoResponse>
+L_ArriendoService -> L_EquipoService : recibirDeArriendo(empresaId, usuarioId, equipoId, operacionId, bodegaId, observacion)
+L_ArriendoService --> L_ArriendoController : ArriendoResponse
+L_ArriendoController --> L_VISTA_arriendos_retorno : redirige a la ficha del arriendo
+else el equipo no está arrendado o la bodega está inactiva
+L_EquipoService --> L_ArriendoController : <<exception>> NegocioException
+L_ArriendoController --> L_VISTA_arriendos_retorno : formulario con el mensaje
+end
+L_VISTA_arriendos_retorno --> A : retorno registrado o el mensaje
+@enduml

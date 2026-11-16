@@ -1,0 +1,40 @@
+@startuml secuencia-hu-21
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+mainframe sd HU-21 Advertir la doble asignación de un técnico
+actor "Vendedor" as A
+participant "capacitaciones/formulario.html" as L_VISTA_capacitaciones_formulario <<boundary>>
+participant ":CapacitacionController" as L_CapacitacionController <<control>>
+participant ":CapacitacionService" as L_CapacitacionService
+participant ":CapacitacionRepository" as L_CapacitacionRepository
+participant ":ArriendoService" as L_ArriendoService
+participant ":TecnicoService" as L_TecnicoService
+participant ":Capacitacion" as L_Capacitacion <<entity>>
+A -> L_VISTA_capacitaciones_formulario : elige técnico y fecha
+L_VISTA_capacitaciones_formulario -> L_CapacitacionController : GET /capacitaciones/conflictos
+L_CapacitacionController -> L_CapacitacionService : avisoConflicto(empresaId, tecnicoId, fecha)
+L_CapacitacionService -> L_CapacitacionRepository : delTecnicoEntre(empresaId, tecnicoId, estado, desde, hasta)
+L_CapacitacionRepository --> L_CapacitacionService : List<Capacitacion>
+L_CapacitacionService --> L_CapacitacionController : String
+L_CapacitacionController --> L_VISTA_capacitaciones_formulario : AvisoConflicto (texto o vacío)
+L_VISTA_capacitaciones_formulario --> A : aviso de técnico ocupado
+A -> L_VISTA_capacitaciones_formulario : envía sin marcar Agendar de todas formas
+L_VISTA_capacitaciones_formulario -> L_CapacitacionController : POST /arriendos/{id}/capacitaciones
+alt marcó Agendar de todas formas
+L_CapacitacionController -> L_CapacitacionService : agendarParaArriendo(empresaId, arriendoId, request)
+L_CapacitacionService -> L_ArriendoService : existe(empresaId, id)
+L_ArriendoService --> L_CapacitacionService : boolean
+L_CapacitacionService -> L_CapacitacionService : agendar()
+L_CapacitacionService -> L_TecnicoService : obtener()
+L_CapacitacionService --> L_Capacitacion : <<create>>
+L_CapacitacionService -> L_CapacitacionRepository : save()
+L_CapacitacionService --> L_CapacitacionController : CapacitacionResponse
+L_CapacitacionController --> L_VISTA_capacitaciones_formulario : redirige a la ficha del arriendo
+else el técnico tiene otra capacitación ese día y no confirmó
+L_CapacitacionService --> L_CapacitacionController : <<exception>> ConflictoTecnicoException
+L_CapacitacionController --> L_VISTA_capacitaciones_formulario : formulario con el aviso y la casilla
+end
+L_VISTA_capacitaciones_formulario --> A : agendada o el aviso
+@enduml

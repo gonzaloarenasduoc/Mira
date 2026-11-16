@@ -1,0 +1,20 @@
+@startuml secuencia-hu-28
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+mainframe sd HU-28 Alertas de retorno vencido en el panel
+actor "Jefatura" as A
+participant "indicadores/panel.html" as L_VISTA_indicadores_panel <<boundary>>
+participant ":IndicadoresController" as L_IndicadoresController <<control>>
+participant ":IndicadoresService" as L_IndicadoresService
+participant ":ArriendoService" as L_ArriendoService
+A -> L_VISTA_indicadores_panel : abre Indicadores
+L_VISTA_indicadores_panel -> L_IndicadoresController : GET /indicadores
+L_IndicadoresController -> L_IndicadoresService : retornosVencidos(empresaId)
+L_IndicadoresService -> L_ArriendoService : alertasDeRetorno(empresaId)
+L_ArriendoService --> L_IndicadoresService : List<AlertaRetornoResponse>
+L_IndicadoresService --> L_IndicadoresController : List<AlertaRetornoResponse>
+L_IndicadoresController --> L_VISTA_indicadores_panel : retornos vencidos al inicio del panel
+L_VISTA_indicadores_panel --> A : vencidos con días de atraso
+@enduml

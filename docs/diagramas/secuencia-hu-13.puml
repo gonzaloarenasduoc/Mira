@@ -1,0 +1,28 @@
+@startuml secuencia-hu-13
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+mainframe sd HU-13 Ver la fecha de retorno de los equipos arrendados
+actor "Vendedor" as A
+participant "disponibilidad/consulta.html" as L_VISTA_disponibilidad_consulta <<boundary>>
+participant ":DisponibilidadController" as L_DisponibilidadController <<control>>
+participant ":DisponibilidadService" as L_DisponibilidadService
+participant ":EquipoService" as L_EquipoService
+participant ":ArriendoRepository" as L_ArriendoRepository
+A -> L_VISTA_disponibilidad_consulta : revisa los equipos arrendados
+L_VISTA_disponibilidad_consulta -> L_DisponibilidadController : GET /disponibilidad
+L_DisponibilidadController -> L_DisponibilidadService : consultar(empresaId, filtro)
+L_DisponibilidadService -> L_EquipoService : buscar(empresaId, filtro)
+L_EquipoService --> L_DisponibilidadService : List<EquipoResponse>
+L_DisponibilidadService -> L_ArriendoRepository : vigentes(empresaId)
+L_ArriendoRepository --> L_DisponibilidadService : List<ArriendoVigente>
+L_DisponibilidadService -> L_DisponibilidadService : aUnidad()
+L_DisponibilidadService --> L_DisponibilidadController : DisponibilidadResponse
+L_DisponibilidadController --> L_VISTA_disponibilidad_consulta : arrendados con su fecha de retorno; los vencidos destacados
+L_VISTA_disponibilidad_consulta --> A : fecha de retorno de cada equipo
+note over A
+La fecha de retorno se calcula al consultar
+desde los arriendos vigentes: no se almacena.
+end note
+@enduml

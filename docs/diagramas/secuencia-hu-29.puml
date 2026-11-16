@@ -1,0 +1,29 @@
+@startuml secuencia-hu-29
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+mainframe sd HU-29 Administrar clientes
+actor "Vendedor" as A
+participant "clientes/formulario.html" as L_VISTA_clientes_formulario <<boundary>>
+participant ":ClienteController" as L_ClienteController <<control>>
+participant ":ClienteService" as L_ClienteService
+participant ":ClienteRepository" as L_ClienteRepository
+participant ":Cliente" as L_Cliente <<entity>>
+A -> L_VISTA_clientes_formulario : registra RUT, razón social y contacto
+L_VISTA_clientes_formulario -> L_ClienteController : POST /clientes
+alt RUT válido y no registrado en la empresa
+L_ClienteController -> L_ClienteService : crear(empresaId, request)
+L_ClienteService -> L_ClienteRepository : findByEmpresaIdAndRut(empresaId, rut)
+L_ClienteRepository --> L_ClienteService : Optional<Cliente>
+L_ClienteService --> L_Cliente : <<create>>
+L_ClienteService -> L_ClienteService : aplicar()
+L_ClienteService -> L_ClienteRepository : save()
+L_ClienteService --> L_ClienteController : ClienteResponse
+L_ClienteController --> L_VISTA_clientes_formulario : redirige al listado de clientes
+else RUT inválido o repetido
+L_ClienteService --> L_ClienteController : <<exception>> NegocioException
+L_ClienteController --> L_VISTA_clientes_formulario : formulario con el mensaje
+end
+L_VISTA_clientes_formulario --> A : cliente creado o el mensaje
+@enduml

@@ -1,0 +1,38 @@
+@startuml secuencia-hu-25
+!include _estilo.iuml
+hide footbox
+skinparam maxMessageSize 260
+skinparam sequenceMessageAlign left
+mainframe sd HU-25 Consultar los documentos de un equipo
+actor "Encargado de bodega" as A
+participant "equipos/ficha.html" as L_VISTA_equipos_ficha <<boundary>>
+participant ":EquipoController" as L_EquipoController <<control>>
+participant ":EquipoService" as L_EquipoService
+participant ":EquipoRepository" as L_EquipoRepository
+participant ":MovimientoRepository" as L_MovimientoRepository
+participant ":UsuarioService" as L_UsuarioService
+participant ":DocumentoService" as L_DocumentoService
+participant ":VentaService" as L_VentaService
+participant ":ArriendoService" as L_ArriendoService
+participant ":DocumentoRepository" as L_DocumentoRepository
+A -> L_VISTA_equipos_ficha : abre la ficha de un equipo
+L_VISTA_equipos_ficha -> L_EquipoController : GET /equipos/{id}
+L_EquipoController -> L_EquipoService : ficha(empresaId, id)
+L_EquipoService -> L_EquipoRepository : buscarFicha(empresaId, id)
+L_EquipoRepository --> L_EquipoService : Optional<Equipo>
+L_EquipoService -> L_MovimientoRepository : historial(empresaId, equipoId)
+L_MovimientoRepository --> L_EquipoService : List<Movimiento>
+L_EquipoService -> L_UsuarioService : nombresPorId(empresaId, ids)
+L_UsuarioService --> L_EquipoService : Map<Long, String>
+L_EquipoService --> L_EquipoController : FichaEquipoResponse
+L_EquipoController -> L_DocumentoService : deEquipo(empresaId, equipoId, incluirVentas)
+L_DocumentoService -> L_VentaService : idsConEquipo(empresaId, equipoId)
+L_VentaService --> L_DocumentoService : List<Long>
+L_DocumentoService -> L_ArriendoService : idsConEquipo(empresaId, equipoId)
+L_ArriendoService --> L_DocumentoService : List<Long>
+L_DocumentoService -> L_DocumentoRepository : findByEmpresaIdAndOperacionIdInOrderByFechaEmisionDescIdDesc(empresaId, operaciones)
+L_DocumentoRepository --> L_DocumentoService : List<Documento>
+L_DocumentoService --> L_EquipoController : List<DocumentoResponse>
+L_EquipoController --> L_VISTA_equipos_ficha : ficha con los documentos de todas sus operaciones
+L_VISTA_equipos_ficha --> A : documentos del equipo
+@enduml
