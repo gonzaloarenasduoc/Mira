@@ -1,0 +1,188 @@
+1
+00:00:00,000 --> 00:00:12,000
+Demo de avance de la semana 13: repositorio, funcionalidades, datos en PostgreSQL y pruebas.
+
+2
+00:00:12,000 --> 00:00:20,000
+La rama main tiene integrado el backlog completo: 30 historias y 105 PF, unidos por pull requests aprobados.
+
+3
+00:00:20,000 --> 00:00:33,000
+El código se organiza en un módulo por área de negocio: usuarios, inventario, operaciones, capacitaciones, documentos e indicadores.
+
+4
+00:00:33,000 --> 00:00:45,000
+Docker Compose define dos contenedores: la base PostgreSQL 16 y la aplicación Mira (decisión D28).
+
+5
+00:00:45,000 --> 00:01:00,000
+Con docker compose up -d se crean los volúmenes, la red y los contenedores. La base pasa su chequeo de salud.
+
+6
+00:01:00,000 --> 00:01:11,000
+Al arrancar, Flyway aplica las migraciones V1 a V3 y la aplicación queda lista en unos 8 segundos.
+
+7
+00:01:11,000 --> 00:01:22,000
+Se cargan los datos de demostración: seis meses de operación ficticia y los PDF de órdenes de compra, guías y facturas.
+
+8
+00:01:22,000 --> 00:01:29,400
+Los dos contenedores quedan en ejecución y la base aparece como healthy.
+
+9
+00:01:29,400 --> 00:01:34,700
+Parte 2: las funcionalidades de los sprints 4 y 5, recorridas con los cuatro roles.
+
+10
+00:01:34,700 --> 00:01:45,700
+Inicia sesión Valentina Soto, con el rol de vendedor.
+
+11
+00:01:45,700 --> 00:01:54,000
+Listado de arriendos (HU-17): estado y total de cada arriendo, calculados al momento de consultar.
+
+12
+00:01:54,000 --> 00:02:00,800
+Ficha del arriendo: equipos, documentos adjuntos y capacitación ya realizada (HU-24 y HU-20).
+
+13
+00:02:00,800 --> 00:02:05,700
+Ficha de una estación total disponible: datos del equipo e historial de movimientos. Se elige Vender.
+
+14
+00:02:05,700 --> 00:02:10,400
+Registrar venta (HU-18): cliente, fecha, orden de compra y los equipos que se venden.
+
+15
+00:02:10,400 --> 00:02:16,600
+La venta queda registrada y el equipo pasa a vendido. La ficha avisa que falta agendar una capacitación.
+
+16
+00:02:16,600 --> 00:02:21,700
+Se adjunta la factura en PDF a la venta (HU-23).
+
+17
+00:02:21,700 --> 00:02:30,300
+La factura queda en la ficha de la venta, y el sistema sugiere agendar la capacitación (HU-20).
+
+18
+00:02:30,300 --> 00:02:40,000
+Al elegir técnico y fecha, el sistema avisa que Andrés Pérez ya tiene dos capacitaciones ese día (HU-21).
+
+19
+00:02:40,000 --> 00:02:47,000
+Se agenda de todas formas: el aviso informa, pero no bloquea (D26). La capacitación queda programada.
+
+20
+00:02:47,000 --> 00:02:50,000
+El vendedor revisa los arriendos vigentes y sus plazos de retorno en el panel.
+
+21
+00:02:50,000 --> 00:03:00,400
+Arriendo de un dron que requiere capacitación y aún no la tiene: se agenda desde la ficha.
+
+22
+00:03:00,400 --> 00:03:05,000
+Se agenda con Camila Rojas para hoy temprano, en la Bodega Norte.
+
+23
+00:03:05,000 --> 00:03:08,200
+La capacitación aparece en la ficha del arriendo como programada.
+
+24
+00:03:08,200 --> 00:03:17,900
+Calendario de capacitaciones (HU-22): cliente, lugar, técnico y estado de cada una.
+
+25
+00:03:17,900 --> 00:03:22,500
+La capacitación se marca como realizada, con su fecha y hora. Realizada y cancelada son estados finales.
+
+26
+00:03:22,500 --> 00:03:25,500
+Vuelta al calendario: la capacitación del 14-11 ya figura como realizada.
+
+27
+00:03:25,500 --> 00:03:29,200
+Historial del cliente (HU-19): todos sus arriendos y ventas, con equipos y total.
+
+28
+00:03:29,200 --> 00:03:35,300
+Ficha del equipo (HU-25): documentos de todas sus operaciones e historial completo de movimientos.
+
+29
+00:03:35,300 --> 00:03:40,500
+Se cierra la sesión e inicia sesión Rodrigo Muñoz, con el rol de jefatura.
+
+30
+00:03:40,500 --> 00:03:45,000
+La página de inicio de jefatura muestra las alertas de retorno vencido o próximo a vencer (HU-16).
+
+31
+00:03:45,000 --> 00:03:52,600
+Panel de indicadores (HU-28): los retornos vencidos, destacados con sus días de atraso.
+
+32
+00:03:52,600 --> 00:03:59,100
+Equipos por bodega y por estado (HU-26). Los vendidos no se cuentan como inventario.
+
+33
+00:03:59,100 --> 00:04:07,900
+Utilización de los equipos en un período (HU-27): porcentaje de días arrendados, total y por categoría.
+
+34
+00:04:07,900 --> 00:04:12,300
+Se cierra la sesión e inicia sesión Pedro Ibarra, encargado de bodega.
+
+35
+00:04:12,300 --> 00:04:20,100
+El encargado de bodega escribe a mano la dirección de capacitaciones, que su rol no tiene permitida.
+
+36
+00:04:20,100 --> 00:04:23,900
+El sistema le muestra Acceso denegado (CF-11): los permisos se revisan en el servidor.
+
+37
+00:04:23,900 --> 00:04:28,000
+Parte 3: los datos registrados durante la demo, consultados directamente en PostgreSQL.
+
+38
+00:04:28,000 --> 00:04:40,000
+Se abre una consola psql dentro del contenedor de la base de datos.
+
+39
+00:04:40,000 --> 00:04:53,000
+Las ventas registradas: la venta 336 de la estación total AX9-221104, recién hecha en la demo.
+
+40
+00:04:53,000 --> 00:05:05,000
+Los movimientos del equipo: la salida por venta se guardó junto con la venta, en la misma transacción.
+
+41
+00:05:05,000 --> 00:05:15,000
+Los documentos: la factura 90015 queda con su referencia; el archivo PDF vive en el volumen de la aplicación.
+
+42
+00:05:15,000 --> 00:05:43,100
+Las capacitaciones: la de Camila Rojas quedó realizada a las 08:45 y la de Andrés Pérez, programada.
+
+43
+00:05:43,100 --> 00:05:47,100
+Parte 4: la suite completa de pruebas.
+
+44
+00:05:47,100 --> 00:06:35,000
+./mvnw clean verify ejecuta las pruebas unitarias y las de integración contra PostgreSQL 16 real (Testcontainers).
+
+45
+00:06:35,000 --> 00:06:40,000
+Resultado: 219 pruebas, sin fallas, errores ni omitidas. BUILD SUCCESS.
+
+46
+00:06:40,000 --> 00:06:54,300
+La cobertura de la capa de servicios medida con JaCoCo es 84,6 %, sobre el 70 % que exige PNF-15.
+
+47
+00:06:54,300 --> 00:07:02,300
+Al cierre de la semana 13: 30 historias integradas, 219 pruebas sin fallas y las semanas 14 y 15 para pruebas integradas, informe y defensa.
+
