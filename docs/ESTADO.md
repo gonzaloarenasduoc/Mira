@@ -3,7 +3,7 @@
 Este archivo se actualiza al terminar cada sesión de trabajo. Es lo primero que lee el
 asistente del otro integrante para saber qué está en curso y no pisar nada.
 
-**Última actualización:** 14-11-2026
+**Última actualización:** 16-11-2026
 
 ## Fase actual
 
@@ -44,7 +44,7 @@ preparación de la presentación; no se agregan funcionalidades.
   trabajo se reorganizó en sprints de dos semanas.
 - Documentación de la Fase 2 (semana 8, rama `semana-08`), con la estructura y los nombres del
   repositorio del docente:
-  - `Fase 2/Evidencias Proyecto (version Agil)/`: Documento 01 Product Vision, 02 Product
+  - `Fase 2/Evidencias Proyecto/`: Documento 01 Product Vision, 02 Product
     Backlog (28 historias, HU-01 a HU-28, suman 100 PF), 04 Definition of Done y 05 Documento
     de Diseño.
   - `Fase 2/Evidencias Grupales/`: guía 2.4 renombrada al nombre exacto del docente e informe
@@ -213,6 +213,15 @@ preparación de la presentación; no se agregan funcionalidades.
 | Entregas del 16-11: Retrospectiva Semana 13 (acta y video) e Informe final Fase 2 (30%) con la defensa | Gonzalo y Joaquín | `semana-14` | Todo listo, incluida la presentación de la defensa (`Fase 2/Evidencias Grupales/Presentacion_Defensa_Final.pptx`, guion en `docs/guion-defensa.md`). Falta la revisión de ambos (sección 6 del informe y retros) y ensayar |
 
 ## Siguiente
+
+**Observaciones del docente al acta del 19-10 (firmada el 09-11), en curso el 16-11:**
+- Observaciones al avance y Control de Acuerdos los llena el docente: el acta de la semana 13 se
+  entrega con esas secciones vacías (corregido el 16-11).
+- Carpeta renombrada a `Fase 2/Evidencias Proyecto` (16-11). Los documentos ya entregados que
+  mencionan el nombre anterior no se modifican.
+- Documento de Diseño: diagrama de clases de clases (no de entidades), un diagrama de secuencia por
+  historia de usuario, solo con componentes reales del proyecto (sin base de datos ni bibliotecas), y
+  letra legible en todos los diagramas, con la notación de uml-diagrams.org.
 
 1. Validar con Joaquín los borradores de las retrospectivas de los sprints 4 y 5 (`docs/sprints/`).
 2. Entregar el acta de la semana 13 (`docs/actas/Acta_Control_de_Avance_2026_11_16.docx`), que informa
