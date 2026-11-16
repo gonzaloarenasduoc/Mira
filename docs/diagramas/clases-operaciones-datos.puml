@@ -1,11 +1,12 @@
 @startuml clases-operaciones-datos
 !include _estilo.iuml
 hide empty members
+hide circle
 skinparam classAttributeIconSize 0
-skinparam packageStyle rectangle
+skinparam packageStyle folder
 skinparam nodesep 25
 skinparam ranksep 45
-title Operaciones: clientes, arriendos y ventas (E005 y E006) · datos
+mainframe class Operaciones: clientes, arriendos y ventas (E005 y E006) · datos
 
 package "service" {
   class ArriendoService <<Service>> {
@@ -20,7 +21,7 @@ package "service" {
   }
 }
 package "repository" {
-  interface ArriendoRepository <<Repository>> {
+  interface ArriendoRepository <<interface>> <<Repository>> {
     + clientes(empresaId, ids) : List<ClienteDeOperacion>
     + vigentes(empresaId) : List<ArriendoVigente>
     + vigentesDelEquipo(empresaId, equipoId) : List<ArriendoVigente>
@@ -34,13 +35,13 @@ package "repository" {
     + arrendadosEntre(empresaId, desde, hasta) : List<PeriodoArrendado>
     + porRetornar(empresaId) : List<LineaPorRetornar>
   }
-  interface ClienteRepository <<Repository>> {
+  interface ClienteRepository <<interface>> <<Repository>> {
     + findByEmpresaIdAndActivoTrueOrderByRazonSocial(empresaId) : List<Cliente>
     + findByEmpresaIdOrderByRazonSocial(empresaId) : List<Cliente>
     + findByEmpresaIdAndRut(empresaId, rut) : Optional<Cliente>
     + findByIdAndEmpresaId(id, empresaId) : Optional<Cliente>
   }
-  interface VentaRepository <<Repository>> {
+  interface VentaRepository <<interface>> <<Repository>> {
     + clientes(empresaId, ids) : List<ClienteDeOperacion>
     + buscarFicha(empresaId, id) : Optional<Venta>
     + delCliente(empresaId, clienteId) : List<Venta>
@@ -90,7 +91,7 @@ package "entity" {
 }
 package "otros módulos" #F7F7F7 {
   class Empresa <<Entity>>
-  interface EmpresaRepository <<Repository>>
+  interface EmpresaRepository <<interface>> <<Repository>>
   abstract class EntidadAuditable <<Entity>>
 }
 ClienteRepository ..> Cliente : <<manage>>

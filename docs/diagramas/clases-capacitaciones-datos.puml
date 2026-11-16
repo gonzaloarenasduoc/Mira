@@ -1,11 +1,12 @@
 @startuml clases-capacitaciones-datos
 !include _estilo.iuml
 hide empty members
+hide circle
 skinparam classAttributeIconSize 0
-skinparam packageStyle rectangle
+skinparam packageStyle folder
 skinparam nodesep 25
 skinparam ranksep 45
-title Capacitaciones y técnicos (E007) · datos
+mainframe class Capacitaciones y técnicos (E007) · datos
 
 package "service" {
   class CapacitacionService <<Service>> {
@@ -14,13 +15,13 @@ package "service" {
   }
 }
 package "repository" {
-  interface CapacitacionRepository <<Repository>> {
+  interface CapacitacionRepository <<interface>> <<Repository>> {
     + findByEmpresaIdAndOperacionIdOrderByFechaProgramada(empresaId, operacionId) : List<Capacitacion>
     + entre(empresaId, desde, hasta) : List<Capacitacion>
     + findByIdAndEmpresaId(id, empresaId) : Optional<Capacitacion>
     + delTecnicoEntre(empresaId, tecnicoId, estado, desde, hasta) : List<Capacitacion>
   }
-  interface TecnicoRepository <<Repository>> {
+  interface TecnicoRepository <<interface>> <<Repository>> {
     + findByEmpresaIdOrderByApellidoAscNombreAsc(empresaId) : List<Tecnico>
     + findByEmpresaIdAndActivoTrueOrderByApellidoAscNombreAsc(empresaId) : List<Tecnico>
     + findByIdAndEmpresaId(id, empresaId) : Optional<Tecnico>
@@ -48,7 +49,7 @@ package "entity" {
     + cambiarEstado(activo) : void
     + getNombreCompleto() : String
   }
-  enum EstadoCapacitacion {
+  enum EstadoCapacitacion <<enumeration>> {
     PROGRAMADA
     REALIZADA
     CANCELADA
@@ -57,7 +58,7 @@ package "entity" {
 }
 package "otros módulos" #F7F7F7 {
   class Empresa <<Entity>>
-  interface EmpresaRepository <<Repository>>
+  interface EmpresaRepository <<interface>> <<Repository>>
   abstract class EntidadAuditable <<Entity>>
 }
 TecnicoRepository ..> Tecnico : <<manage>>

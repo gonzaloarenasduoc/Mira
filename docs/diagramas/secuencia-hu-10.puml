@@ -3,10 +3,10 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-10 · Consultar el historial de traslados
+mainframe sd HU-10 Consultar el historial de traslados
 actor "Encargado de bodega" as A
-boundary "traslados/lista.html" as L_VISTA_traslados_lista
-control ":TrasladoController" as L_TrasladoController
+participant "traslados/lista.html" as L_VISTA_traslados_lista <<boundary>>
+participant ":TrasladoController" as L_TrasladoController <<control>>
 participant ":TrasladoService" as L_TrasladoService
 participant ":MovimientoRepository" as L_MovimientoRepository
 participant ":UsuarioService" as L_UsuarioService

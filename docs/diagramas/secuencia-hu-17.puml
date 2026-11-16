@@ -3,10 +3,10 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-17 · Consultar los arriendos y su total
+mainframe sd HU-17 Consultar los arriendos y su total
 actor "Vendedor" as A
-boundary "arriendos/lista.html" as L_VISTA_arriendos_lista
-control ":ArriendoController" as L_ArriendoController
+participant "arriendos/lista.html" as L_VISTA_arriendos_lista <<boundary>>
+participant ":ArriendoController" as L_ArriendoController <<control>>
 participant ":ArriendoService" as L_ArriendoService
 participant ":ArriendoRepository" as L_ArriendoRepository
 participant ":EquipoService" as L_EquipoService

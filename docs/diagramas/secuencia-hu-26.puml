@@ -3,10 +3,10 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-26 · Panel de equipos por bodega y estado
+mainframe sd HU-26 Panel de equipos por bodega y estado
 actor "Jefatura" as A
-boundary "indicadores/panel.html" as L_VISTA_indicadores_panel
-control ":IndicadoresController" as L_IndicadoresController
+participant "indicadores/panel.html" as L_VISTA_indicadores_panel <<boundary>>
+participant ":IndicadoresController" as L_IndicadoresController <<control>>
 participant ":IndicadoresService" as L_IndicadoresService
 participant ":EquipoService" as L_EquipoService
 A -> L_VISTA_indicadores_panel : abre Indicadores

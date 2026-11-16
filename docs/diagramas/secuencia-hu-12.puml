@@ -3,10 +3,10 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-12 · Ver la disponibilidad consolidada por bodega
+mainframe sd HU-12 Ver la disponibilidad consolidada por bodega
 actor "Vendedor" as A
-boundary "disponibilidad/consulta.html" as L_VISTA_disponibilidad_consulta
-control ":DisponibilidadController" as L_DisponibilidadController
+participant "disponibilidad/consulta.html" as L_VISTA_disponibilidad_consulta <<boundary>>
+participant ":DisponibilidadController" as L_DisponibilidadController <<control>>
 participant ":DisponibilidadService" as L_DisponibilidadService
 participant ":EquipoService" as L_EquipoService
 participant ":ArriendoRepository" as L_ArriendoRepository

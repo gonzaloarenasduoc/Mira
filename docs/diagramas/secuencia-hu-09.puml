@@ -3,17 +3,17 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-09 · Registrar un traslado entre bodegas
+mainframe sd HU-09 Registrar un traslado entre bodegas
 actor "Encargado de bodega" as A
-boundary "traslados/formulario.html" as L_VISTA_traslados_formulario
-control ":TrasladoController" as L_TrasladoController
+participant "traslados/formulario.html" as L_VISTA_traslados_formulario <<boundary>>
+participant ":TrasladoController" as L_TrasladoController <<control>>
 participant ":TrasladoService" as L_TrasladoService
 participant ":EquipoRepository" as L_EquipoRepository
 participant ":BodegaService" as L_BodegaService
-entity ":Movimiento" as L_Movimiento
+participant ":Movimiento" as L_Movimiento <<entity>>
 participant ":MovimientoRepository" as L_MovimientoRepository
 participant ":UsuarioService" as L_UsuarioService
-boundary "traslados/lista.html" as L_VISTA_traslados_lista
+participant "traslados/lista.html" as L_VISTA_traslados_lista <<boundary>>
 A -> L_VISTA_traslados_formulario : elige el equipo y la bodega de destino
 L_VISTA_traslados_formulario -> L_TrasladoController : POST /traslados
 alt equipo disponible y destino distinto

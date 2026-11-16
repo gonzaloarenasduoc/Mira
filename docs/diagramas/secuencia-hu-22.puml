@@ -3,13 +3,13 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-22 · Calendario de capacitaciones
+mainframe sd HU-22 Calendario de capacitaciones
 actor "Vendedor" as A
-boundary "capacitaciones/calendario.html" as L_VISTA_capacitaciones_calendario
-control ":CapacitacionController" as L_CapacitacionController
+participant "capacitaciones/calendario.html" as L_VISTA_capacitaciones_calendario <<boundary>>
+participant ":CapacitacionController" as L_CapacitacionController <<control>>
 participant ":CapacitacionService" as L_CapacitacionService
 participant ":CapacitacionRepository" as L_CapacitacionRepository
-boundary "capacitaciones/realizada.html" as L_VISTA_capacitaciones_realizada
+participant "capacitaciones/realizada.html" as L_VISTA_capacitaciones_realizada <<boundary>>
 A -> L_VISTA_capacitaciones_calendario : abre Capacitaciones
 L_VISTA_capacitaciones_calendario -> L_CapacitacionController : GET /capacitaciones
 L_CapacitacionController -> L_CapacitacionService : calendario(empresaId, mes)

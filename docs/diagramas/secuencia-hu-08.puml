@@ -3,13 +3,13 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-08 · Administrar bodegas
+mainframe sd HU-08 Administrar bodegas
 actor "Administrador" as A
-boundary "bodegas/formulario.html" as L_VISTA_bodegas_formulario
-control ":BodegaController" as L_BodegaController
+participant "bodegas/formulario.html" as L_VISTA_bodegas_formulario <<boundary>>
+participant ":BodegaController" as L_BodegaController <<control>>
 participant ":BodegaService" as L_BodegaService
 participant ":BodegaRepository" as L_BodegaRepository
-entity ":Bodega" as L_Bodega
+participant ":Bodega" as L_Bodega <<entity>>
 A -> L_VISTA_bodegas_formulario : registra una bodega con nombre y comuna
 L_VISTA_bodegas_formulario -> L_BodegaController : POST /bodegas
 alt nombre no repetido en la empresa
@@ -17,7 +17,7 @@ L_BodegaController -> L_BodegaService : crear(empresaId, request)
 L_BodegaService -> L_BodegaService : validarNombreLibre()
 L_BodegaService -> L_BodegaRepository : findByEmpresaIdAndNombreIgnoreCase(empresaId, nombre)
 L_BodegaRepository --> L_BodegaService : Optional<Bodega>
-L_BodegaService -> L_Bodega : <<create>>
+L_BodegaService --> L_Bodega : <<create>>
 L_BodegaService -> L_BodegaRepository : save()
 L_BodegaService --> L_BodegaController : BodegaResponse
 L_BodegaController --> L_VISTA_bodegas_formulario : redirige al listado de bodegas

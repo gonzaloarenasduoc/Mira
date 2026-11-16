@@ -3,10 +3,10 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-03 · Menú y acceso según el rol
+mainframe sd HU-03 Menú y acceso según el rol
 actor "Usuario autenticado" as A
-boundary "inicio.html" as L_VISTA_inicio
-control ":InicioController" as L_InicioController
+participant "inicio.html" as L_VISTA_inicio <<boundary>>
+participant ":InicioController" as L_InicioController <<control>>
 participant ":ArriendoService" as L_ArriendoService
 participant ":ArriendoRepository" as L_ArriendoRepository
 participant ":SeguridadConfig" as L_SeguridadConfig

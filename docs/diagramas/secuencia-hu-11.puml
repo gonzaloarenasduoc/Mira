@@ -3,10 +3,10 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-11 · Buscar equipos por sus atributos
+mainframe sd HU-11 Buscar equipos por sus atributos
 actor "Vendedor" as A
-boundary "equipos/lista.html" as L_VISTA_equipos_lista
-control ":EquipoController" as L_EquipoController
+participant "equipos/lista.html" as L_VISTA_equipos_lista <<boundary>>
+participant ":EquipoController" as L_EquipoController <<control>>
 participant ":EquipoService" as L_EquipoService
 participant ":EquipoRepository" as L_EquipoRepository
 A -> L_VISTA_equipos_lista : escribe marca, modelo o parte de la serie

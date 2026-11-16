@@ -1,11 +1,12 @@
 @startuml clases-indicadores-aplicacion
 !include _estilo.iuml
 hide empty members
+hide circle
 skinparam classAttributeIconSize 0
-skinparam packageStyle rectangle
+skinparam packageStyle folder
 skinparam nodesep 25
 skinparam ranksep 45
-title Panel de indicadores (E009) · aplicación
+mainframe class Panel de indicadores (E009) · aplicación
 
 package "controller" {
   class IndicadoresController <<Controller>> {

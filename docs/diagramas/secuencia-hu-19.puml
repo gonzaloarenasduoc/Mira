@@ -3,10 +3,10 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-19 · Consultar el historial de operaciones de un cliente
+mainframe sd HU-19 Consultar el historial de operaciones de un cliente
 actor "Vendedor" as A
-boundary "clientes/ficha.html" as L_VISTA_clientes_ficha
-control ":ClienteController" as L_ClienteController
+participant "clientes/ficha.html" as L_VISTA_clientes_ficha <<boundary>>
+participant ":ClienteController" as L_ClienteController <<control>>
 participant ":ClienteService" as L_ClienteService
 participant ":HistorialClienteService" as L_HistorialClienteService
 participant ":ArriendoRepository" as L_ArriendoRepository

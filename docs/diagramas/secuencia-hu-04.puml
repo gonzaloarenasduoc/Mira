@@ -3,16 +3,16 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-04 · Registrar un equipo por número de serie
+mainframe sd HU-04 Registrar un equipo por número de serie
 actor "Encargado de bodega" as A
-boundary "equipos/formulario.html" as L_VISTA_equipos_formulario
-control ":EquipoController" as L_EquipoController
+participant "equipos/formulario.html" as L_VISTA_equipos_formulario <<boundary>>
+participant ":EquipoController" as L_EquipoController <<control>>
 participant ":EquipoService" as L_EquipoService
 participant ":EquipoRepository" as L_EquipoRepository
 participant ":CategoriaRepository" as L_CategoriaRepository
 participant ":BodegaService" as L_BodegaService
-entity ":Equipo" as L_Equipo
-entity ":Movimiento" as L_Movimiento
+participant ":Equipo" as L_Equipo <<entity>>
+participant ":Movimiento" as L_Movimiento <<entity>>
 participant ":MovimientoRepository" as L_MovimientoRepository
 A -> L_VISTA_equipos_formulario : completa serie, categoría, marca, modelo y bodega
 L_VISTA_equipos_formulario -> L_EquipoController : POST /equipos
@@ -23,7 +23,7 @@ L_EquipoRepository --> L_EquipoService : boolean
 L_EquipoService -> L_CategoriaRepository : findByIdAndEmpresaId(id, empresaId)
 L_CategoriaRepository --> L_EquipoService : Optional<Categoria>
 L_EquipoService -> L_BodegaService : obtener()
-L_EquipoService -> L_Equipo : <<create>>
+L_EquipoService --> L_Equipo : <<create>>
 L_EquipoService -> L_Movimiento : registrar(equipo, tipo, fecha, origen, destino, usuarioId, observacion)
 L_EquipoService -> L_EquipoRepository : save()
 L_EquipoService -> L_MovimientoRepository : save()

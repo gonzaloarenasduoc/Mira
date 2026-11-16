@@ -3,12 +3,12 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-06 · Editar y desactivar usuarios
+mainframe sd HU-06 Editar y desactivar usuarios
 actor "Administrador" as A
-boundary "usuarios/formulario.html" as L_VISTA_usuarios_formulario
-control ":UsuarioController" as L_UsuarioController
+participant "usuarios/formulario.html" as L_VISTA_usuarios_formulario <<boundary>>
+participant ":UsuarioController" as L_UsuarioController <<control>>
 participant ":UsuarioService" as L_UsuarioService
-boundary "usuarios/lista.html" as L_VISTA_usuarios_lista
+participant "usuarios/lista.html" as L_VISTA_usuarios_lista <<boundary>>
 A -> L_VISTA_usuarios_formulario : cambia nombre o rol de un usuario
 L_VISTA_usuarios_formulario -> L_UsuarioController : POST /usuarios/{id}
 L_UsuarioController -> L_UsuarioService : buscar(empresaId, id)

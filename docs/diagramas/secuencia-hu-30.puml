@@ -3,17 +3,17 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-30 · Administrar técnicos
+mainframe sd HU-30 Administrar técnicos
 actor "Vendedor" as A
-boundary "tecnicos/formulario.html" as L_VISTA_tecnicos_formulario
-control ":TecnicoController" as L_TecnicoController
+participant "tecnicos/formulario.html" as L_VISTA_tecnicos_formulario <<boundary>>
+participant ":TecnicoController" as L_TecnicoController <<control>>
 participant ":TecnicoService" as L_TecnicoService
-entity ":Tecnico" as L_Tecnico
+participant ":Tecnico" as L_Tecnico <<entity>>
 participant ":TecnicoRepository" as L_TecnicoRepository
 A -> L_VISTA_tecnicos_formulario : registra nombre, apellido y contacto
 L_VISTA_tecnicos_formulario -> L_TecnicoController : POST /tecnicos
 L_TecnicoController -> L_TecnicoService : crear(empresaId, request)
-L_TecnicoService -> L_Tecnico : <<create>>
+L_TecnicoService --> L_Tecnico : <<create>>
 L_TecnicoService -> L_TecnicoService : aplicar()
 L_TecnicoService -> L_TecnicoRepository : save()
 L_TecnicoService --> L_TecnicoController : TecnicoResponse

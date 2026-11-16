@@ -3,15 +3,15 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-23 · Adjuntar documentos a una operación
+mainframe sd HU-23 Adjuntar documentos a una operación
 actor "Encargado de bodega" as A
-boundary "documentos/formulario.html" as L_VISTA_documentos_formulario
-control ":DocumentoController" as L_DocumentoController
+participant "documentos/formulario.html" as L_VISTA_documentos_formulario <<boundary>>
+participant ":DocumentoController" as L_DocumentoController <<control>>
 participant ":DocumentoService" as L_DocumentoService
 participant ":ArriendoService" as L_ArriendoService
 participant ":AlmacenArchivos" as L_AlmacenArchivos
 participant ":DocumentoRepository" as L_DocumentoRepository
-entity ":Documento" as L_Documento
+participant ":Documento" as L_Documento <<entity>>
 A -> L_VISTA_documentos_formulario : elige tipo, folio, fecha y archivo
 L_VISTA_documentos_formulario -> L_DocumentoController : POST /arriendos/{id}/documentos
 alt PDF, JPG o PNG de hasta 10 MB
@@ -27,7 +27,7 @@ L_AlmacenArchivos --> L_DocumentoService : String
 L_DocumentoService -> L_DocumentoService : borrarSiSeRevierte()
 L_DocumentoService -> L_AlmacenArchivos : eliminar(rutaRelativa)
 L_DocumentoService -> L_DocumentoRepository : save()
-L_DocumentoService -> L_Documento : <<create>>
+L_DocumentoService --> L_Documento : <<create>>
 L_DocumentoService --> L_DocumentoController : DocumentoResponse
 L_DocumentoController --> L_VISTA_documentos_formulario : redirige a la ficha del arriendo
 else formato no permitido o contenido que no coincide

@@ -3,10 +3,10 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-15 · Registrar el retorno de un equipo arrendado
+mainframe sd HU-15 Registrar el retorno de un equipo arrendado
 actor "Encargado de bodega" as A
-boundary "arriendos/retorno.html" as L_VISTA_arriendos_retorno
-control ":ArriendoController" as L_ArriendoController
+participant "arriendos/retorno.html" as L_VISTA_arriendos_retorno <<boundary>>
+participant ":ArriendoController" as L_ArriendoController <<control>>
 participant ":ArriendoService" as L_ArriendoService
 participant ":ArriendoRepository" as L_ArriendoRepository
 participant ":EquipoService" as L_EquipoService

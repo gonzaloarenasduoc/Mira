@@ -3,15 +3,15 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-21 · Advertir la doble asignación de un técnico
+mainframe sd HU-21 Advertir la doble asignación de un técnico
 actor "Vendedor" as A
-boundary "capacitaciones/formulario.html" as L_VISTA_capacitaciones_formulario
-control ":CapacitacionController" as L_CapacitacionController
+participant "capacitaciones/formulario.html" as L_VISTA_capacitaciones_formulario <<boundary>>
+participant ":CapacitacionController" as L_CapacitacionController <<control>>
 participant ":CapacitacionService" as L_CapacitacionService
 participant ":CapacitacionRepository" as L_CapacitacionRepository
 participant ":ArriendoService" as L_ArriendoService
 participant ":TecnicoService" as L_TecnicoService
-entity ":Capacitacion" as L_Capacitacion
+participant ":Capacitacion" as L_Capacitacion <<entity>>
 A -> L_VISTA_capacitaciones_formulario : elige técnico y fecha
 L_VISTA_capacitaciones_formulario -> L_CapacitacionController : GET /capacitaciones/conflictos
 L_CapacitacionController -> L_CapacitacionService : avisoConflicto(empresaId, tecnicoId, fecha)
@@ -28,7 +28,7 @@ L_CapacitacionService -> L_ArriendoService : existe(empresaId, id)
 L_ArriendoService --> L_CapacitacionService : boolean
 L_CapacitacionService -> L_CapacitacionService : agendar()
 L_CapacitacionService -> L_TecnicoService : obtener()
-L_CapacitacionService -> L_Capacitacion : <<create>>
+L_CapacitacionService --> L_Capacitacion : <<create>>
 L_CapacitacionService -> L_CapacitacionRepository : save()
 L_CapacitacionService --> L_CapacitacionController : CapacitacionResponse
 L_CapacitacionController --> L_VISTA_capacitaciones_formulario : redirige a la ficha del arriendo

@@ -3,10 +3,10 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-25 · Consultar los documentos de un equipo
+mainframe sd HU-25 Consultar los documentos de un equipo
 actor "Encargado de bodega" as A
-boundary "equipos/ficha.html" as L_VISTA_equipos_ficha
-control ":EquipoController" as L_EquipoController
+participant "equipos/ficha.html" as L_VISTA_equipos_ficha <<boundary>>
+participant ":EquipoController" as L_EquipoController <<control>>
 participant ":EquipoService" as L_EquipoService
 participant ":EquipoRepository" as L_EquipoRepository
 participant ":MovimientoRepository" as L_MovimientoRepository

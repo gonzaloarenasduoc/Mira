@@ -3,10 +3,10 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-28 · Alertas de retorno vencido en el panel
+mainframe sd HU-28 Alertas de retorno vencido en el panel
 actor "Jefatura" as A
-boundary "indicadores/panel.html" as L_VISTA_indicadores_panel
-control ":IndicadoresController" as L_IndicadoresController
+participant "indicadores/panel.html" as L_VISTA_indicadores_panel <<boundary>>
+participant ":IndicadoresController" as L_IndicadoresController <<control>>
 participant ":IndicadoresService" as L_IndicadoresService
 participant ":ArriendoService" as L_ArriendoService
 A -> L_VISTA_indicadores_panel : abre Indicadores

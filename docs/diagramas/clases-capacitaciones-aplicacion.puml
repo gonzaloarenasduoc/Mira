@@ -1,11 +1,12 @@
 @startuml clases-capacitaciones-aplicacion
 !include _estilo.iuml
 hide empty members
+hide circle
 skinparam classAttributeIconSize 0
-skinparam packageStyle rectangle
+skinparam packageStyle folder
 skinparam nodesep 25
 skinparam ranksep 45
-title Capacitaciones y técnicos (E007) · aplicación
+mainframe class Capacitaciones y técnicos (E007) · aplicación
 
 package "controller" {
   class CapacitacionController <<Controller>> {

@@ -1,11 +1,12 @@
 @startuml clases-usuarios-aplicacion
 !include _estilo.iuml
 hide empty members
+hide circle
 skinparam classAttributeIconSize 0
-skinparam packageStyle rectangle
+skinparam packageStyle folder
 skinparam nodesep 25
 skinparam ranksep 45
-title Usuarios y control de acceso (E001) · aplicación
+mainframe class Usuarios y control de acceso (E001) · aplicación
 
 package "controller" {
   class LoginController <<Controller>> {

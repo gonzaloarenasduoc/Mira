@@ -3,15 +3,15 @@
 hide footbox
 skinparam maxMessageSize 260
 skinparam sequenceMessageAlign left
-title HU-24 · Consultar los documentos de una operación
+mainframe sd HU-24 Consultar los documentos de una operación
 actor "Vendedor" as A
-boundary "arriendos/ficha.html" as L_VISTA_arriendos_ficha
-control ":ArriendoController" as L_ArriendoController
+participant "arriendos/ficha.html" as L_VISTA_arriendos_ficha <<boundary>>
+participant ":ArriendoController" as L_ArriendoController <<control>>
 participant ":ArriendoService" as L_ArriendoService
 participant ":ArriendoRepository" as L_ArriendoRepository
 participant ":DocumentoService" as L_DocumentoService
 participant ":DocumentoRepository" as L_DocumentoRepository
-control ":DocumentoController" as L_DocumentoController
+participant ":DocumentoController" as L_DocumentoController <<control>>
 participant ":VentaService" as L_VentaService
 participant ":AlmacenArchivos" as L_AlmacenArchivos
 A -> L_VISTA_arriendos_ficha : abre la ficha de un arriendo
