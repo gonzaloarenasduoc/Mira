@@ -51,9 +51,9 @@ omitidas. Evidencias en `docs/evidencias/semana-13/`, capturas 01 a 32 y medici�
   pruebas omitidas.
 
 **Qué no funcionó**
-- No se cumplió el acuerdo de la retrospectiva del Sprint 4: todo el sprint lo desarrolló un solo
-  integrante, incluidos los servicios de HU-20 a HU-22, asignados a Joaquín. Se le avisó del cambio
-  de zona, pero el código no tuvo un segundo autor.
+- No se cumplió el acuerdo de la retrospectiva del Sprint 4: el sprint se trabajó otra vez en sesiones
+  conjuntas desde el equipo de un integrante, incluidos los servicios de HU-20 a HU-22, asignados a
+  Joaquín, y los commits volvieron a quedar con un solo autor.
 - El tablero no se actualizó al cerrar cada historia.
 - Las pruebas de integración de HU-20 a HU-22 se ejecutaron recién el 12-11, después de abrir el
   pull request, porque el entorno de desarrollo no tenía Docker activo.

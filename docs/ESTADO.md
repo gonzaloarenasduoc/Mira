@@ -3,11 +3,12 @@
 Este archivo se actualiza al terminar cada sesión de trabajo. Es lo primero que lee el
 asistente del otro integrante para saber qué está en curso y no pisar nada.
 
-**Última actualización:** 16-11-2026
+**Última actualización:** 26-11-2026
 
 ## Fase actual
 
-Fase 2, semana 14, rama `semana-14` (D11). **El backlog completo (30 historias, 105 PF) está
+Fase 3, semana 16, rama `semana-16` (D11): preparación de la defensa final del 9 o 10 de diciembre.
+Las entregas de la Fase 2 se subieron al AVA el 16-11. **El backlog completo (30 historias, 105 PF) está
 implementado e integrado en `main`**: el pull request #33 se integró el 12-11 con la aprobación de
 Joaquín y cerró los issues del Sprint 5 y las épicas E006 a E009. `./mvnw clean verify` sobre `main`:
 219 pruebas, 0 fallas, 0 omitidas. Las semanas 14 y 15 son de pruebas integradas, implantación y
@@ -210,9 +211,20 @@ preparación de la presentación; no se agregan funcionalidades.
 
 | Qué | Quién | Rama | Notas |
 |---|---|---|---|
-| Entregas del 16-11: Retrospectiva Semana 13 (acta y video) e Informe final Fase 2 (30%) con la defensa | Gonzalo y Joaquín | `semana-14` | Todo listo, incluida la presentación de la defensa (`Fase 2/Evidencias Grupales/Presentacion_Defensa_Final.pptx`, guion en `docs/guion-defensa.md`). Falta la revisión de ambos (sección 6 del informe y retros) y ensayar |
+| Defensa final (9 o 10 de diciembre) | Gonzalo y Joaquín | `semana-16` | Presentación nueva según el temario del docente (`Fase 3/Evidencias Grupales/Presentacion_Defensa.pptx`) y guion con la demostración en vivo ensayada (`docs/guion-defensa.md`). Falta que ambos la revisen y la ensayen |
 
 ## Siguiente
+
+**Defensa final (26-11):** el docente pidió, para la defensa del 9 o 10 de diciembre, 12 minutos de
+presentación con problema, producto, vínculo con el perfil de egreso, vínculo individual con el
+desarrollo profesional, arquitectura y tecnologías, y planificación original con sus cambios y
+lecciones; después, la demostración en vivo de toda la funcionalidad, en máximo 8 minutos, y ambos
+presentan. Observaciones a la presentación anterior: demasiado texto (subtítulos y punteos), la
+demostración en medio de la presentación y un cierre que hablaba de acuerdos con la empresa, que dejó
+de participar. La presentación nueva tiene una idea por lámina, el burndown real contra el plan
+original, el modelo de datos reducido a lo que lo diferencia (multiempresa, historial inmutable y
+estado calculado), el cierre sobre la perseverancia y la demostración al final. Las retrospectivas de
+los sprints 4 y 5 se corrigieron: esas semanas se trabajaron en sesiones conjuntas.
 
 **Observaciones del docente al acta del 19-10 (firmada el 09-11), en curso el 16-11:**
 - Observaciones al avance y Control de Acuerdos los llena el docente: el acta de la semana 13 se
@@ -239,8 +251,7 @@ preparación de la presentación; no se agregan funcionalidades.
 4. Consultar con el docente las categorías que no son equipos físicos (D19).
 5. Pendientes de la matriz que requieren personas: PNF-09 (3 personas ajenas registran un arriendo), PNF-11
    (probar en Firefox y Edge) y PNF-16 (alguien del curso levanta el sistema con el README).
-6. Revisar cada uno su párrafo de la sección 6 del informe final (intereses y proyecciones); se
-   entrega tal como está.
+6. Revisar y ensayar la defensa final con `docs/guion-defensa.md`.
 
 ## Bloqueado
 
