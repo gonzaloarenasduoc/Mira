@@ -268,6 +268,7 @@ consolidada por bodega con la fecha de retorno de los equipos arrendados (histor
 | Dónde | Qué hay |
 |---|---|
 | `Fase 2/` | Evidencias de la Fase 2: Product Vision, Product Backlog, Definition of Done, Documento de Diseño, guías 2.4 y 2.6 y presentación |
+| `Fase 3/` | Presentación de la defensa final |
 | `docs/` | Documentación técnica: modelo de datos, arquitectura, convenciones, decisiones y casos de prueba |
 | `docs/diagramas/` | Diagramas UML en PlantUML |
 | `docs/evidencias/semana-08/`, `semana-09/` | Capturas del sistema funcionando y mediciones |

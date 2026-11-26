@@ -37,12 +37,15 @@ PostgreSQL 16. Evidencias en `docs/evidencias/semana-10/` a `semana-13/`.
 - Cada pull request se integró con la aprobación del otro integrante registrada en GitHub.
 
 **Qué no funcionó**
-- El desarrollo de las semanas 12 y 13 lo hizo un solo integrante, incluida HU-18, asignada al otro.
+- Las semanas 12 y 13 se trabajaron en sesiones conjuntas desde el equipo de un integrante, incluida
+  HU-18, asignada a Joaquín: los commits quedaron con un solo autor y el historial no muestra el aporte
+  de ambos.
 - El tablero no se actualizó al cerrar cada historia.
 - Los comentarios de aprobación de los pull requests no reflejan una revisión propia del código.
 
 **Qué cambiamos**
-- En el Sprint 5, cada integrante desarrolla y sube las historias que tiene asignadas.
+- En el Sprint 5, cada integrante sube desde su propia cuenta las historias que tiene asignadas, para
+  que el historial refleje la autoría.
 - Quien cierra una historia mueve su tarjeta en el tablero el mismo día.
 - La aprobación de un pull request incluye al menos una observación propia sobre el código.
 

@@ -1,108 +1,160 @@
 # Guion de la defensa del proyecto
 
-Presentación de 15 minutos con `Fase 2/Evidencias Grupales/Presentacion_Defensa_Final.pptx`, con demostración en vivo
-del sistema levantado con Docker y los datos de demostración. El respaldo es el video `Demo/Demo_v5.mp4`.
+Defensa final del 9 o 10 de diciembre, con `Fase 3/Evidencias Grupales/Presentacion_Defensa.pptx`. Sigue el temario del
+docente: problema, producto, vínculo con el perfil de egreso, vínculo individual con el desarrollo profesional,
+arquitectura y tecnologías, y planificación original con sus cambios y lecciones. Son 12 minutos de presentación
+y, al final, la demostración en vivo de toda la funcionalidad, en máximo 8 minutos. Ambos presentan.
 
-**Reparto:** Joaquín presenta el problema, la solución, la metodología, el modelo de datos y la arquitectura
-(diapositivas 1 a 8). Gonzalo presenta la demostración, las pruebas, los resultados y el cierre (9 a 13).
+**Reparto:** Gonzalo presenta el problema, el producto, la planificación, las lecciones y el cierre (láminas 1 a 3 y
+8 a 10). Joaquín presenta el perfil de egreso, la arquitectura y el modelo de datos (láminas 4 a 7). La lámina 5 la
+comparten: cada uno habla de su propio desarrollo profesional. En la demostración, Joaquín muestra los roles de
+administrador y encargado de bodega, y Gonzalo los de vendedor y jefatura.
+
+El texto de cada lámina también está en las notas del orador de la presentación.
 
 ## Tiempos
 
-| # | Diapositiva | Expone | Tiempo | Acumulado |
+| # | Lámina | Expone | Tiempo | Acumulado |
 |---|---|---|---|---|
-| 1 | Portada | Joaquín | 15 s | 0:15 |
-| 2 | Temario | Joaquín | 15 s | 0:30 |
-| 3 | El problema | Joaquín | 1 min | 1:30 |
-| 4 | La solución: Mira | Joaquín | 1 min | 2:30 |
-| 5 | Metodología | Joaquín | 1 min | 3:30 |
-| 6 | Plan y ejecución | Joaquín | 1 min | 4:30 |
-| 7 | Modelo de datos | Joaquín | 1 min | 5:30 |
-| 8 | Arquitectura e implantación | Joaquín | 1 min | 6:30 |
-| 9 | Demostración en vivo | Gonzalo | 5 min | 11:30 |
-| 10 | Pruebas y calidad | Gonzalo | 1 min | 12:30 |
-| 11 | Resultados frente a los objetivos | Gonzalo | 1 min | 13:30 |
-| 12 | Dificultades y aprendizajes | Gonzalo | 45 s | 14:15 |
-| 13 | Trabajo futuro y cierre | Gonzalo | 30 s | 14:45 |
+| 1 | Portada | Gonzalo | 20 s | 0:20 |
+| 2 | El problema | Gonzalo | 1 min 15 s | 1:35 |
+| 3 | El producto | Gonzalo | 1 min 15 s | 2:50 |
+| 4 | Vínculo con el perfil de egreso | Joaquín | 1 min 30 s | 4:20 |
+| 5 | El proyecto y nuestro desarrollo profesional | Joaquín y Gonzalo | 1 min 40 s | 6:00 |
+| 6 | Arquitectura y tecnologías | Joaquín | 1 min 30 s | 7:30 |
+| 7 | Modelo de datos: lo que nos diferencia | Joaquín | 1 min 15 s | 8:45 |
+| 8 | Planificación original y real | Gonzalo | 1 min 15 s | 10:00 |
+| 9 | Cambios y lecciones | Gonzalo | 1 min | 11:00 |
+| 10 | Perseverancia | Gonzalo | 45 s | 11:45 |
+| 11 | Demostración en vivo | Joaquín y Gonzalo | 8 min | 19:45 |
+| 12 | Gracias y preguntas | Gonzalo | — | — |
 
-## Texto de cada diapositiva
+## Texto de cada lámina
 
-### 1 · Portada · Joaquín (15 s)
-> Buenos días. Somos Joaquín Romero y Gonzalo Arenas y presentamos Mira, el sistema de gestión y trazabilidad de equipos de geomensura que desarrollamos en el Capstone.
+### 1 · Portada · Gonzalo (20 s)
 
-### 2 · Temario · Joaquín (15 s)
-> Yo presento el problema, la solución, cómo trabajamos y el diseño. Gonzalo muestra el sistema en vivo, las pruebas, los resultados y lo que queda como trabajo futuro.
+> Buenos días. Somos Gonzalo Arenas y Joaquín Romero, y les presentamos Mira: un sistema web para la trazabilidad de los equipos de geomensura de una empresa que los vende y los arrienda.
 
-### 3 · El problema · Joaquín (1 min)
-> La empresa vende y arrienda estaciones totales, GPS RTK, drones y niveles a mineras, constructoras y topógrafos, y lleva su inventario en planillas. El problema de fondo es que una planilla cuenta cantidades, no equipos: dice que hay cinco GPS, pero no cuál está en qué bodega ni si está arrendado. Con varias bodegas, encontrar un equipo disponible es llamar por teléfono. Los arriendos vencidos no se detectan y equipos de alto valor quedan inmovilizados. Y sin historial no hay información para decidir compras.
+### 2 · El problema · Gonzalo (1 min 15 s)
 
-### 4 · La solución: Mira · Joaquín (1 min)
-> Mira reemplaza la planilla por una aplicación web donde cada equipo es una unidad con número de serie, estado y ubicación. Cubre el inventario en varias bodegas, la disponibilidad consolidada, los arriendos y ventas con control de retorno, los documentos y las capacitaciones de cada operación, y un panel de indicadores para la jefatura. Cada uno de los cuatro roles ve solo lo que le corresponde. A la derecha, el panel con datos de demostración.
+> Partamos con una pregunta que la empresa recibe todos los días: ¿tienen un GPS RTK disponible para el lunes? Hoy, responderla exige revisar planillas y llamar a cada bodega.
+>
+> El problema de fondo es que la planilla cuenta cantidades y no equipos: dice que hay cinco GPS, pero no cuál está en qué bodega ni si está arrendado. Con varias bodegas no hay una visión común, los retornos vencidos no se detectan y equipos de alto valor quedan inmovilizados. Y sin historial no hay datos para decidir qué comprar.
 
-### 5 · Metodología · Joaquín (1 min)
-> Trabajamos con Scrum adaptado al calendario: sprints de dos semanas, cada uno con un objetivo y una demostración. Después de un primer sprint sin cumplir escribimos una Definition of Done: ninguna historia se da por terminada sin su prueba automatizada. Cada semana es una rama que se integra por pull request aprobado por el otro. Registramos 28 decisiones con sus alternativas, llevamos un acta por semana, y las reglas del proyecto están escritas en el repositorio para que nuestros asistentes de programación las respeten.
+### 3 · El producto · Gonzalo (1 min 15 s)
 
-### 6 · Plan y ejecución · Joaquín (1 min)
-> El primer sprint no cumplió su objetivo y sus historias pasaron al segundo. Desde ahí formalizamos el proceso y recuperamos el atraso: el Sprint 3 se adelantó a la semana 9 y el Sprint 5 se desarrolló en la semana 13. Durante el camino detectamos dos historias que faltaban, la administración de clientes y la de técnicos, y el backlog pasó de 100 a 105 puntos. La implantación con Docker quedó lista en la semana 14.
+> Mira cambia la unidad de trabajo: cada equipo es una unidad con número de serie, estado y ubicación conocidos en todo momento.
+>
+> Sobre esa base hay seis módulos: inventario en varias bodegas, con traslados; disponibilidad consolidada en una sola pantalla; arriendos y ventas que validan la disponibilidad y controlan los retornos; capacitaciones con los técnicos; documentos de cada operación, e indicadores para la jefatura. Cada uno de los cuatro roles ve solo lo que le corresponde. Al final lo verán funcionando.
 
-### 7 · Modelo de datos · Joaquín (1 min)
-> El modelo tiene 14 tablas y se versiona con migraciones de Flyway que nunca se editan. Cuatro decisiones lo definen: el equipo es la unidad, identificada por su número de serie; cada cambio de estado deja un movimiento inmutable, como un libro contable; lo que se puede calcular, como la disponibilidad o los atrasos, no se guarda, para que nunca quede desactualizado; y toda tabla de negocio lleva la empresa, de modo que el sistema puede servir a varias empresas sin rediseño.
+### 4 · Vínculo con el perfil de egreso · Joaquín (1 min 30 s)
 
-### 8 · Arquitectura e implantación · Joaquín (1 min)
-> Es un monolito modular: ocho módulos por área de negocio que solo se hablan a través de servicios. La regla central es transaccional: un arriendo, el cambio de estado de sus equipos y sus movimientos se guardan juntos o no se guarda nada; lo probamos incluso botando la base de datos a mitad de un arriendo. Y se implanta con Docker Compose: un solo comando levanta la base y la aplicación. Ahora Gonzalo lo muestra funcionando.
+> El proyecto pone en práctica cuatro competencias del perfil de egreso, encadenadas.
+>
+> Gestión de proyectos: planificamos y controlamos cinco sprints y registramos 28 decisiones con sus alternativas. Modelos de datos: diseñamos e implementamos 14 tablas en PostgreSQL, preparadas para varias empresas. Solución de software: construimos e integramos las 30 historias del backlog. Y pruebas de certificación: 219 pruebas automatizadas, 84,6 % de cobertura en los servicios y mediciones de rendimiento.
+>
+> Están encadenadas porque cada una se apoya en la anterior: sin plan no hay modelo, sin modelo no hay software, y sin pruebas no sabemos si el software cumple.
 
-### 9 · Demostración en vivo · Gonzalo (5 min)
-> Ver el recorrido de la demostración, más abajo.
+### 5 · El proyecto y nuestro desarrollo profesional · Joaquín y Gonzalo (1 min 40 s)
 
-### 10 · Pruebas y calidad · Gonzalo (1 min)
-> El sistema tiene 219 pruebas automatizadas que pasan completas, 18 de ellas contra PostgreSQL real, y una cobertura de 84,6 % en la capa de servicios. Los 14 casos funcionales se cumplen. De los 16 no funcionales cumplimos 12: la disponibilidad responde en 0,2 segundos y el panel en 0,05 con un año de datos. Botamos la base en medio de un arriendo y no quedó nada a medias; esa prueba además nos mostró un defecto en la página de error, que corregimos. Somos transparentes: la concurrencia se cumple con usuarios que hacen pausas entre acciones, pero no en saturación, faltan Firefox y Edge, y dos pruebas requieren personas ajenas al proyecto.
+> Joaquín: Mi interés está en el backend y en el diseño de bases de datos, la parte que sostiene las reglas del negocio. En Mira lo más exigente fue garantizar que un arriendo, el cambio de estado y su movimiento se guarden juntos o no se guarden. El proyecto también me hizo cerrar dos brechas, las pruebas automatizadas y los contenedores, y me enseñó que planificar y controlar es tan técnico como programar. Por eso me proyecto como líder técnico.
+>
+> Gonzalo: Mis intereses están en el desarrollo web y en el análisis de datos. En Mira trabajé las vistas, el panel de indicadores y los documentos, y el panel fue mi puerta de entrada a los datos: convertir el historial de cada equipo en indicadores exige entender cómo se registran. Vengo de la prevención de riesgos y este proyecto consolida mi paso al desarrollo de software. Me proyecto como desarrollador frontend que sigue creciendo en datos.
 
-### 11 · Resultados frente a los objetivos · Gonzalo (1 min)
-> Cumplimos los objetivos de construcción: modelo de datos, inventario, operaciones, capacitaciones, documentos y panel. El levantamiento se ajustó, porque las reuniones con la empresa se aplazaron y los vacíos quedaron como supuestos de diseño declarados. Y la validación se cumplió en parte: con pruebas sí, pero la revisión con la empresa no se pudo hacer. Por eso decimos que el aporte es simulado: lo demostramos con datos que reproducen seis meses de operación.
+### 6 · Arquitectura y tecnologías · Joaquín (1 min 30 s)
 
-### 12 · Dificultades y aprendizajes · Gonzalo (45 s)
-> Tuvimos cuatro dificultades. Planificar con rangos de semanas permitió que el primer sprint no se cumpliera; lo corregimos con sprints formales y terminamos adelantados. Las reuniones con la empresa se aplazaron; trabajamos con supuestos declarados. Faltaban dos historias en el backlog y las agregamos con su decisión. Y el trabajo de los últimos sprints quedó concentrado en un integrante; lo reconocemos en la retrospectiva y lo compensamos con revisión cruzada y las pruebas finales repartidas.
+> Mira es un monolito modular: una sola aplicación, organizada en ocho módulos por área de negocio que solo se comunican a través de sus servicios. Lo elegimos porque ningún módulo necesita escalar por separado, y un solo despliegue es más simple de operar para una pyme.
+>
+> Por capas: el navegador recibe páginas armadas en el servidor con Thymeleaf; los controladores reciben cada solicitud y Spring Security revisa el rol; los servicios tienen las reglas de negocio, y toda operación que cambia el estado de un equipo es transaccional; los repositorios acceden a PostgreSQL 16, cuyo esquema versionamos con Flyway.
+>
+> Usamos Java 21 con Spring Boot 4.1 por el tipado estático y el manejo de transacciones, y todo se levanta con Docker Compose: la base y la aplicación con un solo comando.
 
-### 13 · Trabajo futuro y cierre · Gonzalo (30 s)
-> Como trabajo futuro quedan el despliegue en la nube con HTTPS, la validación con usuarios reales de la empresa, completar las pruebas de navegadores y de reproducibilidad, y definir con la empresa las categorías que no son equipos físicos. Muchas gracias; quedamos atentos a sus preguntas.
+### 7 · Modelo de datos: lo que nos diferencia · Joaquín (1 min 15 s)
 
-## Demostración en vivo (5 minutos) · Gonzalo
+> Del modelo de datos destacamos tres decisiones que nos diferencian de una planilla.
+>
+> Primero, es multiempresa: toda tabla de negocio lleva la empresa, y las claves únicas, como el número de serie o el RUT, son únicas por empresa. Hoy sirve a una empresa; mañana, a varias sin rediseño.
+>
+> Segundo, el historial es inmutable: cada cambio de estado deja un movimiento que nunca se edita, como un libro contable. Y tercero, la disponibilidad no se guarda, se calcula al consultar, así que nunca queda desactualizada; aun así responde en 0,2 segundos con 500 equipos.
 
-### Preparación, 30 minutos antes
+### 8 · Planificación original y real · Gonzalo (1 min 15 s)
 
-1. En el PC que se proyecta, levantar el sistema desde cero con los datos de demostración. Las fechas de los datos se ajustan al día de la carga, así que conviene cargarlos el mismo día:
+> Este gráfico compara la planificación original con lo que realmente pasó, en puntos de función pendientes por semana. La línea verde es el plan de la Fase 1; la roja, lo real.
+>
+> El primer sprint, en las semanas 6 y 7, no se cumplió: la línea roja queda plana. Desde ahí formalizamos el proceso y recuperamos el atraso adelantando los sprints 3 y 5. En el camino el alcance creció en cinco puntos, con las historias de clientes y técnicos. Y terminamos el desarrollo en la semana 13, antes de lo planificado.
+
+### 9 · Cambios y lecciones · Gonzalo (1 min)
+
+> El Sprint 1 no se cumplió porque el plan tenía rangos de semanas y no hitos. Pasamos a sprints con objetivo, demostración y una definición de terminado: un plan necesita hitos verificables.
+>
+> Faltaban dos historias, clientes y técnicos: las agregamos, cada una con su decisión registrada e informada en las actas. Y cuando la empresa dejó de participar, declaramos supuestos de diseño: decidir y dejarlo escrito.
+
+### 10 · Perseverancia · Gonzalo (45 s)
+
+> Empezamos este proyecto con una empresa real del rubro, y en el camino la empresa dejó de participar. Podíamos achicar el proyecto; en cambio, con la perseverancia que nos formó Duoc, lo terminamos completo: 30 historias, 105 puntos de función y 219 pruebas.
+>
+> Y queremos seguir perseverando: ofrecerle Mira a la empresa y aportarle valor con lo que construimos. Ahora se lo mostramos funcionando.
+
+## Demostración en vivo (máximo 8 minutos)
+
+### Preparación, el mismo día
+
+1. En el PC que se proyecta, levantar el sistema desde cero con los datos de demostración. Las fechas de los datos se
+   ajustan al día de la carga, así que conviene cargarlos el mismo día:
    ```bash
    docker compose down -v
    docker compose up --build -d
    docs/demo/cargar-demo.sh docker
    ```
-2. Abrir `http://localhost:8080` en Chrome a pantalla completa (F11), con el zoom en 100 % o 110 %, y cerrar las notificaciones del sistema.
-3. Tener a mano un PDF para adjuntar como factura. Sirve cualquiera de `docs/demo/archivos/1/`.
-4. Dejar abierto, detrás del navegador, `Demo/Demo_v5.mp4` en el minuto 1:33, por si falla algo.
-5. Usuarios: `vendedor@mira.cl` / `vendedor123`, `jefatura@mira.cl` / `jefatura123` y `bodega@mira.cl` / `bodega123`.
+2. Abrir `http://localhost:8080` en Chrome a pantalla completa (F11), con el zoom en 100 %, y silenciar las notificaciones.
+3. Tener a mano un PDF para adjuntar como factura: sirve cualquiera de `docs/demo/archivos/1/`.
+4. Usuarios: `admin@mira.cl`, `bodega@mira.cl`, `vendedor@mira.cl` y `jefatura@mira.cl`; la contraseña es el rol
+   seguido de `123` (`admin123`, `bodega123`, `vendedor123`, `jefatura123`).
+5. Dejar abierto, detrás del navegador, `Demo/Demo_v5.mp4` en el minuto 1:33, por si algo falla.
+
+El recorrido se ensayó completo el 26-11-2026 sobre los datos de demostración: los 22 pasos funcionaron y cubren las
+30 historias.
 
 ### Recorrido
 
-| Min. | Qué se hace | Qué se dice |
-|---|---|---|
-| 0:00 | Entrar como **vendedor** y abrir **Arriendos** | El listado calcula el estado y el total de cada arriendo al consultar; los vencidos se destacan |
-| 0:30 | Abrir el arriendo vigente de **Topografía Atacama** | Dos equipos, la orden de compra y la guía de despacho adjuntas, y la capacitación ya realizada |
-| 1:00 | **Equipos**, buscar `AX9`, abrir **AX9-221104** y pulsar **Vender** | Cliente **Inmobiliaria Costanera**, valor `7200000` y orden de compra `OC-2026-170`. La venta se guarda en una transacción y el equipo queda vendido |
-| 1:45 | **Adjuntar documento**: tipo Factura, folio `90015` y el PDF | Solo se aceptan PDF, JPG o PNG de hasta 10 MB; el archivo se guarda fuera de la base |
-| 2:15 | En la ficha de la venta, **Agendarla ahora** | El sistema sugiere la capacitación porque una estación total la requiere |
-| 2:30 | Técnico **Andrés Pérez**, fecha **dentro de tres días** | Aparece el aviso: ya tiene dos capacitaciones ese día. Se marca **Agendar de todas formas**, a las 17:30 |
-| 3:15 | Menú **Capacitaciones** | Calendario del mes con hora, cliente, técnico y estado; la cancelada aparece tachada |
-| 3:40 | **Cerrar sesión**, entrar como **jefatura** y abrir **Indicadores** | Retornos vencidos con sus días de atraso, equipos por bodega y estado, y la utilización por categoría y por equipo |
-| 4:30 | **Cerrar sesión**, entrar como **encargado de bodega** y escribir `localhost:8080/capacitaciones` | Su menú no tiene Ventas ni Capacitaciones, y la dirección escrita a mano responde acceso denegado |
+| Min. | Presenta | Qué se hace | Qué se dice |
+|---|---|---|---|
+| 0:00 | Joaquín | Entrar como **administrador** (admin@mira.cl) | Inicio de sesión (HU-01). El administrador ve todo el menú. |
+| 0:15 | Joaquín | **Usuarios** · Nuevo usuario con rol Vendedor; luego **Desactivar** | Cada usuario tiene un rol (HU-02); no se borra, se desactiva (HU-06). |
+| 0:45 | Joaquín | **Bodegas** · Nueva bodega: Bodega Iquique | La empresa administra sus bodegas (HU-08). |
+| 1:00 | Joaquín | **Clientes** · Nuevo: RUT 76.543.210-1, luego corregir a 76.543.210-3 | El RUT se valida con su dígito verificador y es único por empresa (HU-29). |
+| 1:25 | Joaquín | **Capacitaciones** · Técnicos · Nuevo técnico | Los técnicos que dictan las capacitaciones (HU-30). |
+| 1:45 | Joaquín | Cerrar sesión y entrar como **encargado de bodega** (bodega@mira.cl) | Su menú no tiene ventas ni capacitaciones (HU-03). El inicio muestra las alertas de retorno (HU-16). |
+| 2:05 | Joaquín | **Equipos** · Registrar equipo: GS18-990001, GPS RTK, Leica GS18 T, Bodega Central | Cada equipo se registra por su número de serie, único por empresa (HU-04). |
+| 2:30 | Joaquín | Filtrar por **GS18** en el listado de equipos | Listado con filtros y búsqueda por serie, marca o modelo (HU-05 y HU-11). |
+| 2:45 | Joaquín | Abrir **P4R-0F7712** y pulsar **Trasladar** a Bodega Norte | La ficha muestra el historial del equipo (HU-07); el traslado lo deja en tránsito (HU-09). |
+| 3:05 | Joaquín | **Traslados** · Confirmar llegada de SDIP-310590 | Al confirmar, queda disponible en la bodega de destino; el historial de traslados queda abajo (HU-10). |
+| 3:20 | Joaquín | **Disponibilidad** | Unidades disponibles por bodega y la fecha de retorno de los arrendados (HU-12 y HU-13). |
+| 3:35 | Joaquín | **Inicio** · Registrar retorno del arriendo N° 332 (GS8000-GR0112) | El equipo vuelve y queda disponible en la bodega que lo recibe (HU-15). |
+| 3:50 | Joaquín | Escribir a mano **localhost:8080/capacitaciones** | Acceso denegado: los permisos se revisan en el servidor, no solo en el menú (CF-11). Joaquín entrega a Gonzalo. |
+| 4:00 | Gonzalo | Entrar como **vendedor** (vendedor@mira.cl) · Disponibilidad · Registrar arriendo | Cliente Topografía Atacama, AX10M-240311 y SEL-270803, retorno en 10 días, OC-2026-201. Se valida la disponibilidad y todo se guarda junto (HU-14). |
+| 4:40 | Gonzalo | **Arriendos** | Estado y total de cada arriendo, calculados al consultar; los vencidos destacados (HU-17). |
+| 4:55 | Gonzalo | **Ventas** · AX9-221104 a Inmobiliaria Costanera, 7.200.000, OC-2026-202 | La venta deja el equipo como vendido (HU-18). |
+| 5:25 | Gonzalo | **Adjuntar documento**: Factura, folio 90015, PDF | Solo PDF, JPG o PNG de hasta 10 MB; queda en la ficha de la operación (HU-23 y HU-24). |
+| 5:50 | Gonzalo | **Agendarla ahora** · técnico Andrés Pérez, dentro de tres días, 17:30 | Aviso: ya tiene dos capacitaciones ese día (HU-21). Se agenda de todas formas: el aviso no bloquea (HU-20). |
+| 6:20 | Gonzalo | **Capacitaciones** · abrir la de Minera Pampa Norte · Marcar como realizada | Calendario con cliente, técnico y estado; realizada y cancelada son estados finales (HU-22). |
+| 6:40 | Gonzalo | **Clientes** · Topografía Atacama | Historial de todas sus operaciones, con el arriendo recién registrado (HU-19). |
+| 6:50 | Gonzalo | **Equipos** · AX9-221104 | Documentos de todas las operaciones del equipo (HU-25). |
+| 7:00 | Gonzalo | Entrar como **jefatura** (jefatura@mira.cl) · **Indicadores** | Retornos vencidos con sus días de atraso (HU-28), equipos por bodega y estado (HU-26) y utilización por período (HU-27). La jefatura solo consulta. |
+| 8:00 | Gonzalo | Volver a la presentación: lámina Gracias | "Muchas gracias; quedamos atentos a sus preguntas." |
 
-Si algo falla (red, Docker o una pantalla que no carga), no se depura en vivo: se pasa al video en el minuto 1:33 y se narra encima con el mismo recorrido.
+Si algo falla (red, Docker o una pantalla que no carga), no se depura en vivo: se pasa al video en el minuto 1:33 y
+se narra encima con el mismo recorrido.
 
 ## Preguntas probables
 
-| Pregunta | Respuesta corta |
-|---|---|
-| ¿Por qué un monolito y no microservicios? | Ningún módulo tiene una carga distinta que justifique separarlo, y un solo despliegue es más simple de operar para una pyme (D03). |
-| ¿Cómo evitan que un equipo quede en dos arriendos? | El registro bloquea el equipo, valida que esté disponible y guarda el arriendo, el cambio de estado y el movimiento en una sola transacción (CF-02, CF-03). |
-| ¿La empresa validó el sistema? | No. Las reuniones se aplazaron y la validación se hizo con pruebas y datos de demostración; por eso el aporte es simulado. |
-| ¿Por qué el backlog pasó de 100 a 105 PF? | Faltaban dos historias que el registro de operaciones necesitaba: clientes (HU-29) y técnicos (HU-30). Se registraron como decisiones y se informaron en las actas. |
-| ¿Qué no se cumplió? | La validación con la empresa, el despliegue en la nube y tres pruebas no funcionales: PNF-09 y PNF-16 requieren personas ajenas al proyecto, y en PNF-11 faltan Firefox y Edge. La concurrencia se cumple solo con usuarios que hacen pausas. |
-| ¿Cómo usaron la inteligencia artificial? | Con asistentes de programación que leen las reglas del proyecto desde el repositorio; cada cambio se revisa en un pull request y lleva sus pruebas. |
+| Pregunta | Respuesta corta | Responde |
+|---|---|---|
+| ¿Por qué un monolito y no microservicios? | Ningún módulo tiene una carga distinta que justifique separarlo, y un solo despliegue es más simple de operar para una pyme (D03). | Joaquín |
+| ¿Por qué Thymeleaf y no React? | El sistema son formularios y listados; una SPA obliga a mantener dos aplicaciones con estado duplicado (D02). | Joaquín |
+| ¿Cómo evitan que un equipo quede en dos arriendos? | El registro bloquea el equipo, valida que esté disponible y guarda el arriendo, el cambio de estado y el movimiento en una sola transacción (CF-02 y CF-03). | Joaquín |
+| ¿La empresa validó el sistema? | No. Dejó de participar, así que lo validamos con pruebas y con datos de demostración que reproducen seis meses de operación. | Gonzalo |
+| ¿Por qué el backlog pasó de 100 a 105 PF? | Faltaban clientes (HU-29) y técnicos (HU-30), que el registro de operaciones necesitaba. Se registraron como decisiones y se informaron en las actas. | Gonzalo |
+| ¿Qué no se cumplió? | El despliegue en la nube y cuatro pruebas no funcionales: PNF-03 y PNF-11 en parte, y PNF-09 y PNF-16, que requieren personas ajenas al proyecto. | Gonzalo |
+| ¿Cómo trabajaron en equipo? | En sesiones de trabajo conjuntas y con una integración semanal por pull request aprobado por el otro integrante. | Gonzalo |
+| ¿Cómo usaron la inteligencia artificial? | Con asistentes de programación que leen las reglas del proyecto desde el repositorio; cada cambio se revisa en un pull request y lleva sus pruebas. | Joaquín |
